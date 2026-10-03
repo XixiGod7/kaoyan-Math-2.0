@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 数砖 mathbrick · 最终 logo（方案 D：行列式/绝对值竖线 | 砖 |）。绿竖线对称夹住三块橙砖。 -->
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="G" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#15C08E"/><stop offset="100%" stop-color="#0A9A6E"/></linearGradient>
+    <linearGradient id="O" x1="0" y1="0" x2="1" y2="0.3"><stop offset="0%" stop-color="#F9923A"/><stop offset="100%" stop-color="#F07018"/></linearGradient>
+  </defs>
+  <path d="M20,15 L20,85 M80,15 L80,85" fill="none" stroke="url(#G)" stroke-width="8" stroke-linecap="round"/>
+  <rect x="35" y="31" width="30" height="9" rx="2.5" fill="url(#O)"/>
+  <rect x="35" y="45.5" width="30" height="9" rx="2.5" fill="url(#O)"/>
+  <rect x="35" y="60" width="30" height="9" rx="2.5" fill="url(#O)"/>
+</svg>

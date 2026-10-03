@@ -1,0 +1,1 @@
+const e="navSeries";function i(t,s,r,n){try{sessionStorage.setItem(e,JSON.stringify({ids:t,label:s,backTo:r,paper:n}))}catch{}}function a(){try{const t=sessionStorage.getItem(e);if(!t)return null;const s=JSON.parse(t);return Array.isArray(s.ids)&&s.ids.length>0?s:null}catch{return null}}export{a as g,i as s};

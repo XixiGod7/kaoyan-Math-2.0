@@ -1,0 +1,1 @@
+import{r}from"./vendor-C1PfG1cZ.js";let t=null,n=null;function o(){return t?Promise.resolve(t):(n||(n=fetch("/data/kaogang-figures.json").then(e=>e.ok?e.json():{}).then(e=>(t=e,e)).catch(()=>(t={},{}))),n)}function a(){const[e,u]=r.useState(t??{});return r.useEffect(()=>{t||o().then(u)},[]),e}export{a as u};

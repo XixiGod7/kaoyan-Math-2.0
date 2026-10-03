@@ -1,0 +1,1 @@
+import{r as u}from"./vendor-C1PfG1cZ.js";const i=t=>`mb:pick:${t}`;function a(t,s,r,c){const o=n=>typeof n=="string"&&t.includes(n);return o(r)?r:o(c)?c:s}function f(t,s,r,c){const[o,n]=u.useState(()=>{let e=null;try{e=localStorage.getItem(i(t))}catch{}return a(s,r,c,e)});return[o,e=>{n(e);try{localStorage.setItem(i(t),e)}catch{}}]}export{f as u};

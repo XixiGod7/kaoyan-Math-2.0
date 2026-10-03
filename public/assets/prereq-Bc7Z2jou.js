@@ -1,0 +1,1 @@
+import{r as n}from"./vendor-C1PfG1cZ.js";let e=null,r=null;function o(){return e?Promise.resolve(e):(r||(r=fetch("/data/kp-prereq.json").then(t=>t.ok?t.json():{edges:{}}).then(t=>(e=t.edges??{},e)).catch(()=>(e={},e))),r)}function a(){const[t,s]=n.useState(e??{});return n.useEffect(()=>{e||o().then(s)},[]),t}export{a as u};

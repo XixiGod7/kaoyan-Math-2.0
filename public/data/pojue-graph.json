@@ -1,0 +1,4622 @@
+{
+  "nodes": [
+    {
+      "code": "GL01-M01",
+      "title": "事件运算与加法减法公式",
+      "domain": "GL01",
+      "domainName": "随机事件与概率",
+      "oneLiner": "「恰有一个」的系数是 1、−2、+3，不是容斥的 1、−1、+1",
+      "status": "published"
+    },
+    {
+      "code": "GL01-M02",
+      "title": "古典概型与几何概型",
+      "domain": "GL01",
+      "domainName": "随机事件与概率",
+      "oneLiner": "几何概型就是量测度占比；古典概型的胜负手是「放回还是不放回」决定的分母",
+      "status": "published"
+    },
+    {
+      "code": "GL01-M03",
+      "title": "条件概率与乘法公式",
+      "domain": "GL01",
+      "domainName": "随机事件与概率",
+      "oneLiner": "全部功夫在把分子那个交事件化简对；反求型就把定义式当成关于未知量的方程",
+      "status": "published"
+    },
+    {
+      "code": "GL01-M04",
+      "title": "全概率公式与贝叶斯公式",
+      "domain": "GL01",
+      "domainName": "随机事件与概率",
+      "oneLiner": "它的主战场不是算概率，而是拿离散那一个变量把局面切开，求另一个变量的分布",
+      "status": "published"
+    },
+    {
+      "code": "GL01-M05",
+      "title": "独立性的判定与应用",
+      "domain": "GL01",
+      "domainName": "随机事件与概率",
+      "oneLiner": "独立和互不相容几乎相反——两个概率非零的事件不可能既独立又互不相容",
+      "status": "published"
+    },
+    {
+      "code": "GL02-M01",
+      "title": "由归一性与分布函数的性质定参数",
+      "domain": "GL02",
+      "domainName": "一维随机变量及其分布",
+      "oneLiner": "一个方程不够就去题里找第二个；积不出来的先想对称性和\"半个正态\"",
+      "status": "published"
+    },
+    {
+      "code": "GL02-M02",
+      "title": "分布函数密度与区间概率的互求",
+      "domain": "GL02",
+      "domainName": "一维随机变量及其分布",
+      "oneLiner": "由密度求 F 要分段积、逐段定常数；混合型只能靠 F 描述，别去找它的密度",
+      "status": "published"
+    },
+    {
+      "code": "GL02-M03",
+      "title": "常见分布的识别与直接套用",
+      "domain": "GL02",
+      "domainName": "一维随机变量及其分布",
+      "oneLiner": "七个分布的分布律与数字特征是一张必须背下来的表——认出来就是送分，认错就全错",
+      "status": "published"
+    },
+    {
+      "code": "GL02-M04",
+      "title": "正态分布的标准化对称性与线性变换",
+      "domain": "GL02",
+      "domainName": "一维随机变量及其分布",
+      "oneLiner": "三件套——线性变换仍正态、独立正态的线性组合仍正态、标准化后查同一个 Φ",
+      "status": "published"
+    },
+    {
+      "code": "GL02-M05",
+      "title": "指数分布与几何分布的无记忆性",
+      "domain": "GL02",
+      "domainName": "一维随机变量及其分布",
+      "oneLiner": "连续侧只有指数、离散侧只有几何——近十年考的全是它\"不成立\"的那一面",
+      "status": "published"
+    },
+    {
+      "code": "GL02-M06",
+      "title": "一维随机变量函数的分布",
+      "domain": "GL02",
+      "domainName": "一维随机变量及其分布",
+      "oneLiner": "分布函数法是唯一万能的路，公式法只是单调时的捷径——离散型走另一支，取值相同要合并",
+      "status": "published"
+    },
+    {
+      "code": "GL03-M01",
+      "title": "联合边缘与条件分布的互求",
+      "domain": "GL03",
+      "domainName": "多维随机变量及其分布",
+      "oneLiner": "三个方向一个公式 f(x,y)=f_X(x)·f_{Y|X}(y|x)；全部难点在支撑区域定积分限",
+      "status": "published"
+    },
+    {
+      "code": "GL03-M02",
+      "title": "二维随机变量的独立性判定",
+      "domain": "GL03",
+      "domainName": "多维随机变量及其分布",
+      "oneLiner": "支撑不是矩形就必不独立——一句话结束，不用验密度",
+      "status": "published"
+    },
+    {
+      "code": "GL03-M03",
+      "title": "两个随机变量函数的分布",
+      "domain": "GL03",
+      "domainName": "多维随机变量及其分布",
+      "oneLiner": "四条路按代价排：可加性 → 卷积 → 按离散那个的取值分情形 → 其余一律分布函数法",
+      "status": "published"
+    },
+    {
+      "code": "GL03-M04",
+      "title": "二维正态分布的性质与线性组合",
+      "domain": "GL03",
+      "domainName": "多维随机变量及其分布",
+      "oneLiner": "四条特权——任意线性组合仍正态、不相关就独立、边缘正态、条件正态",
+      "status": "published"
+    },
+    {
+      "code": "GL04-M01",
+      "title": "随机变量函数的期望",
+      "domain": "GL04",
+      "domainName": "随机变量的数字特征",
+      "oneLiner": "不必先求 g(X) 的分布——直接拿 g(x) 去乘密度积分；只问期望走这条，问分布才走那条",
+      "status": "published"
+    },
+    {
+      "code": "GL04-M02",
+      "title": "期望与方差的运算性质",
+      "domain": "GL04",
+      "domainName": "随机变量的数字特征",
+      "oneLiner": "D(X)=E(X²)−[E(X)]² 正反两向都要熟；不独立时别把 E(XY) 拆成 E(X)E(Y)",
+      "status": "published"
+    },
+    {
+      "code": "GL04-M03",
+      "title": "方差的线性组合与协方差的双线性展开",
+      "domain": "GL04",
+      "domainName": "随机变量的数字特征",
+      "oneLiner": "交叉项的符号跟着 ab 走；协方差是双线性的，Cov(X+Y,X−Y)=D(X)−D(Y) 不需要独立",
+      "status": "published"
+    },
+    {
+      "code": "GL04-M04",
+      "title": "协方差与相关系数的计算",
+      "domain": "GL04",
+      "domainName": "随机变量的数字特征",
+      "oneLiner": "Cov=E(XY)−E(X)E(Y)，ρ 的分母要开根号；E(XY) 难算时改用条件期望",
+      "status": "published"
+    },
+    {
+      "code": "GL04-M05",
+      "title": "不相关与独立的辨析",
+      "domain": "GL04",
+      "domainName": "随机变量的数字特征",
+      "oneLiner": "独立⇒不相关，反过来只在二维正态里成立——不相关只管线性关系，函数关系照样可以很强",
+      "status": "published"
+    },
+    {
+      "code": "GL04-M06",
+      "title": "用对称性与奇偶性简化数字特征",
+      "domain": "GL04",
+      "domainName": "随机变量的数字特征",
+      "oneLiner": "密度关于 x=c 对称就意味着 E(X)=c 且所有奇数阶中心矩为零——一句话代替三个积分",
+      "status": "published"
+    },
+    {
+      "code": "GL05-M01",
+      "title": "切比雪夫不等式估计概率",
+      "domain": "GL05",
+      "domainName": "大数定律与中心极限定理",
+      "oneLiner": "一个公式没有变化，全部工作量在算出那个方差",
+      "status": "published"
+    },
+    {
+      "code": "GL05-M02",
+      "title": "大数定律与依概率收敛",
+      "domain": "GL05",
+      "domainName": "大数定律与中心极限定理",
+      "oneLiner": "辛钦大数定律：样本的平均依概率收敛到那个东西的期望——难点从来不在定律，在算那个期望",
+      "status": "published"
+    },
+    {
+      "code": "GL05-M03",
+      "title": "中心极限定理的标准化近似",
+      "domain": "GL05",
+      "domainName": "大数定律与中心极限定理",
+      "oneLiner": "把和标准化成 (ΣX−nμ)/(√n·σ) 再套 Φ——难点只有\"算对 nμ 和 nσ²\"",
+      "status": "published"
+    },
+    {
+      "code": "GL06-M01",
+      "title": "三大抽样分布的构造与自由度",
+      "domain": "GL06",
+      "domainName": "数理统计的基本概念",
+      "oneLiner": "三个定义式必须能反着认——看见\"标准正态平方和\"想卡方，看见\"正态除以根号卡方\"想 t",
+      "status": "published"
+    },
+    {
+      "code": "GL06-M02",
+      "title": "正态总体下样本均值与样本方差的分布及独立性",
+      "domain": "GL06",
+      "domainName": "数理统计的基本概念",
+      "oneLiner": "四条结论撑起整章——X̄ 正态、(n−1)S²/σ² 是卡方、两者独立、比出来是 t",
+      "status": "published"
+    },
+    {
+      "code": "GL06-M03",
+      "title": "次序统计量与经验分布函数",
+      "domain": "GL06",
+      "domainName": "数理统计的基本概念",
+      "oneLiner": "max 与 min 的分布只有两个公式，而近十年它次次都接着问无偏估计",
+      "status": "published"
+    },
+    {
+      "code": "GL07-M01",
+      "title": "矩估计",
+      "domain": "GL07",
+      "domainName": "参数估计与假设检验",
+      "oneLiner": "算出 E(X)，令它等于样本均值，反解参数——一个参数只需要一阶矩",
+      "status": "published"
+    },
+    {
+      "code": "GL07-M02",
+      "title": "最大似然估计",
+      "domain": "GL07",
+      "domainName": "参数估计与假设检验",
+      "oneLiner": "写似然、取对数、求导令零——但似然对参数单调时不能求导，要在边界取",
+      "status": "published"
+    },
+    {
+      "code": "GL07-M03",
+      "title": "估计量的无偏性与有效性",
+      "domain": "GL07",
+      "domainName": "参数估计与假设检验",
+      "oneLiner": "无偏就是 E(θ̂)=θ 这一个等号——它常常是用来\"定系数\"的方程，不是要你证的结论",
+      "status": "published"
+    },
+    {
+      "code": "GL07-M04",
+      "title": "假设检验拒绝域与两类错误",
+      "domain": "GL07",
+      "domainName": "参数估计与假设检验",
+      "oneLiner": "σ 已知用 Z、未知用 t；两类错误认准\"谁为真\"——第一类在 H₀ 下算，第二类在 H₁ 下算",
+      "status": "published"
+    },
+    {
+      "code": "GL07-M05",
+      "title": "区间估计",
+      "domain": "GL07",
+      "domainName": "参数估计与假设检验",
+      "oneLiner": "中心是 x̄、半宽是分位数乘标准误；σ 已知用 u、未知用 t——这一条近十年一道都没考过",
+      "status": "published"
+    },
+    {
+      "code": "GS01-M01",
+      "title": "由极限值反推分子分母的行为",
+      "domain": "GS01",
+      "domainName": "函数、极限、连续",
+      "oneLiner": "分母趋于 0 而整体极限有限，分子必趋于 0——但「趋于 0」不等于「函数值是 0」",
+      "status": "published"
+    },
+    {
+      "code": "GS01-M02",
+      "title": "分左右极限判存在性与求值",
+      "domain": "GS01",
+      "domainName": "函数、极限、连续",
+      "oneLiner": "识别信号是「含 1/x 的超越函数」或绝对值，不是「分段函数」四个字",
+      "status": "published"
+    },
+    {
+      "code": "GS01-M03",
+      "title": "等价无穷小代换",
+      "domain": "GS01",
+      "domainName": "函数、极限、连续",
+      "oneLiner": "乘除因子放心换，加减位置一相消就退泰勒",
+      "status": "published"
+    },
+    {
+      "code": "GS01-M04",
+      "title": "泰勒（麦克劳林）展开取主部",
+      "domain": "GS01",
+      "domainName": "函数、极限、连续",
+      "oneLiner": "展到「分子出现首个非零项」就停——少了得 0/0，多了纯浪费",
+      "status": "published"
+    },
+    {
+      "code": "GS01-M05",
+      "title": "洛必达法则",
+      "domain": "GS01",
+      "domainName": "函数、极限、连续",
+      "oneLiner": "全库 50 道用到它，近十年只剩 4 道，而其中 3 道换泰勒一样能做——它已经从首选退成兜底",
+      "status": "published"
+    },
+    {
+      "code": "GS01-M06",
+      "title": "幂指函数取对数",
+      "domain": "GS01",
+      "domainName": "函数、极限、连续",
+      "oneLiner": "1^∞ 有个一步到位的公式，但用它之前必须先确认底数真的趋于 1",
+      "status": "published"
+    },
+    {
+      "code": "GS01-M07",
+      "title": "代数变形与换元",
+      "domain": "GS01",
+      "domainName": "函数、极限、连续",
+      "oneLiner": "它几乎从不是最后一步，而是第一步——先把式子整理成一个分式，别的方法才用得上",
+      "status": "published"
+    },
+    {
+      "code": "GS01-M08",
+      "title": "单调有界准则",
+      "domain": "GS01",
+      "domainName": "函数、极限、连续",
+      "oneLiner": "两步固定：先证有界加单调得收敛，再对递推式两边取极限解方程——顺序反了就是逻辑漏洞",
+      "status": "published"
+    },
+    {
+      "code": "GS01-M09",
+      "title": "夹逼准则与放缩",
+      "domain": "GS01",
+      "domainName": "函数、极限、连续",
+      "oneLiner": "近十年只出现过 1 次，但它是 n 项和的两条正路之一——凑不成 i/n 时只剩它",
+      "status": "published"
+    },
+    {
+      "code": "GS01-M10",
+      "title": "定积分定义求 n 项和极限",
+      "domain": "GS01",
+      "domainName": "函数、极限、连续",
+      "oneLiner": "判据只有一个——能不能凑出 (1/n)Σf(i/n)；两个 1/n 一个当自变量、一个当区间宽",
+      "status": "published"
+    },
+    {
+      "code": "GS01-M11",
+      "title": "比阶",
+      "domain": "GS01",
+      "domainName": "函数、极限、连续",
+      "oneLiner": "「等价」比「同阶」多一个要求——不光次数相同，首项系数还得恰好相等",
+      "status": "published"
+    },
+    {
+      "code": "GS01-M12",
+      "title": "主部提取定阶",
+      "domain": "GS01",
+      "domainName": "函数、极限、连续",
+      "oneLiner": "和泰勒取主部是同一手法、不同目标——那条要极限值，这条只要次数",
+      "status": "published"
+    },
+    {
+      "code": "GS01-M13",
+      "title": "间断点的判定与分类",
+      "domain": "GS01",
+      "domainName": "函数、极限、连续",
+      "oneLiner": "漏点比判错更常见——先把无定义点扫全，再逐点分左右极限",
+      "status": "published"
+    },
+    {
+      "code": "GS01-M14",
+      "title": "分段/含参函数的连续性定参",
+      "domain": "GS01",
+      "domainName": "函数、极限、连续",
+      "oneLiner": "判据是三样相等——左极限、右极限、函数值；学生常只验前两样",
+      "status": "published"
+    },
+    {
+      "code": "GS01-M15",
+      "title": "闭区间上连续函数性质的应用",
+      "domain": "GS01",
+      "domainName": "函数、极限、连续",
+      "oneLiner": "条件里只有连续性才轮到它——一出现可导性，多半该换中值定理",
+      "status": "published"
+    },
+    {
+      "code": "GS01-M16",
+      "title": "展开定阶、逐阶匹配系数",
+      "domain": "GS01",
+      "domainName": "函数、极限、连续",
+      "oneLiner": "两边展成同一个变量的幂，从最低阶往上逐阶配——发散的那几阶系数必须先归零",
+      "status": "published"
+    },
+    {
+      "code": "GS01-M17",
+      "title": "幂指型定参",
+      "domain": "GS01",
+      "domainName": "函数、极限、连续",
+      "oneLiner": "参数长在幂指结构里，必须先取对数再配系数——直接对底数配一定错",
+      "status": "published"
+    },
+    {
+      "code": "GS01-M18",
+      "title": "先求和再取极限",
+      "domain": "GS01",
+      "domainName": "函数、极限、连续",
+      "oneLiner": "和定积分定义方向相反——那条把和看成积分，这条把和直接算出来；判断顺序是先试算得出来吗",
+      "status": "published"
+    },
+    {
+      "code": "GS01-M19",
+      "title": "由一个极限推另一个极限",
+      "domain": "GS01",
+      "domainName": "函数、极限、连续",
+      "oneLiner": "正面推不动就举反例——四个选项里通常三个都能被同一个振荡或线性反例掀掉",
+      "status": "published"
+    },
+    {
+      "code": "GS01-M20",
+      "title": "函数性质的判定与函数方程",
+      "domain": "GS01",
+      "domainName": "函数、极限、连续",
+      "oneLiner": "近十年这类题常以变限积分为壳——考的是奇偶性传递，不是积分计算",
+      "status": "published"
+    },
+    {
+      "code": "GS02-M01",
+      "title": "用导数定义凑差商",
+      "domain": "GS02",
+      "domainName": "一元微分·概念与计算",
+      "oneLiner": "见到含 f 的极限先找差商，分子不像就先展开剥出来",
+      "status": "published"
+    },
+    {
+      "code": "GS02-M02",
+      "title": "可导性的判定",
+      "domain": "GS02",
+      "domainName": "一元微分·概念与计算",
+      "oneLiner": "判可导只认左右导数，先看差商分子是几阶无穷小",
+      "status": "published"
+    },
+    {
+      "code": "GS02-M03",
+      "title": "导数概念的充要辨析",
+      "domain": "GS02",
+      "domainName": "一元微分·概念与计算",
+      "oneLiner": "先看箭头往哪边走，再从三件套里挑反例",
+      "status": "published"
+    },
+    {
+      "code": "GS02-M04",
+      "title": "对数求导法",
+      "domain": "GS02",
+      "domainName": "一元微分·概念与计算",
+      "oneLiner": "底和指数都带 x，或一长串连乘连除，先两边取对数",
+      "status": "published"
+    },
+    {
+      "code": "GS02-M05",
+      "title": "隐函数求导",
+      "domain": "GS02",
+      "domainName": "一元微分·概念与计算",
+      "oneLiner": "两边对 x 求导，y 当 x 的函数；先代点再往下走",
+      "status": "published"
+    },
+    {
+      "code": "GS02-M06",
+      "title": "参数方程求导",
+      "domain": "GS02",
+      "domainName": "一元微分·概念与计算",
+      "oneLiner": "一律对 t 求，二阶导末尾还要再除一次 x'(t)",
+      "status": "published"
+    },
+    {
+      "code": "GS02-M07",
+      "title": "反函数求导",
+      "domain": "GS02",
+      "domainName": "一元微分·概念与计算",
+      "oneLiner": "取倒数不难，难的是先把点换回去",
+      "status": "published"
+    },
+    {
+      "code": "GS02-M08",
+      "title": "莱布尼茨公式",
+      "domain": "GS02",
+      "domainName": "一元微分·概念与计算",
+      "oneLiner": "乘积求 n 阶导，谁会归零谁当第二个因子",
+      "status": "published"
+    },
+    {
+      "code": "GS02-M09",
+      "title": "泰勒系数与高阶导数互求",
+      "domain": "GS02",
+      "domainName": "一元微分·概念与计算",
+      "oneLiner": "一个式子两个方向——系数乘 n! 就是导数，导数除 n! 就是系数",
+      "status": "published"
+    },
+    {
+      "code": "GS02-M10",
+      "title": "逐阶求导找规律",
+      "domain": "GS02",
+      "domainName": "一元微分·概念与计算",
+      "oneLiner": "动笔之前先看结构，奇偶周期对称能白送答案",
+      "status": "published"
+    },
+    {
+      "code": "GS03-M01",
+      "title": "求单调区间与极值",
+      "domain": "GS03",
+      "domainName": "一元微分·应用",
+      "oneLiner": "驻点加不可导点一起列，靠变号定生死",
+      "status": "published"
+    },
+    {
+      "code": "GS03-M02",
+      "title": "不可导点处的极值判定",
+      "domain": "GS03",
+      "domainName": "一元微分·应用",
+      "oneLiner": "求导法失灵就回定义，直接比两侧的函数值",
+      "status": "published"
+    },
+    {
+      "code": "GS03-M03",
+      "title": "单调与凹凸的概念辨析",
+      "domain": "GS03",
+      "domainName": "一元微分·应用",
+      "oneLiner": "一点处的符号管不了一个邻域，除非那个导数在这点连续",
+      "status": "published"
+    },
+    {
+      "code": "GS03-M04",
+      "title": "最大值与最小值",
+      "domain": "GS03",
+      "domainName": "一元微分·应用",
+      "oneLiner": "卡点多半在前半段——先把目标函数解出来，求最值只是最后三行",
+      "status": "published"
+    },
+    {
+      "code": "GS03-M05",
+      "title": "拐点的求法",
+      "domain": "GS03",
+      "domainName": "一元微分·应用",
+      "oneLiner": "解出 f''=0 只是候选，不变号就不算；还有 f'' 不存在的点别漏",
+      "status": "published"
+    },
+    {
+      "code": "GS03-M06",
+      "title": "凹凸性的等价刻画",
+      "domain": "GS03",
+      "domainName": "一元微分·应用",
+      "oneLiner": "正向泰勒、反向反证——充要条件双向证的固定套路",
+      "status": "published"
+    },
+    {
+      "code": "GS03-M07",
+      "title": "渐近线",
+      "domain": "GS03",
+      "domainName": "一元微分·应用",
+      "oneLiner": "三类分头查，左右无穷各算一遍，漏项就是主要失分",
+      "status": "published"
+    },
+    {
+      "code": "GS03-M08",
+      "title": "切线与法线",
+      "domain": "GS03",
+      "domainName": "一元微分·应用",
+      "oneLiner": "斜率从哪来决定第一步，「过某点」和「在某点」是两道题",
+      "status": "published"
+    },
+    {
+      "code": "GS03-M09",
+      "title": "曲率与曲率圆",
+      "domain": "GS03",
+      "domainName": "一元微分·应用",
+      "oneLiner": "曲率圆要三个量——半径、凹侧、圆心，少一个就写不出方程",
+      "status": "published"
+    },
+    {
+      "code": "GS03-M10",
+      "title": "经济应用",
+      "domain": "GS03",
+      "domainName": "一元微分·应用",
+      "oneLiner": "建模三步——反解价格、写利润、求导取极值",
+      "status": "published"
+    },
+    {
+      "code": "GS03-M11",
+      "title": "相关变化率",
+      "domain": "GS03",
+      "domainName": "一元微分·应用",
+      "oneLiner": "先写静态等式，两边对 t 求导，最后才代瞬时值",
+      "status": "published"
+    },
+    {
+      "code": "GS04-M01",
+      "title": "罗尔定理与辅助函数的构造",
+      "domain": "GS04",
+      "domainName": "中值定理与不等式证明",
+      "oneLiner": "把待证式改写成 $F'(\\xi)=0$ 的形状，反推出来的那个 $F$ 就是辅助函数",
+      "status": "published"
+    },
+    {
+      "code": "GS04-M02",
+      "title": "拉格朗日与柯西中值定理",
+      "domain": "GS04",
+      "domainName": "中值定理与不等式证明",
+      "oneLiner": "待证式里有 $f(b)-f(a)$ 就想拉格朗日，有两个函数的差之比就想柯西",
+      "status": "published"
+    },
+    {
+      "code": "GS04-M03",
+      "title": "泰勒公式证含高阶导的等式与估计",
+      "domain": "GS04",
+      "domainName": "中值定理与不等式证明",
+      "oneLiner": "在\"导数信息最多的点\"展开，再代端点——对称端点相加消掉一阶项",
+      "status": "published"
+    },
+    {
+      "code": "GS04-M04",
+      "title": "构造辅助函数用单调性证不等式",
+      "domain": "GS04",
+      "domainName": "中值定理与不等式证明",
+      "oneLiner": "令 $F=f-g$ → 求 $F'$ 定单调 → 验端点值，三步缺一不可",
+      "status": "published"
+    },
+    {
+      "code": "GS04-M05",
+      "title": "用最值证不等式",
+      "domain": "GS04",
+      "domainName": "中值定理与不等式证明",
+      "oneLiner": "单调性中途变号就求最值——只要证最小值 $\\ge0$，不必解出最值点",
+      "status": "published"
+    },
+    {
+      "code": "GS04-M06",
+      "title": "泰勒展开证不等式",
+      "domain": "GS04",
+      "domainName": "中值定理与不等式证明",
+      "oneLiner": "条件里给了 $f''$ 的符号，就是凸性——在中点展开，余项的号由 $f''$ 定",
+      "status": "published"
+    },
+    {
+      "code": "GS04-M07",
+      "title": "定积分不等式",
+      "domain": "GS04",
+      "domainName": "中值定理与不等式证明",
+      "oneLiner": "比被积函数不比积分值——近十年这类题算出来的一道都没有",
+      "status": "published"
+    },
+    {
+      "code": "GS04-M08",
+      "title": "零点的存在性与个数",
+      "domain": "GS04",
+      "domainName": "中值定理与不等式证明",
+      "oneLiner": "存在性靠零点定理，个数靠单调性——分成 $n$ 个单调区间，每段至多一根",
+      "status": "published"
+    },
+    {
+      "code": "GS05-M01",
+      "title": "凑微分",
+      "domain": "GS05",
+      "domainName": "一元积分·计算方法",
+      "oneLiner": "认出\"谁是谁的导数\"，把 $g'(x)\\mathrm dx$ 收进 $\\mathrm d g(x)$",
+      "status": "published"
+    },
+    {
+      "code": "GS05-M02",
+      "title": "第二类换元",
+      "domain": "GS05",
+      "domainName": "一元积分·计算方法",
+      "oneLiner": "根号挡路就把根号设成新变量；无穷限想倒代换",
+      "status": "published"
+    },
+    {
+      "code": "GS05-M03",
+      "title": "分部积分",
+      "domain": "GS05",
+      "domainName": "一元积分·计算方法",
+      "oneLiner": "\"反对幂指三\"，靠前的选作 $u$；被积式里有 $f'$ 或变限积分，一定分部",
+      "status": "published"
+    },
+    {
+      "code": "GS05-M04",
+      "title": "有理函数积分",
+      "domain": "GS05",
+      "domainName": "一元积分·计算方法",
+      "oneLiner": "分母能分解就部分分式，分解不了就配方走 arctan",
+      "status": "published"
+    },
+    {
+      "code": "GS05-M05",
+      "title": "定积分的奇偶对称化简",
+      "domain": "GS05",
+      "domainName": "一元积分·计算方法",
+      "oneLiner": "积分限对称就先判奇偶——奇的整块归零，偶的折成一半",
+      "status": "published"
+    },
+    {
+      "code": "GS05-M06",
+      "title": "周期性与区间可加性",
+      "domain": "GS05",
+      "domainName": "一元积分·计算方法",
+      "oneLiner": "周期函数积一个整周期只看周期数；带绝对值先找变号点再拆",
+      "status": "published"
+    },
+    {
+      "code": "GS05-M07",
+      "title": "用几何意义读出积分值",
+      "domain": "GS05",
+      "domainName": "一元积分·计算方法",
+      "oneLiner": "被积式画出来是圆、三角形或梯形，就直接量面积，别积分",
+      "status": "published"
+    },
+    {
+      "code": "GS05-M08",
+      "title": "反常积分的计算",
+      "domain": "GS05",
+      "domainName": "一元积分·计算方法",
+      "oneLiner": "先当普通积分求原函数，再在坏点上取极限——瑕点在内部必须拆",
+      "status": "published"
+    },
+    {
+      "code": "GS05-M09",
+      "title": "由方程或递推间接求积分",
+      "domain": "GS05",
+      "domainName": "一元积分·计算方法",
+      "oneLiner": "不给函数表达式，就对方程两边积分——别急着把函数解出来",
+      "status": "published"
+    },
+    {
+      "code": "GS06-M01",
+      "title": "用定积分定义求和式极限",
+      "domain": "GS06",
+      "domainName": "一元积分·概念与应用",
+      "oneLiner": "把 $n$ 项和凑成 $\\frac1n\\sum f(\\frac in)$，它就是 $\\int_0^1 f$",
+      "status": "published"
+    },
+    {
+      "code": "GS06-M02",
+      "title": "定积分的比较与估值",
+      "domain": "GS06",
+      "domainName": "一元积分·概念与应用",
+      "oneLiner": "比被积函数，不算积分——保号性一条打天下",
+      "status": "published"
+    },
+    {
+      "code": "GS06-M03",
+      "title": "原函数与分段函数求原函数",
+      "domain": "GS06",
+      "domainName": "一元积分·概念与应用",
+      "oneLiner": "各段分别积分，再用\"原函数必连续\"把两段的常数接上",
+      "status": "published"
+    },
+    {
+      "code": "GS06-M04",
+      "title": "反常积分收敛性的判别",
+      "domain": "GS06",
+      "domainName": "一元积分·概念与应用",
+      "oneLiner": "在每个坏点上单独定阶，跟 $p$ 积分比——两端都是坏点就取交集",
+      "status": "published"
+    },
+    {
+      "code": "GS06-M05",
+      "title": "变限积分求导",
+      "domain": "GS06",
+      "domainName": "一元积分·概念与应用",
+      "oneLiner": "被积函数里含 $x$ 就先换元把它挪到限上，再套公式",
+      "status": "published"
+    },
+    {
+      "code": "GS06-M06",
+      "title": "变限积分函数的性质判定",
+      "domain": "GS06",
+      "domainName": "一元积分·概念与应用",
+      "oneLiner": "奇偶性会传递且要翻个个儿——$f$ 奇则 $\\int_0^x f$ 偶",
+      "status": "published"
+    },
+    {
+      "code": "GS06-M07",
+      "title": "含变限积分的极限与定阶",
+      "domain": "GS06",
+      "domainName": "一元积分·概念与应用",
+      "oneLiner": "用被积函数的等价无穷小估阶——$\\int_0^x t^k\\mathrm dt\\sim\\frac{x^{k+1}}{k+1}$",
+      "status": "published"
+    },
+    {
+      "code": "GS06-M08",
+      "title": "含变限积分的方程",
+      "domain": "GS06",
+      "domainName": "一元积分·概念与应用",
+      "oneLiner": "两边求导消掉积分号；卷积型必须先换元再求导",
+      "status": "published"
+    },
+    {
+      "code": "GS06-M09",
+      "title": "平面图形的面积",
+      "domain": "GS06",
+      "domainName": "一元积分·概念与应用",
+      "oneLiner": "先求交点定限，再积\"上减下\"——极坐标另有一套公式",
+      "status": "published"
+    },
+    {
+      "code": "GS06-M10",
+      "title": "旋转体的体积",
+      "domain": "GS06",
+      "domainName": "一元积分·概念与应用",
+      "oneLiner": "绕谁转就以谁为积分变量；绕 $y$ 轴反解不动就上柱壳法",
+      "status": "published"
+    },
+    {
+      "code": "GS06-M11",
+      "title": "弧长与旋转面侧面积",
+      "domain": "GS06",
+      "domainName": "一元积分·概念与应用",
+      "oneLiner": "根号里一定配得成完全平方——配不出来八成是前面算错了",
+      "status": "published"
+    },
+    {
+      "code": "GS06-M12",
+      "title": "函数的平均值",
+      "domain": "GS06",
+      "domainName": "一元积分·概念与应用",
+      "oneLiner": "$\\bar f=\\frac1{b-a}\\int_a^b f$——是个数，不是中值定理里的那个点",
+      "status": "published"
+    },
+    {
+      "code": "GS06-M13",
+      "title": "微元法解物理应用",
+      "domain": "GS06",
+      "domainName": "一元积分·概念与应用",
+      "oneLiner": "切一个微元、把变量当常量、写出 $\\mathrm dW$ 再积——三步不能跳",
+      "status": "published"
+    },
+    {
+      "code": "GS06-M14",
+      "title": "经济应用的定积分建模",
+      "domain": "GS06",
+      "domainName": "一元积分·概念与应用",
+      "oneLiner": "由边际求总量就是积分；加权平均的分母是权重的总量",
+      "status": "published"
+    },
+    {
+      "code": "GS07-M01",
+      "title": "变量可分离",
+      "domain": "GS07",
+      "domainName": "常微分方程",
+      "oneLiner": "能整理成\"$y$ 的东西 $\\mathrm dy$ = $x$ 的东西 $\\mathrm dx$\"就两边直接积",
+      "status": "published"
+    },
+    {
+      "code": "GS07-M02",
+      "title": "一阶线性方程",
+      "domain": "GS07",
+      "domainName": "常微分方程",
+      "oneLiner": "整理成 $y'+P y=Q$ 就套通解公式——它几乎从不单独考，前后才是考点",
+      "status": "published"
+    },
+    {
+      "code": "GS07-M03",
+      "title": "全微分方程",
+      "domain": "GS07",
+      "domainName": "常微分方程",
+      "oneLiner": "先验 $M_y=N_x$，再偏积分还原势函数 $u(x,y)=C$",
+      "status": "published"
+    },
+    {
+      "code": "GS07-M04",
+      "title": "变量代换化为可解型",
+      "domain": "GS07",
+      "domainName": "常微分方程",
+      "oneLiner": "哪个组合整体反复出现就令它为 $u$——不是背类型表",
+      "status": "published"
+    },
+    {
+      "code": "GS07-M05",
+      "title": "可降阶的高阶方程",
+      "domain": "GS07",
+      "domainName": "常微分方程",
+      "oneLiner": "不显含 $y$ 时 $y''=p'$，不显含 $x$ 时 $y''=p\\frac{\\mathrm dp}{\\mathrm dy}$——写错就全错",
+      "status": "published"
+    },
+    {
+      "code": "GS07-M06",
+      "title": "二阶常系数齐次线性方程",
+      "domain": "GS07",
+      "domainName": "常微分方程",
+      "oneLiner": "特征方程三种根三种通解，背死——近十年更爱反着考",
+      "status": "published"
+    },
+    {
+      "code": "GS07-M07",
+      "title": "二阶常系数非齐次线性方程",
+      "domain": "GS07",
+      "domainName": "常微分方程",
+      "oneLiner": "判共振：$\\alpha$（或 $\\alpha\\pm\\beta\\mathrm i$）是特征根就乘 $x^k$",
+      "status": "published"
+    },
+    {
+      "code": "GS07-M08",
+      "title": "欧拉方程",
+      "domain": "GS07",
+      "domainName": "常微分方程",
+      "oneLiner": "$x=\\mathrm e^t$ 换元化成常系数；$x^2y''\\to y_{tt}-y_t$，那个减号最常丢",
+      "status": "published"
+    },
+    {
+      "code": "GS07-M09",
+      "title": "由解反推方程与参数",
+      "domain": "GS07",
+      "domainName": "常微分方程",
+      "oneLiner": "通解形式 ⇄ 特征根，双向翻译；\"任一解\"三个字要对每一项都成立",
+      "status": "published"
+    },
+    {
+      "code": "GS07-M10",
+      "title": "线性方程解的结构",
+      "domain": "GS07",
+      "domainName": "常微分方程",
+      "oneLiner": "系数和为 1 是非齐次解，系数和为 0 是齐次解——判据只有这一条",
+      "status": "published"
+    },
+    {
+      "code": "GS07-M11",
+      "title": "由几何条件建立微分方程",
+      "domain": "GS07",
+      "domainName": "常微分方程",
+      "oneLiner": "切线在 $y$ 轴截距 $=y-xy'$，法线在 $x$ 轴截距 $=x+yy'$——两个表达式管一切",
+      "status": "published"
+    },
+    {
+      "code": "GS07-M12",
+      "title": "由积分方程或变化率建立微分方程",
+      "domain": "GS07",
+      "domainName": "常微分方程",
+      "oneLiner": "两边求导消掉积分号——但先整理再求导，能省一半计算",
+      "status": "published"
+    },
+    {
+      "code": "GS07-M13",
+      "title": "一阶常系数线性差分方程",
+      "domain": "GS07",
+      "domainName": "常微分方程",
+      "oneLiner": "结构与常系数微分方程完全平行——共振同样要乘 $t$",
+      "status": "published"
+    },
+    {
+      "code": "GS08-M01",
+      "title": "用定义求偏导数",
+      "domain": "GS08",
+      "domainName": "多元函数微分学",
+      "oneLiner": "另一个变量先冻成常数，再沿那一条线用一元的差商",
+      "status": "published"
+    },
+    {
+      "code": "GS08-M02",
+      "title": "可微性的判定",
+      "domain": "GS08",
+      "domainName": "多元函数微分学",
+      "oneLiner": "那条链只往一个方向走——偏导连续推可微，反过来一步都不成立",
+      "status": "published"
+    },
+    {
+      "code": "GS08-M03",
+      "title": "全微分的计算与读取",
+      "domain": "GS08",
+      "domainName": "多元函数微分学",
+      "oneLiner": "给了 df 就等于给了两个偏导值，认不出这层就无从下手",
+      "status": "published"
+    },
+    {
+      "code": "GS08-M04",
+      "title": "多元复合函数的链式求导",
+      "domain": "GS08",
+      "domainName": "多元函数微分学",
+      "oneLiner": "先画变量关系树，一条路径一项，条数就是项数",
+      "status": "published"
+    },
+    {
+      "code": "GS08-M05",
+      "title": "二阶偏导与混合偏导",
+      "domain": "GS08",
+      "domainName": "多元函数微分学",
+      "oneLiner": "对 f_u 再求导时它仍是 u,v 的函数——那一次链式漏了就全错",
+      "status": "published"
+    },
+    {
+      "code": "GS08-M06",
+      "title": "隐函数求偏导",
+      "domain": "GS08",
+      "domainName": "多元函数微分学",
+      "oneLiner": "求对 x 的偏导时 y 是常数、z 是 x 的函数——这一步认错就全错",
+      "status": "published"
+    },
+    {
+      "code": "GS08-M07",
+      "title": "隐函数的二阶偏导",
+      "domain": "GS08",
+      "domainName": "多元函数微分学",
+      "oneLiner": "先代点算出一阶的数值，再对等式求第二次导——别先解出表达式",
+      "status": "published"
+    },
+    {
+      "code": "GS08-M08",
+      "title": "由全微分还原原函数",
+      "domain": "GS08",
+      "domainName": "多元函数微分学",
+      "oneLiner": "偏积分出来的那个\"常数\"是另一个变量的函数，写成 C 就错了",
+      "status": "published"
+    },
+    {
+      "code": "GS08-M09",
+      "title": "变量代换化偏微分方程",
+      "domain": "GS08",
+      "domainName": "多元函数微分学",
+      "oneLiner": "两个方向——要么代换后解出 f，要么待定系数让某些项消失",
+      "status": "published"
+    },
+    {
+      "code": "GS08-M10",
+      "title": "由恒等式定抽象函数的偏导值",
+      "domain": "GS08",
+      "domainName": "多元函数微分学",
+      "oneLiner": "一个恒等式给不出两个未知数，分别求导再联立",
+      "status": "published"
+    },
+    {
+      "code": "GS08-M11",
+      "title": "二元函数的无条件极值",
+      "domain": "GS08",
+      "domainName": "多元函数微分学",
+      "oneLiner": "解驻点、算 AC−B²、看 A 的符号——判别式为零就得回定义",
+      "status": "published"
+    },
+    {
+      "code": "GS08-M12",
+      "title": "条件极值与拉格朗日乘数法",
+      "domain": "GS08",
+      "domainName": "多元函数微分学",
+      "oneLiner": "功夫在建模不在求解——目标函数和约束写对了，剩下的是体力活",
+      "status": "published"
+    },
+    {
+      "code": "GS08-M13",
+      "title": "闭区域上的最值与恒成立求参",
+      "domain": "GS08",
+      "domainName": "多元函数微分学",
+      "oneLiner": "内部驻点和边界最值两批一起比——漏边界是主要失分",
+      "status": "published"
+    },
+    {
+      "code": "GS08-M14",
+      "title": "方向导数与梯度",
+      "domain": "GS08",
+      "domainName": "多元函数微分学",
+      "oneLiner": "方向向量必须先单位化——这条唯一但极高发",
+      "status": "published"
+    },
+    {
+      "code": "GS08-M15",
+      "title": "切平面与法线",
+      "domain": "GS08",
+      "domainName": "多元函数微分学",
+      "oneLiner": "两套法向量别混——隐式用 (F_x,F_y,F_z)，显式用 (f_x,f_y,−1)",
+      "status": "published"
+    },
+    {
+      "code": "GS09-M01",
+      "title": "二重积分的定义与和式极限",
+      "domain": "GS09",
+      "domainName": "重积分",
+      "oneLiner": "先由样本点的分母定出网格步长，再核对面积元对不对",
+      "status": "published"
+    },
+    {
+      "code": "GS09-M02",
+      "title": "不算就比积分大小",
+      "domain": "GS09",
+      "domainName": "重积分",
+      "oneLiner": "在区域内把被积函数排个序，一步计算都不用做",
+      "status": "published"
+    },
+    {
+      "code": "GS09-M03",
+      "title": "对称性化简",
+      "domain": "GS09",
+      "domainName": "重积分",
+      "oneLiner": "两层要分清——奇偶对称消项，轮换对称配对",
+      "status": "published"
+    },
+    {
+      "code": "GS09-M04",
+      "title": "直角坐标累次积分",
+      "domain": "GS09",
+      "domainName": "重积分",
+      "oneLiner": "选序的唯一判据是内层积不积得出来，不是区域好不好看",
+      "status": "published"
+    },
+    {
+      "code": "GS09-M05",
+      "title": "交换积分次序",
+      "domain": "GS09",
+      "domainName": "重积分",
+      "oneLiner": "识别信号极硬——给的是二次积分，且内层没有初等原函数",
+      "status": "published"
+    },
+    {
+      "code": "GS09-M06",
+      "title": "极坐标换元",
+      "domain": "GS09",
+      "domainName": "重积分",
+      "oneLiner": "过原点的圆上限是 2a·sinθ 不是常数——这条吃掉的分最多",
+      "status": "published"
+    },
+    {
+      "code": "GS09-M07",
+      "title": "一般换元与雅可比",
+      "domain": "GS09",
+      "domainName": "重积分",
+      "oneLiner": "换元的目的是把区域变成矩形，不是把函数变简单",
+      "status": "published"
+    },
+    {
+      "code": "GS09-M08",
+      "title": "含未知积分值的二重积分",
+      "domain": "GS09",
+      "domainName": "重积分",
+      "oneLiner": "把那个积分设成常数 I，代回去解出 I——答案是数不是函数",
+      "status": "published"
+    },
+    {
+      "code": "GS09-M09",
+      "title": "三重积分的坐标选择",
+      "domain": "GS09",
+      "domainName": "重积分",
+      "oneLiner": "看被积函数选坐标系——含 r² 用球、含 x²+y² 用柱、只含 z 用截面",
+      "status": "published"
+    },
+    {
+      "code": "GS09-M10",
+      "title": "重积分的应用",
+      "domain": "GS09",
+      "domainName": "重积分",
+      "oneLiner": "先看对称性能白送几个坐标，剩下的才动笔",
+      "status": "published"
+    },
+    {
+      "code": "GS09-M11",
+      "title": "无界区域上的反常二重积分",
+      "domain": "GS09",
+      "domainName": "重积分",
+      "oneLiner": "全部难点就是选序——选对了内层是普通积分，外层才好收敛",
+      "status": "published"
+    },
+    {
+      "code": "GS10-M01",
+      "title": "格林公式",
+      "domain": "GS10",
+      "domainName": "曲线曲面积分",
+      "oneLiner": "不闭合就补线，有奇点就挖掉——近十年一道都没有能直接套公式的",
+      "status": "published"
+    },
+    {
+      "code": "GS10-M02",
+      "title": "高斯公式",
+      "domain": "GS10",
+      "domainName": "曲线曲面积分",
+      "oneLiner": "不闭合就补面，算完减掉——补法和格林一模一样，只是升了一维",
+      "status": "published"
+    },
+    {
+      "code": "GS10-M03",
+      "title": "斯托克斯公式",
+      "domain": "GS10",
+      "domainName": "曲线曲面积分",
+      "oneLiner": "空间曲线积分化曲面积分；边界相同的曲面随便挑，挑最好投影的那张",
+      "status": "published"
+    },
+    {
+      "code": "GS10-M04",
+      "title": "第二类曲面积分的直接计算",
+      "domain": "GS10",
+      "domainName": "曲线曲面积分",
+      "oneLiner": "三个投影一次搞定——用法向量把 $\\mathrm dy\\mathrm dz$、$\\mathrm dz\\mathrm dx$ 全换成 $\\mathrm dx\\mathrm dy$",
+      "status": "published"
+    },
+    {
+      "code": "GS10-M05",
+      "title": "第一类曲线与曲面积分",
+      "domain": "GS10",
+      "domainName": "曲线曲面积分",
+      "oneLiner": "没有方向只有大小；先把曲线曲面的方程代进被积式，常常一步塌掉",
+      "status": "published"
+    },
+    {
+      "code": "GS10-M06",
+      "title": "路径无关与二元全微分的原函数",
+      "domain": "GS10",
+      "domainName": "曲线曲面积分",
+      "oneLiner": "判据只有 $P_y=Q_x$，但\"单连通\"这个前提不能丢",
+      "status": "published"
+    },
+    {
+      "code": "GS10-M07",
+      "title": "散度与旋度的计算",
+      "domain": "GS10",
+      "domainName": "曲线曲面积分",
+      "oneLiner": "纯套公式，没有技巧——但它是高斯与斯托克斯的被积式，会算这个才谈得上用那两个",
+      "status": "published"
+    },
+    {
+      "code": "GS10-M08",
+      "title": "对称性化简与方程代入",
+      "domain": "GS10",
+      "domainName": "曲线曲面积分",
+      "oneLiner": "仅数学一。算之前先砍——奇偶消项、轮换配对，再加一条重积分没有的：曲线曲面的方程本身就是恒等式",
+      "status": "published"
+    },
+    {
+      "code": "GS10-M09",
+      "title": "第二类曲线积分的直接参数化",
+      "domain": "GS10",
+      "domainName": "曲线曲面积分",
+      "oneLiner": "仅数学一。三大公式都使不上时的兜底——写参数方程、由起终点定上下限、化成一元定积分",
+      "status": "published"
+    },
+    {
+      "code": "GS11-M01",
+      "title": "正项级数的判别",
+      "domain": "GS11",
+      "domainName": "无穷级数",
+      "oneLiner": "主流不是比值法，是\"用等价无穷小把通项定阶，再跟 1/n^p 比\"",
+      "status": "published"
+    },
+    {
+      "code": "GS11-M02",
+      "title": "交错级数与绝对条件收敛",
+      "domain": "GS11",
+      "domainName": "无穷级数",
+      "oneLiner": "固定两步——先判绝对值级数，不收敛再用莱布尼茨；只做后一步说不出\"条件\"二字",
+      "status": "published"
+    },
+    {
+      "code": "GS11-M03",
+      "title": "敛散性的概念辨析与反例",
+      "domain": "GS11",
+      "domainName": "无穷级数",
+      "oneLiner": "考的是蕴含关系不是判别法——正面推不动就举反例，一对反例能打掉一半选项",
+      "status": "published"
+    },
+    {
+      "code": "GS11-M04",
+      "title": "收敛半径与收敛域",
+      "domain": "GS11",
+      "domainName": "无穷级数",
+      "oneLiner": "半径靠比值/根值，端点必须一个一个单独代进去判——\"收敛区间\"和\"收敛域\"是两个词",
+      "status": "published"
+    },
+    {
+      "code": "GS11-M05",
+      "title": "求和函数",
+      "domain": "GS11",
+      "domainName": "无穷级数",
+      "oneLiner": "目标只有一个——把系数里的 n 消掉凑成几何级数；分母有 n 就求导，分子有 n 就积分",
+      "status": "published"
+    },
+    {
+      "code": "GS11-M06",
+      "title": "由和函数满足的微分方程求和",
+      "domain": "GS11",
+      "domainName": "无穷级数",
+      "oneLiner": "逐项求导消不掉系数时的出口——用递推式把 S′ 和 S 焊成一个一阶方程，解它",
+      "status": "published"
+    },
+    {
+      "code": "GS11-M07",
+      "title": "函数展开成幂级数",
+      "domain": "GS11",
+      "domainName": "无穷级数",
+      "oneLiner": "几乎从不用泰勒公式硬算——全靠往六个已知展开式上凑，凑不上就先求导或积分",
+      "status": "published"
+    },
+    {
+      "code": "GS11-M08",
+      "title": "数项级数求和",
+      "domain": "GS11",
+      "domainName": "无穷级数",
+      "oneLiner": "求的是一个\"数\"不是函数——认不出展开式就构造幂级数，求出和函数再代那个特定的 x",
+      "status": "published"
+    },
+    {
+      "code": "GS11-M09",
+      "title": "傅里叶系数的计算",
+      "domain": "GS11",
+      "domainName": "无穷级数",
+      "oneLiner": "套公式加分部积分，没有花样——难的往往在算出通项之后那一步",
+      "status": "published"
+    },
+    {
+      "code": "GS11-M10",
+      "title": "狄利克雷收敛定理求某点的和",
+      "domain": "GS11",
+      "domainName": "无穷级数",
+      "oneLiner": "先按周期折回主区间，再看那点连不连续——连续取 f，跳跃取左右极限的平均",
+      "status": "published"
+    },
+    {
+      "code": "GS11-M11",
+      "title": "正弦余弦级数与奇偶延拓",
+      "domain": "GS11",
+      "domainName": "无穷级数",
+      "oneLiner": "要正弦级数就作奇延拓、要余弦级数就作偶延拓——延拓出来的新间断点才是考点",
+      "status": "published"
+    },
+    {
+      "code": "XD01-M01",
+      "title": "具体行列式的化简计算",
+      "domain": "XD01",
+      "domainName": "行列式",
+      "oneLiner": "动手展开之前先找行（列）之间的线性关系——找到就是 0，找不到再造零降阶",
+      "status": "published"
+    },
+    {
+      "code": "XD01-M02",
+      "title": "代数余子式的线性组合",
+      "domain": "XD01",
+      "domainName": "行列式",
+      "oneLiner": "一律不算单个余子式——把组合系数替换掉那一行（那一列），求值的就是新行列式",
+      "status": "published"
+    },
+    {
+      "code": "XD01-M03",
+      "title": "抽象行列式的求值",
+      "domain": "XD01",
+      "domainName": "行列式",
+      "oneLiner": "不给元素只给关系式——近十年四道里有三道的实质是「先把特征值找出来再连乘」",
+      "status": "published"
+    },
+    {
+      "code": "XD01-M04",
+      "title": "行列式作为参数的函数",
+      "domain": "XD01",
+      "domainName": "行列式",
+      "oneLiner": "把行列式看成 x 的多项式——问系数就按定义枚举排列，问根就先因式分解",
+      "status": "published"
+    },
+    {
+      "code": "XD02-M01",
+      "title": "秩的不等式与等式",
+      "domain": "XD02",
+      "domainName": "矩阵",
+      "oneLiner": "2025 年数一数二数三三张卷各考一道，三道的核心动作都是同一个——把不等式夹成等号",
+      "status": "published"
+    },
+    {
+      "code": "XD02-M02",
+      "title": "用分块矩阵的初等变换比较秩",
+      "domain": "XD02",
+      "domainName": "矩阵",
+      "oneLiner": "借单位块把另一角消成零、化块对角——能不能消掉，看那一块拆不拆得出相邻块这个因子",
+      "status": "published"
+    },
+    {
+      "code": "XD02-M03",
+      "title": "伴随矩阵的秩、行列式与基本等式",
+      "domain": "XD02",
+      "domainName": "矩阵",
+      "oneLiner": "近十年 9 道，是线代前两章考得最多的一条——四个公式包打，其中秩的三分公式最常单独成题",
+      "status": "published"
+    },
+    {
+      "code": "XD02-M04",
+      "title": "初等矩阵与初等变换",
+      "domain": "XD02",
+      "domainName": "矩阵",
+      "oneLiner": "行变换左乘、列变换右乘——近十年六道里五道出在数二和数三，是这两张卷的常客",
+      "status": "published"
+    },
+    {
+      "code": "XD02-M05",
+      "title": "分块矩阵的乘法、求逆与伴随",
+      "domain": "XD02",
+      "domainName": "矩阵",
+      "oneLiner": "近十年只单独出过 2 道，是矩阵一章最少的一条——但它作为工具，在别的条里到处露面",
+      "status": "published"
+    },
+    {
+      "code": "XD02-M06",
+      "title": "秩一矩阵的识别与用法",
+      "domain": "XD02",
+      "domainName": "矩阵",
+      "oneLiner": "认出 A=αβᵀ 之后，幂、特征值、可对角化三件事同时解决——一个 tr A 全包",
+      "status": "published"
+    },
+    {
+      "code": "XD02-M07",
+      "title": "逆矩阵与矩阵方程的恒等变形",
+      "domain": "XD02",
+      "domainName": "矩阵",
+      "oneLiner": "三步不变——移项、因式分解、左乘或右乘那个逆；难点永远在「往哪边乘」",
+      "status": "published"
+    },
+    {
+      "code": "XD02-M08",
+      "title": "矩阵方程按列化为方程组",
+      "domain": "XD02",
+      "domainName": "矩阵",
+      "oneLiner": "AB=C 就是逐列的 Ax=c——解完拼成 P 之后，还欠一个 det P≠0 的约束",
+      "status": "published"
+    },
+    {
+      "code": "XD02-M09",
+      "title": "方阵的高次幂",
+      "domain": "XD02",
+      "domainName": "矩阵",
+      "oneLiner": "三条路：对角化、满秩分解降阶、零化多项式降幂——2026 年三张卷同时考了第二条",
+      "status": "published"
+    },
+    {
+      "code": "XD03-M01",
+      "title": "线性相关性的判定与含参定参数",
+      "domain": "XD03",
+      "domainName": "向量组与秩",
+      "oneLiner": "具体向量看行列式或秩，抽象向量设零组合——含参题的分数全在「回代排增根」那一步",
+      "status": "published"
+    },
+    {
+      "code": "XD03-M02",
+      "title": "线性表示与向量组等价",
+      "domain": "XD03",
+      "domainName": "向量组与秩",
+      "oneLiner": "能不能表示就是方程组有没有解；两组等价要三个秩相等，不是两个",
+      "status": "published"
+    },
+    {
+      "code": "XD03-M03",
+      "title": "求秩、极大无关组与满秩分解",
+      "domain": "XD03",
+      "domainName": "向量组与秩",
+      "oneLiner": "化一次行最简，秩、极大无关组、表示系数、满秩分解四样东西一起读出来",
+      "status": "published"
+    },
+    {
+      "code": "XD03-M04",
+      "title": "施密特正交化与内积条件",
+      "domain": "XD03",
+      "domainName": "向量组与秩",
+      "oneLiner": "近十年八道里五道是正交对角化的中间步骤——它更像必经之路，而不是独立考点",
+      "status": "published"
+    },
+    {
+      "code": "XD03-M05",
+      "title": "基、坐标与过渡矩阵",
+      "domain": "XD03",
+      "domainName": "向量组与秩",
+      "oneLiner": "仅数学一。坐标就是组合系数；过渡矩阵的方向一年错一批，写成等式再读",
+      "status": "published"
+    },
+    {
+      "code": "XD04-M01",
+      "title": "有解性的判别与含参讨论",
+      "domain": "XD04",
+      "domainName": "线性方程组",
+      "oneLiner": "本章 23 道近十年真题里有 10 道挂着它——判据只有一条，分数全丢在「回代排增根」",
+      "status": "published"
+    },
+    {
+      "code": "XD04-M02",
+      "title": "求通解：特解加基础解系",
+      "domain": "XD04",
+      "domainName": "线性方程组",
+      "oneLiner": "结构一句话，分数在三件事上：个数是 n−r、必须带任意常数、抽象题不要真去解方程组",
+      "status": "published"
+    },
+    {
+      "code": "XD04-M03",
+      "title": "由向量组的线性关系直接写出解",
+      "domain": "XD04",
+      "domainName": "线性方程组",
+      "oneLiner": "近十年只考过 2 道填空，但十分钟学完能秒杀——移项，系数按顺序排出来就是解",
+      "status": "published"
+    },
+    {
+      "code": "XD04-M04",
+      "title": "同解、公共解与解集的包含",
+      "domain": "XD04",
+      "domainName": "线性方程组",
+      "oneLiner": "一个方向的包含往往是白送的，题眼在「是不是真包含」——那就是秩差一",
+      "status": "published"
+    },
+    {
+      "code": "XD04-M05",
+      "title": "方程组的几何意义",
+      "domain": "XD04",
+      "domainName": "线性方程组",
+      "oneLiner": "仅数学一。近十年三道全是选择题，两道给图判秩——照着翻译表读，别看图猜",
+      "status": "published"
+    },
+    {
+      "code": "XD05-M01",
+      "title": "由定义式反求参数或向量",
+      "domain": "XD05",
+      "domainName": "特征值与相似对角化",
+      "oneLiner": "已经给了特征向量就别去解特征方程——把 Aξ 和 λξ 逐分量摆平，λ 也当未知数",
+      "status": "published"
+    },
+    {
+      "code": "XD05-M02",
+      "title": "由矩阵的关系式确定特征值",
+      "domain": "XD05",
+      "domainName": "特征值与相似对角化",
+      "oneLiner": "A 满足哪个多项式，λ 就满足哪个方程——但那只给候选值，配几个还得靠秩或行列式",
+      "status": "published"
+    },
+    {
+      "code": "XD05-M03",
+      "title": "由秩确定特征值的重数",
+      "domain": "XD05",
+      "domainName": "特征值与相似对角化",
+      "oneLiner": "几何重数 = n − r(λE−A)，一个减法把「秩」翻译成「有几个无关特征向量」",
+      "status": "published"
+    },
+    {
+      "code": "XD05-M04",
+      "title": "相似的判定与相似不变量",
+      "domain": "XD05",
+      "domainName": "特征值与相似对角化",
+      "oneLiner": "迹、行列式、特征值只是必要条件；判到底得再比一次 r(λE−A)",
+      "status": "published"
+    },
+    {
+      "code": "XD05-M05",
+      "title": "可相似对角化的判定",
+      "domain": "XD05",
+      "domainName": "特征值与相似对角化",
+      "oneLiner": "近十年 10 道，特征值这一章最高频——只盯重特征值，看几何重数补没补齐",
+      "status": "published"
+    },
+    {
+      "code": "XD05-M06",
+      "title": "求相似变换矩阵与对角阵",
+      "domain": "XD05",
+      "domainName": "特征值与相似对角化",
+      "oneLiner": "P 的第 i 列必须是第 i 个对角元的特征向量——列序对不上，整题作废",
+      "status": "published"
+    },
+    {
+      "code": "XD05-M07",
+      "title": "实对称矩阵的正交相似对角化",
+      "domain": "XD05",
+      "domainName": "特征值与相似对角化",
+      "oneLiner": "实对称三件礼物：必可对角化、特征值全实、不同特征值的向量自动正交——正交化只在重根内部做",
+      "status": "published"
+    },
+    {
+      "code": "XD06-M01",
+      "title": "二次型与其矩阵的互相转化",
+      "domain": "XD06",
+      "domainName": "二次型",
+      "oneLiner": "交叉项系数要对半分——这一步错了，后面特征值、惯性指数、正定全跟着错",
+      "status": "published"
+    },
+    {
+      "code": "XD06-M02",
+      "title": "配方法化标准形与惯性指数计数",
+      "domain": "XD06",
+      "domainName": "二次型",
+      "oneLiner": "线代 36 条方法里近十年考得最多的一条——只数正负个数，不必求特征值",
+      "status": "published"
+    },
+    {
+      "code": "XD06-M03",
+      "title": "平方和型二次型",
+      "domain": "XD06",
+      "domainName": "二次型",
+      "oneLiner": "题面直接给成几个线性式的平方和——先查这几个线性式相不相关，秩就出来了",
+      "status": "published"
+    },
+    {
+      "code": "XD06-M04",
+      "title": "由标准形或规范形反求参数",
+      "domain": "XD06",
+      "domainName": "二次型",
+      "oneLiner": "正交变换的标准形系数就是特征值——迹与行列式两个方程，参数就出来了",
+      "status": "published"
+    },
+    {
+      "code": "XD06-M05",
+      "title": "合同的判定与合同变换的构造",
+      "domain": "XD06",
+      "domainName": "二次型",
+      "oneLiner": "实对称阵合同 ⟺ 正负惯性指数相同——判合同只数符号，不比大小",
+      "status": "published"
+    },
+    {
+      "code": "XD06-M06",
+      "title": "正定与半正定的判定及应用",
+      "domain": "XD06",
+      "domainName": "二次型",
+      "oneLiner": "判正定用顺序主子式、判半正定必须用全部主子式——这两个词差一个字，判据差很远",
+      "status": "published"
+    }
+  ],
+  "edges": [
+    {
+      "from": "GL01-M01",
+      "to": "GL01-M02"
+    },
+    {
+      "from": "GL01-M01",
+      "to": "GL01-M03"
+    },
+    {
+      "from": "GL01-M01",
+      "to": "GL01-M04"
+    },
+    {
+      "from": "GL01-M01",
+      "to": "GL01-M05"
+    },
+    {
+      "from": "GL01-M02",
+      "to": "GL01-M03"
+    },
+    {
+      "from": "GL01-M02",
+      "to": "GL01-M04"
+    },
+    {
+      "from": "GL01-M02",
+      "to": "GL01-M05"
+    },
+    {
+      "from": "GL01-M02",
+      "to": "GL03-M02"
+    },
+    {
+      "from": "GL01-M03",
+      "to": "GL01-M04"
+    },
+    {
+      "from": "GL01-M03",
+      "to": "GL01-M05"
+    },
+    {
+      "from": "GL01-M03",
+      "to": "GL03-M02"
+    },
+    {
+      "from": "GL01-M04",
+      "to": "GL01-M05"
+    },
+    {
+      "from": "GL01-M04",
+      "to": "GL03-M02"
+    },
+    {
+      "from": "GL01-M05",
+      "to": "GL03-M02"
+    },
+    {
+      "from": "GL02-M01",
+      "to": "GL02-M02"
+    },
+    {
+      "from": "GL02-M01",
+      "to": "GL02-M03"
+    },
+    {
+      "from": "GL02-M01",
+      "to": "GL02-M04"
+    },
+    {
+      "from": "GL02-M01",
+      "to": "GL02-M05"
+    },
+    {
+      "from": "GL02-M01",
+      "to": "GL02-M06"
+    },
+    {
+      "from": "GL02-M02",
+      "to": "GL02-M03"
+    },
+    {
+      "from": "GL02-M02",
+      "to": "GL02-M04"
+    },
+    {
+      "from": "GL02-M02",
+      "to": "GL02-M05"
+    },
+    {
+      "from": "GL02-M02",
+      "to": "GL02-M06"
+    },
+    {
+      "from": "GL02-M02",
+      "to": "GL03-M03"
+    },
+    {
+      "from": "GL02-M03",
+      "to": "GL02-M02"
+    },
+    {
+      "from": "GL02-M03",
+      "to": "GL02-M04"
+    },
+    {
+      "from": "GL02-M03",
+      "to": "GL02-M05"
+    },
+    {
+      "from": "GL02-M03",
+      "to": "GL02-M06"
+    },
+    {
+      "from": "GL02-M03",
+      "to": "GL03-M03"
+    },
+    {
+      "from": "GL02-M04",
+      "to": "GL02-M05"
+    },
+    {
+      "from": "GL02-M04",
+      "to": "GL02-M06"
+    },
+    {
+      "from": "GL02-M04",
+      "to": "GL03-M03"
+    },
+    {
+      "from": "GL02-M05",
+      "to": "GL02-M06"
+    },
+    {
+      "from": "GL02-M05",
+      "to": "GL03-M03"
+    },
+    {
+      "from": "GL02-M06",
+      "to": "GL03-M03"
+    },
+    {
+      "from": "GL01-M05",
+      "to": "GL03-M03"
+    },
+    {
+      "from": "GL01-M05",
+      "to": "GL02-M06"
+    },
+    {
+      "from": "GL01-M05",
+      "to": "GL03-M04"
+    },
+    {
+      "from": "GL02-M06",
+      "to": "GL03-M04"
+    },
+    {
+      "from": "GL03-M01",
+      "to": "GL03-M02"
+    },
+    {
+      "from": "GL03-M01",
+      "to": "GL01-M05"
+    },
+    {
+      "from": "GL03-M01",
+      "to": "GL03-M03"
+    },
+    {
+      "from": "GL03-M01",
+      "to": "GL02-M06"
+    },
+    {
+      "from": "GL03-M01",
+      "to": "GL03-M04"
+    },
+    {
+      "from": "GL03-M02",
+      "to": "GL01-M05"
+    },
+    {
+      "from": "GL03-M02",
+      "to": "GL03-M03"
+    },
+    {
+      "from": "GL03-M02",
+      "to": "GL02-M06"
+    },
+    {
+      "from": "GL03-M02",
+      "to": "GL03-M04"
+    },
+    {
+      "from": "GL03-M03",
+      "to": "GL02-M06"
+    },
+    {
+      "from": "GL03-M03",
+      "to": "GL03-M04"
+    },
+    {
+      "from": "GL02-M06",
+      "to": "GL04-M02"
+    },
+    {
+      "from": "GL02-M06",
+      "to": "GL04-M03"
+    },
+    {
+      "from": "GL02-M06",
+      "to": "GL04-M04"
+    },
+    {
+      "from": "GL02-M06",
+      "to": "GL04-M05"
+    },
+    {
+      "from": "GL02-M06",
+      "to": "GL04-M06"
+    },
+    {
+      "from": "GL04-M01",
+      "to": "GL02-M06"
+    },
+    {
+      "from": "GL04-M01",
+      "to": "GL04-M02"
+    },
+    {
+      "from": "GL04-M01",
+      "to": "GL04-M03"
+    },
+    {
+      "from": "GL04-M01",
+      "to": "GL04-M04"
+    },
+    {
+      "from": "GL04-M01",
+      "to": "GL04-M05"
+    },
+    {
+      "from": "GL04-M02",
+      "to": "GL04-M03"
+    },
+    {
+      "from": "GL04-M02",
+      "to": "GL04-M04"
+    },
+    {
+      "from": "GL04-M02",
+      "to": "GL04-M05"
+    },
+    {
+      "from": "GL04-M02",
+      "to": "GL04-M06"
+    },
+    {
+      "from": "GL04-M03",
+      "to": "GL04-M02"
+    },
+    {
+      "from": "GL04-M03",
+      "to": "GL04-M04"
+    },
+    {
+      "from": "GL04-M03",
+      "to": "GL04-M05"
+    },
+    {
+      "from": "GL04-M03",
+      "to": "GL04-M06"
+    },
+    {
+      "from": "GL04-M04",
+      "to": "GL04-M05"
+    },
+    {
+      "from": "GL04-M04",
+      "to": "GL04-M06"
+    },
+    {
+      "from": "GL04-M05",
+      "to": "GL04-M06"
+    },
+    {
+      "from": "GL05-M01",
+      "to": "GL05-M02"
+    },
+    {
+      "from": "GL05-M01",
+      "to": "GL05-M03"
+    },
+    {
+      "from": "GL05-M02",
+      "to": "GL05-M03"
+    },
+    {
+      "from": "GL06-M01",
+      "to": "GL06-M02"
+    },
+    {
+      "from": "GL06-M01",
+      "to": "GL06-M03"
+    },
+    {
+      "from": "GL06-M01",
+      "to": "GL07-M03"
+    },
+    {
+      "from": "GL06-M02",
+      "to": "GL06-M03"
+    },
+    {
+      "from": "GL06-M02",
+      "to": "GL07-M03"
+    },
+    {
+      "from": "GL06-M03",
+      "to": "GL07-M03"
+    },
+    {
+      "from": "GL07-M01",
+      "to": "GL07-M02"
+    },
+    {
+      "from": "GL07-M01",
+      "to": "GL07-M03"
+    },
+    {
+      "from": "GL07-M01",
+      "to": "GL07-M04"
+    },
+    {
+      "from": "GL07-M01",
+      "to": "GL07-M05"
+    },
+    {
+      "from": "GL07-M02",
+      "to": "GL07-M03"
+    },
+    {
+      "from": "GL07-M02",
+      "to": "GL07-M04"
+    },
+    {
+      "from": "GL07-M02",
+      "to": "GL07-M05"
+    },
+    {
+      "from": "GL07-M03",
+      "to": "GL07-M04"
+    },
+    {
+      "from": "GL07-M03",
+      "to": "GL07-M05"
+    },
+    {
+      "from": "GL07-M04",
+      "to": "GL07-M05"
+    },
+    {
+      "from": "GS01-M01",
+      "to": "GS01-M02"
+    },
+    {
+      "from": "GS01-M01",
+      "to": "GS01-M03"
+    },
+    {
+      "from": "GS01-M01",
+      "to": "GS01-M04"
+    },
+    {
+      "from": "GS01-M01",
+      "to": "GS01-M05"
+    },
+    {
+      "from": "GS01-M02",
+      "to": "GS01-M03"
+    },
+    {
+      "from": "GS01-M02",
+      "to": "GS01-M04"
+    },
+    {
+      "from": "GS01-M02",
+      "to": "GS01-M05"
+    },
+    {
+      "from": "GS01-M02",
+      "to": "GS01-M06"
+    },
+    {
+      "from": "GS01-M03",
+      "to": "GS01-M04"
+    },
+    {
+      "from": "GS01-M03",
+      "to": "GS01-M05"
+    },
+    {
+      "from": "GS01-M03",
+      "to": "GS01-M06"
+    },
+    {
+      "from": "GS01-M03",
+      "to": "GS01-M07"
+    },
+    {
+      "from": "GS01-M04",
+      "to": "GS01-M05"
+    },
+    {
+      "from": "GS01-M04",
+      "to": "GS01-M06"
+    },
+    {
+      "from": "GS01-M04",
+      "to": "GS01-M07"
+    },
+    {
+      "from": "GS01-M04",
+      "to": "GS01-M08"
+    },
+    {
+      "from": "GS01-M04",
+      "to": "GS01-M09"
+    },
+    {
+      "from": "GS01-M04",
+      "to": "GS01-M10"
+    },
+    {
+      "from": "GS01-M05",
+      "to": "GS01-M06"
+    },
+    {
+      "from": "GS01-M05",
+      "to": "GS01-M07"
+    },
+    {
+      "from": "GS01-M05",
+      "to": "GS01-M08"
+    },
+    {
+      "from": "GS01-M05",
+      "to": "GS01-M09"
+    },
+    {
+      "from": "GS01-M05",
+      "to": "GS01-M10"
+    },
+    {
+      "from": "GS01-M06",
+      "to": "GS01-M07"
+    },
+    {
+      "from": "GS01-M06",
+      "to": "GS01-M08"
+    },
+    {
+      "from": "GS01-M06",
+      "to": "GS01-M09"
+    },
+    {
+      "from": "GS01-M06",
+      "to": "GS01-M10"
+    },
+    {
+      "from": "GS01-M06",
+      "to": "GS01-M11"
+    },
+    {
+      "from": "GS01-M06",
+      "to": "GS01-M12"
+    },
+    {
+      "from": "GS01-M07",
+      "to": "GS01-M08"
+    },
+    {
+      "from": "GS01-M07",
+      "to": "GS01-M09"
+    },
+    {
+      "from": "GS01-M07",
+      "to": "GS01-M10"
+    },
+    {
+      "from": "GS01-M07",
+      "to": "GS01-M11"
+    },
+    {
+      "from": "GS01-M07",
+      "to": "GS01-M12"
+    },
+    {
+      "from": "GS01-M07",
+      "to": "GS01-M13"
+    },
+    {
+      "from": "GS01-M08",
+      "to": "GS01-M09"
+    },
+    {
+      "from": "GS01-M08",
+      "to": "GS01-M10"
+    },
+    {
+      "from": "GS01-M08",
+      "to": "GS01-M11"
+    },
+    {
+      "from": "GS01-M08",
+      "to": "GS01-M12"
+    },
+    {
+      "from": "GS01-M08",
+      "to": "GS01-M13"
+    },
+    {
+      "from": "GS01-M08",
+      "to": "GS01-M14"
+    },
+    {
+      "from": "GS01-M08",
+      "to": "GS01-M15"
+    },
+    {
+      "from": "GS01-M09",
+      "to": "GS01-M10"
+    },
+    {
+      "from": "GS01-M09",
+      "to": "GS01-M11"
+    },
+    {
+      "from": "GS01-M09",
+      "to": "GS01-M12"
+    },
+    {
+      "from": "GS01-M09",
+      "to": "GS01-M13"
+    },
+    {
+      "from": "GS01-M09",
+      "to": "GS01-M14"
+    },
+    {
+      "from": "GS01-M09",
+      "to": "GS01-M15"
+    },
+    {
+      "from": "GS01-M09",
+      "to": "GS01-M16"
+    },
+    {
+      "from": "GS01-M10",
+      "to": "GS01-M11"
+    },
+    {
+      "from": "GS01-M10",
+      "to": "GS01-M12"
+    },
+    {
+      "from": "GS01-M10",
+      "to": "GS01-M13"
+    },
+    {
+      "from": "GS01-M10",
+      "to": "GS01-M14"
+    },
+    {
+      "from": "GS01-M10",
+      "to": "GS01-M15"
+    },
+    {
+      "from": "GS01-M10",
+      "to": "GS01-M16"
+    },
+    {
+      "from": "GS01-M10",
+      "to": "GS01-M17"
+    },
+    {
+      "from": "GS01-M11",
+      "to": "GS01-M12"
+    },
+    {
+      "from": "GS01-M11",
+      "to": "GS01-M13"
+    },
+    {
+      "from": "GS01-M11",
+      "to": "GS01-M14"
+    },
+    {
+      "from": "GS01-M11",
+      "to": "GS01-M15"
+    },
+    {
+      "from": "GS01-M11",
+      "to": "GS01-M16"
+    },
+    {
+      "from": "GS01-M11",
+      "to": "GS01-M17"
+    },
+    {
+      "from": "GS01-M11",
+      "to": "GS01-M18"
+    },
+    {
+      "from": "GS01-M12",
+      "to": "GS01-M13"
+    },
+    {
+      "from": "GS01-M12",
+      "to": "GS01-M14"
+    },
+    {
+      "from": "GS01-M12",
+      "to": "GS01-M15"
+    },
+    {
+      "from": "GS01-M12",
+      "to": "GS01-M16"
+    },
+    {
+      "from": "GS01-M12",
+      "to": "GS01-M17"
+    },
+    {
+      "from": "GS01-M12",
+      "to": "GS01-M18"
+    },
+    {
+      "from": "GS01-M12",
+      "to": "GS01-M19"
+    },
+    {
+      "from": "GS01-M13",
+      "to": "GS01-M14"
+    },
+    {
+      "from": "GS01-M13",
+      "to": "GS01-M15"
+    },
+    {
+      "from": "GS01-M13",
+      "to": "GS01-M16"
+    },
+    {
+      "from": "GS01-M13",
+      "to": "GS01-M17"
+    },
+    {
+      "from": "GS01-M13",
+      "to": "GS01-M18"
+    },
+    {
+      "from": "GS01-M13",
+      "to": "GS01-M19"
+    },
+    {
+      "from": "GS01-M13",
+      "to": "GS01-M20"
+    },
+    {
+      "from": "GS01-M14",
+      "to": "GS01-M15"
+    },
+    {
+      "from": "GS01-M14",
+      "to": "GS01-M16"
+    },
+    {
+      "from": "GS01-M14",
+      "to": "GS01-M17"
+    },
+    {
+      "from": "GS01-M14",
+      "to": "GS01-M18"
+    },
+    {
+      "from": "GS01-M14",
+      "to": "GS01-M19"
+    },
+    {
+      "from": "GS01-M14",
+      "to": "GS01-M20"
+    },
+    {
+      "from": "GS01-M15",
+      "to": "GS01-M16"
+    },
+    {
+      "from": "GS01-M15",
+      "to": "GS01-M17"
+    },
+    {
+      "from": "GS01-M15",
+      "to": "GS01-M18"
+    },
+    {
+      "from": "GS01-M15",
+      "to": "GS01-M19"
+    },
+    {
+      "from": "GS01-M15",
+      "to": "GS01-M20"
+    },
+    {
+      "from": "GS01-M16",
+      "to": "GS01-M17"
+    },
+    {
+      "from": "GS01-M16",
+      "to": "GS01-M18"
+    },
+    {
+      "from": "GS01-M16",
+      "to": "GS01-M19"
+    },
+    {
+      "from": "GS01-M16",
+      "to": "GS01-M20"
+    },
+    {
+      "from": "GS01-M17",
+      "to": "GS01-M18"
+    },
+    {
+      "from": "GS01-M17",
+      "to": "GS01-M19"
+    },
+    {
+      "from": "GS01-M17",
+      "to": "GS01-M20"
+    },
+    {
+      "from": "GS01-M18",
+      "to": "GS01-M19"
+    },
+    {
+      "from": "GS01-M18",
+      "to": "GS01-M20"
+    },
+    {
+      "from": "GS01-M19",
+      "to": "GS01-M20"
+    },
+    {
+      "from": "GS02-M01",
+      "to": "GS02-M02"
+    },
+    {
+      "from": "GS02-M01",
+      "to": "GS02-M03"
+    },
+    {
+      "from": "GS02-M01",
+      "to": "GS02-M04"
+    },
+    {
+      "from": "GS02-M02",
+      "to": "GS02-M03"
+    },
+    {
+      "from": "GS02-M02",
+      "to": "GS02-M01"
+    },
+    {
+      "from": "GS02-M02",
+      "to": "GS02-M04"
+    },
+    {
+      "from": "GS02-M02",
+      "to": "GS02-M05"
+    },
+    {
+      "from": "GS02-M03",
+      "to": "GS02-M01"
+    },
+    {
+      "from": "GS02-M03",
+      "to": "GS02-M02"
+    },
+    {
+      "from": "GS02-M03",
+      "to": "GS02-M04"
+    },
+    {
+      "from": "GS02-M03",
+      "to": "GS02-M05"
+    },
+    {
+      "from": "GS02-M03",
+      "to": "GS02-M06"
+    },
+    {
+      "from": "GS02-M04",
+      "to": "GS02-M05"
+    },
+    {
+      "from": "GS02-M04",
+      "to": "GS02-M06"
+    },
+    {
+      "from": "GS02-M04",
+      "to": "GS02-M07"
+    },
+    {
+      "from": "GS02-M04",
+      "to": "GS02-M08"
+    },
+    {
+      "from": "GS02-M05",
+      "to": "GS02-M06"
+    },
+    {
+      "from": "GS02-M05",
+      "to": "GS02-M07"
+    },
+    {
+      "from": "GS02-M05",
+      "to": "GS02-M08"
+    },
+    {
+      "from": "GS02-M05",
+      "to": "GS02-M09"
+    },
+    {
+      "from": "GS02-M06",
+      "to": "GS02-M07"
+    },
+    {
+      "from": "GS02-M06",
+      "to": "GS02-M08"
+    },
+    {
+      "from": "GS02-M06",
+      "to": "GS02-M09"
+    },
+    {
+      "from": "GS02-M06",
+      "to": "GS02-M10"
+    },
+    {
+      "from": "GS02-M07",
+      "to": "GS02-M08"
+    },
+    {
+      "from": "GS02-M07",
+      "to": "GS02-M09"
+    },
+    {
+      "from": "GS02-M07",
+      "to": "GS02-M10"
+    },
+    {
+      "from": "GS02-M08",
+      "to": "GS02-M09"
+    },
+    {
+      "from": "GS02-M08",
+      "to": "GS02-M10"
+    },
+    {
+      "from": "GS02-M09",
+      "to": "GS02-M10"
+    },
+    {
+      "from": "GS02-M03",
+      "to": "GS03-M04"
+    },
+    {
+      "from": "GS02-M03",
+      "to": "GS03-M05"
+    },
+    {
+      "from": "GS02-M03",
+      "to": "GS03-M01"
+    },
+    {
+      "from": "GS02-M03",
+      "to": "GS03-M06"
+    },
+    {
+      "from": "GS02-M03",
+      "to": "GS03-M07"
+    },
+    {
+      "from": "GS02-M05",
+      "to": "GS03-M09"
+    },
+    {
+      "from": "GS02-M05",
+      "to": "GS03-M10"
+    },
+    {
+      "from": "GS02-M05",
+      "to": "GS03-M11"
+    },
+    {
+      "from": "GS02-M06",
+      "to": "GS03-M09"
+    },
+    {
+      "from": "GS02-M06",
+      "to": "GS03-M10"
+    },
+    {
+      "from": "GS02-M06",
+      "to": "GS03-M11"
+    },
+    {
+      "from": "GS03-M01",
+      "to": "GS03-M02"
+    },
+    {
+      "from": "GS03-M01",
+      "to": "GS03-M03"
+    },
+    {
+      "from": "GS03-M01",
+      "to": "GS02-M03"
+    },
+    {
+      "from": "GS03-M01",
+      "to": "GS03-M04"
+    },
+    {
+      "from": "GS03-M01",
+      "to": "GS03-M05"
+    },
+    {
+      "from": "GS03-M02",
+      "to": "GS03-M01"
+    },
+    {
+      "from": "GS03-M02",
+      "to": "GS03-M03"
+    },
+    {
+      "from": "GS03-M02",
+      "to": "GS02-M03"
+    },
+    {
+      "from": "GS03-M02",
+      "to": "GS03-M04"
+    },
+    {
+      "from": "GS03-M02",
+      "to": "GS03-M05"
+    },
+    {
+      "from": "GS03-M02",
+      "to": "GS03-M06"
+    },
+    {
+      "from": "GS03-M03",
+      "to": "GS02-M03"
+    },
+    {
+      "from": "GS03-M03",
+      "to": "GS03-M04"
+    },
+    {
+      "from": "GS03-M03",
+      "to": "GS03-M05"
+    },
+    {
+      "from": "GS03-M03",
+      "to": "GS03-M01"
+    },
+    {
+      "from": "GS03-M03",
+      "to": "GS03-M06"
+    },
+    {
+      "from": "GS03-M03",
+      "to": "GS03-M07"
+    },
+    {
+      "from": "GS03-M04",
+      "to": "GS03-M05"
+    },
+    {
+      "from": "GS03-M04",
+      "to": "GS03-M01"
+    },
+    {
+      "from": "GS03-M04",
+      "to": "GS03-M06"
+    },
+    {
+      "from": "GS03-M04",
+      "to": "GS03-M07"
+    },
+    {
+      "from": "GS03-M04",
+      "to": "GS03-M08"
+    },
+    {
+      "from": "GS03-M05",
+      "to": "GS03-M01"
+    },
+    {
+      "from": "GS03-M05",
+      "to": "GS03-M06"
+    },
+    {
+      "from": "GS03-M05",
+      "to": "GS03-M07"
+    },
+    {
+      "from": "GS03-M05",
+      "to": "GS03-M08"
+    },
+    {
+      "from": "GS03-M05",
+      "to": "GS02-M05"
+    },
+    {
+      "from": "GS03-M05",
+      "to": "GS02-M06"
+    },
+    {
+      "from": "GS03-M05",
+      "to": "GS03-M09"
+    },
+    {
+      "from": "GS03-M06",
+      "to": "GS03-M07"
+    },
+    {
+      "from": "GS03-M06",
+      "to": "GS03-M08"
+    },
+    {
+      "from": "GS03-M06",
+      "to": "GS02-M05"
+    },
+    {
+      "from": "GS03-M06",
+      "to": "GS02-M06"
+    },
+    {
+      "from": "GS03-M06",
+      "to": "GS03-M09"
+    },
+    {
+      "from": "GS03-M06",
+      "to": "GS03-M10"
+    },
+    {
+      "from": "GS03-M06",
+      "to": "GS03-M11"
+    },
+    {
+      "from": "GS03-M07",
+      "to": "GS03-M08"
+    },
+    {
+      "from": "GS03-M07",
+      "to": "GS02-M05"
+    },
+    {
+      "from": "GS03-M07",
+      "to": "GS02-M06"
+    },
+    {
+      "from": "GS03-M07",
+      "to": "GS03-M09"
+    },
+    {
+      "from": "GS03-M07",
+      "to": "GS03-M10"
+    },
+    {
+      "from": "GS03-M07",
+      "to": "GS03-M11"
+    },
+    {
+      "from": "GS03-M08",
+      "to": "GS02-M05"
+    },
+    {
+      "from": "GS03-M08",
+      "to": "GS02-M06"
+    },
+    {
+      "from": "GS03-M08",
+      "to": "GS03-M09"
+    },
+    {
+      "from": "GS03-M08",
+      "to": "GS03-M10"
+    },
+    {
+      "from": "GS03-M08",
+      "to": "GS03-M11"
+    },
+    {
+      "from": "GS03-M09",
+      "to": "GS03-M10"
+    },
+    {
+      "from": "GS03-M09",
+      "to": "GS03-M11"
+    },
+    {
+      "from": "GS03-M10",
+      "to": "GS03-M11"
+    },
+    {
+      "from": "GS04-M01",
+      "to": "GS04-M02"
+    },
+    {
+      "from": "GS04-M01",
+      "to": "GS04-M03"
+    },
+    {
+      "from": "GS04-M01",
+      "to": "GS04-M04"
+    },
+    {
+      "from": "GS04-M01",
+      "to": "GS04-M05"
+    },
+    {
+      "from": "GS04-M01",
+      "to": "GS04-M06"
+    },
+    {
+      "from": "GS04-M02",
+      "to": "GS04-M03"
+    },
+    {
+      "from": "GS04-M02",
+      "to": "GS04-M04"
+    },
+    {
+      "from": "GS04-M02",
+      "to": "GS04-M01"
+    },
+    {
+      "from": "GS04-M02",
+      "to": "GS04-M05"
+    },
+    {
+      "from": "GS04-M02",
+      "to": "GS04-M06"
+    },
+    {
+      "from": "GS04-M03",
+      "to": "GS04-M04"
+    },
+    {
+      "from": "GS04-M03",
+      "to": "GS04-M01"
+    },
+    {
+      "from": "GS04-M03",
+      "to": "GS04-M05"
+    },
+    {
+      "from": "GS04-M03",
+      "to": "GS04-M06"
+    },
+    {
+      "from": "GS04-M03",
+      "to": "GS04-M07"
+    },
+    {
+      "from": "GS04-M03",
+      "to": "GS04-M08"
+    },
+    {
+      "from": "GS04-M04",
+      "to": "GS04-M01"
+    },
+    {
+      "from": "GS04-M04",
+      "to": "GS04-M05"
+    },
+    {
+      "from": "GS04-M04",
+      "to": "GS04-M06"
+    },
+    {
+      "from": "GS04-M04",
+      "to": "GS04-M07"
+    },
+    {
+      "from": "GS04-M04",
+      "to": "GS04-M08"
+    },
+    {
+      "from": "GS04-M05",
+      "to": "GS04-M06"
+    },
+    {
+      "from": "GS04-M05",
+      "to": "GS04-M04"
+    },
+    {
+      "from": "GS04-M05",
+      "to": "GS04-M07"
+    },
+    {
+      "from": "GS04-M05",
+      "to": "GS04-M08"
+    },
+    {
+      "from": "GS04-M06",
+      "to": "GS04-M05"
+    },
+    {
+      "from": "GS04-M06",
+      "to": "GS04-M04"
+    },
+    {
+      "from": "GS04-M06",
+      "to": "GS04-M07"
+    },
+    {
+      "from": "GS04-M06",
+      "to": "GS04-M08"
+    },
+    {
+      "from": "GS04-M07",
+      "to": "GS04-M08"
+    },
+    {
+      "from": "GS05-M01",
+      "to": "GS05-M02"
+    },
+    {
+      "from": "GS05-M01",
+      "to": "GS05-M03"
+    },
+    {
+      "from": "GS05-M01",
+      "to": "GS05-M04"
+    },
+    {
+      "from": "GS05-M01",
+      "to": "GS05-M05"
+    },
+    {
+      "from": "GS05-M02",
+      "to": "GS05-M03"
+    },
+    {
+      "from": "GS05-M02",
+      "to": "GS05-M04"
+    },
+    {
+      "from": "GS05-M02",
+      "to": "GS05-M05"
+    },
+    {
+      "from": "GS05-M02",
+      "to": "GS05-M06"
+    },
+    {
+      "from": "GS05-M02",
+      "to": "GS05-M07"
+    },
+    {
+      "from": "GS05-M03",
+      "to": "GS05-M04"
+    },
+    {
+      "from": "GS05-M03",
+      "to": "GS05-M05"
+    },
+    {
+      "from": "GS05-M03",
+      "to": "GS05-M06"
+    },
+    {
+      "from": "GS05-M03",
+      "to": "GS05-M07"
+    },
+    {
+      "from": "GS05-M03",
+      "to": "GS05-M08"
+    },
+    {
+      "from": "GS05-M04",
+      "to": "GS05-M05"
+    },
+    {
+      "from": "GS05-M04",
+      "to": "GS05-M06"
+    },
+    {
+      "from": "GS05-M04",
+      "to": "GS05-M07"
+    },
+    {
+      "from": "GS05-M04",
+      "to": "GS05-M08"
+    },
+    {
+      "from": "GS05-M04",
+      "to": "GS05-M09"
+    },
+    {
+      "from": "GS05-M05",
+      "to": "GS05-M06"
+    },
+    {
+      "from": "GS05-M05",
+      "to": "GS05-M07"
+    },
+    {
+      "from": "GS05-M05",
+      "to": "GS05-M08"
+    },
+    {
+      "from": "GS05-M05",
+      "to": "GS05-M09"
+    },
+    {
+      "from": "GS05-M06",
+      "to": "GS05-M07"
+    },
+    {
+      "from": "GS05-M06",
+      "to": "GS05-M08"
+    },
+    {
+      "from": "GS05-M06",
+      "to": "GS05-M09"
+    },
+    {
+      "from": "GS05-M07",
+      "to": "GS05-M08"
+    },
+    {
+      "from": "GS05-M07",
+      "to": "GS05-M09"
+    },
+    {
+      "from": "GS05-M08",
+      "to": "GS05-M09"
+    },
+    {
+      "from": "GS05-M08",
+      "to": "GS06-M05"
+    },
+    {
+      "from": "GS05-M08",
+      "to": "GS06-M06"
+    },
+    {
+      "from": "GS05-M08",
+      "to": "GS06-M07"
+    },
+    {
+      "from": "GS05-M08",
+      "to": "GS06-M08"
+    },
+    {
+      "from": "GS05-M08",
+      "to": "GS06-M09"
+    },
+    {
+      "from": "GS05-M08",
+      "to": "GS06-M10"
+    },
+    {
+      "from": "GS06-M01",
+      "to": "GS06-M02"
+    },
+    {
+      "from": "GS06-M01",
+      "to": "GS06-M03"
+    },
+    {
+      "from": "GS06-M01",
+      "to": "GS06-M04"
+    },
+    {
+      "from": "GS06-M01",
+      "to": "GS05-M08"
+    },
+    {
+      "from": "GS06-M01",
+      "to": "GS06-M05"
+    },
+    {
+      "from": "GS06-M01",
+      "to": "GS06-M06"
+    },
+    {
+      "from": "GS06-M01",
+      "to": "GS06-M07"
+    },
+    {
+      "from": "GS06-M02",
+      "to": "GS06-M03"
+    },
+    {
+      "from": "GS06-M02",
+      "to": "GS06-M04"
+    },
+    {
+      "from": "GS06-M02",
+      "to": "GS05-M08"
+    },
+    {
+      "from": "GS06-M02",
+      "to": "GS06-M05"
+    },
+    {
+      "from": "GS06-M02",
+      "to": "GS06-M06"
+    },
+    {
+      "from": "GS06-M02",
+      "to": "GS06-M07"
+    },
+    {
+      "from": "GS06-M02",
+      "to": "GS06-M08"
+    },
+    {
+      "from": "GS06-M03",
+      "to": "GS06-M04"
+    },
+    {
+      "from": "GS06-M03",
+      "to": "GS05-M08"
+    },
+    {
+      "from": "GS06-M03",
+      "to": "GS06-M05"
+    },
+    {
+      "from": "GS06-M03",
+      "to": "GS06-M06"
+    },
+    {
+      "from": "GS06-M03",
+      "to": "GS06-M07"
+    },
+    {
+      "from": "GS06-M03",
+      "to": "GS06-M08"
+    },
+    {
+      "from": "GS06-M04",
+      "to": "GS05-M08"
+    },
+    {
+      "from": "GS06-M04",
+      "to": "GS06-M05"
+    },
+    {
+      "from": "GS06-M04",
+      "to": "GS06-M06"
+    },
+    {
+      "from": "GS06-M04",
+      "to": "GS06-M07"
+    },
+    {
+      "from": "GS06-M04",
+      "to": "GS06-M08"
+    },
+    {
+      "from": "GS06-M04",
+      "to": "GS06-M09"
+    },
+    {
+      "from": "GS06-M05",
+      "to": "GS06-M06"
+    },
+    {
+      "from": "GS06-M05",
+      "to": "GS06-M07"
+    },
+    {
+      "from": "GS06-M05",
+      "to": "GS06-M08"
+    },
+    {
+      "from": "GS06-M05",
+      "to": "GS06-M09"
+    },
+    {
+      "from": "GS06-M05",
+      "to": "GS06-M10"
+    },
+    {
+      "from": "GS06-M06",
+      "to": "GS06-M07"
+    },
+    {
+      "from": "GS06-M06",
+      "to": "GS06-M08"
+    },
+    {
+      "from": "GS06-M06",
+      "to": "GS06-M09"
+    },
+    {
+      "from": "GS06-M06",
+      "to": "GS06-M10"
+    },
+    {
+      "from": "GS06-M06",
+      "to": "GS06-M11"
+    },
+    {
+      "from": "GS06-M07",
+      "to": "GS06-M08"
+    },
+    {
+      "from": "GS06-M07",
+      "to": "GS06-M09"
+    },
+    {
+      "from": "GS06-M07",
+      "to": "GS06-M10"
+    },
+    {
+      "from": "GS06-M07",
+      "to": "GS06-M11"
+    },
+    {
+      "from": "GS06-M07",
+      "to": "GS06-M12"
+    },
+    {
+      "from": "GS06-M08",
+      "to": "GS06-M09"
+    },
+    {
+      "from": "GS06-M08",
+      "to": "GS06-M10"
+    },
+    {
+      "from": "GS06-M08",
+      "to": "GS06-M11"
+    },
+    {
+      "from": "GS06-M08",
+      "to": "GS06-M12"
+    },
+    {
+      "from": "GS06-M08",
+      "to": "GS06-M13"
+    },
+    {
+      "from": "GS06-M09",
+      "to": "GS06-M10"
+    },
+    {
+      "from": "GS06-M09",
+      "to": "GS06-M11"
+    },
+    {
+      "from": "GS06-M09",
+      "to": "GS06-M12"
+    },
+    {
+      "from": "GS06-M09",
+      "to": "GS06-M13"
+    },
+    {
+      "from": "GS06-M09",
+      "to": "GS06-M14"
+    },
+    {
+      "from": "GS06-M10",
+      "to": "GS06-M11"
+    },
+    {
+      "from": "GS06-M10",
+      "to": "GS06-M12"
+    },
+    {
+      "from": "GS06-M10",
+      "to": "GS06-M13"
+    },
+    {
+      "from": "GS06-M10",
+      "to": "GS06-M14"
+    },
+    {
+      "from": "GS06-M11",
+      "to": "GS06-M12"
+    },
+    {
+      "from": "GS06-M11",
+      "to": "GS06-M13"
+    },
+    {
+      "from": "GS06-M11",
+      "to": "GS06-M14"
+    },
+    {
+      "from": "GS06-M12",
+      "to": "GS06-M13"
+    },
+    {
+      "from": "GS06-M12",
+      "to": "GS06-M14"
+    },
+    {
+      "from": "GS06-M13",
+      "to": "GS06-M14"
+    },
+    {
+      "from": "GS07-M01",
+      "to": "GS07-M04"
+    },
+    {
+      "from": "GS07-M01",
+      "to": "GS07-M02"
+    },
+    {
+      "from": "GS07-M01",
+      "to": "GS07-M03"
+    },
+    {
+      "from": "GS07-M01",
+      "to": "GS07-M08"
+    },
+    {
+      "from": "GS07-M01",
+      "to": "GS07-M05"
+    },
+    {
+      "from": "GS07-M02",
+      "to": "GS07-M03"
+    },
+    {
+      "from": "GS07-M02",
+      "to": "GS07-M04"
+    },
+    {
+      "from": "GS07-M02",
+      "to": "GS07-M08"
+    },
+    {
+      "from": "GS07-M02",
+      "to": "GS07-M05"
+    },
+    {
+      "from": "GS07-M02",
+      "to": "GS07-M06"
+    },
+    {
+      "from": "GS07-M03",
+      "to": "GS07-M04"
+    },
+    {
+      "from": "GS07-M03",
+      "to": "GS07-M08"
+    },
+    {
+      "from": "GS07-M03",
+      "to": "GS07-M05"
+    },
+    {
+      "from": "GS07-M03",
+      "to": "GS07-M06"
+    },
+    {
+      "from": "GS07-M03",
+      "to": "GS07-M07"
+    },
+    {
+      "from": "GS07-M04",
+      "to": "GS07-M02"
+    },
+    {
+      "from": "GS07-M04",
+      "to": "GS07-M03"
+    },
+    {
+      "from": "GS07-M04",
+      "to": "GS07-M08"
+    },
+    {
+      "from": "GS07-M04",
+      "to": "GS07-M05"
+    },
+    {
+      "from": "GS07-M04",
+      "to": "GS07-M06"
+    },
+    {
+      "from": "GS07-M05",
+      "to": "GS07-M06"
+    },
+    {
+      "from": "GS07-M05",
+      "to": "GS07-M07"
+    },
+    {
+      "from": "GS07-M05",
+      "to": "GS07-M08"
+    },
+    {
+      "from": "GS07-M05",
+      "to": "GS07-M09"
+    },
+    {
+      "from": "GS07-M06",
+      "to": "GS07-M07"
+    },
+    {
+      "from": "GS07-M06",
+      "to": "GS07-M08"
+    },
+    {
+      "from": "GS07-M06",
+      "to": "GS07-M09"
+    },
+    {
+      "from": "GS07-M06",
+      "to": "GS07-M10"
+    },
+    {
+      "from": "GS07-M06",
+      "to": "GS07-M11"
+    },
+    {
+      "from": "GS07-M07",
+      "to": "GS07-M06"
+    },
+    {
+      "from": "GS07-M07",
+      "to": "GS07-M08"
+    },
+    {
+      "from": "GS07-M07",
+      "to": "GS07-M09"
+    },
+    {
+      "from": "GS07-M07",
+      "to": "GS07-M10"
+    },
+    {
+      "from": "GS07-M07",
+      "to": "GS07-M11"
+    },
+    {
+      "from": "GS07-M07",
+      "to": "GS07-M12"
+    },
+    {
+      "from": "GS07-M08",
+      "to": "GS07-M05"
+    },
+    {
+      "from": "GS07-M08",
+      "to": "GS07-M06"
+    },
+    {
+      "from": "GS07-M08",
+      "to": "GS07-M07"
+    },
+    {
+      "from": "GS07-M08",
+      "to": "GS07-M09"
+    },
+    {
+      "from": "GS07-M09",
+      "to": "GS07-M10"
+    },
+    {
+      "from": "GS07-M09",
+      "to": "GS07-M11"
+    },
+    {
+      "from": "GS07-M09",
+      "to": "GS07-M12"
+    },
+    {
+      "from": "GS07-M09",
+      "to": "GS07-M13"
+    },
+    {
+      "from": "GS07-M10",
+      "to": "GS07-M11"
+    },
+    {
+      "from": "GS07-M10",
+      "to": "GS07-M12"
+    },
+    {
+      "from": "GS07-M10",
+      "to": "GS07-M13"
+    },
+    {
+      "from": "GS07-M11",
+      "to": "GS07-M12"
+    },
+    {
+      "from": "GS07-M11",
+      "to": "GS07-M13"
+    },
+    {
+      "from": "GS07-M12",
+      "to": "GS07-M13"
+    },
+    {
+      "from": "GS08-M01",
+      "to": "GS08-M02"
+    },
+    {
+      "from": "GS08-M01",
+      "to": "GS08-M03"
+    },
+    {
+      "from": "GS08-M01",
+      "to": "GS08-M04"
+    },
+    {
+      "from": "GS08-M01",
+      "to": "GS08-M05"
+    },
+    {
+      "from": "GS08-M02",
+      "to": "GS08-M03"
+    },
+    {
+      "from": "GS08-M02",
+      "to": "GS08-M04"
+    },
+    {
+      "from": "GS08-M02",
+      "to": "GS08-M05"
+    },
+    {
+      "from": "GS08-M03",
+      "to": "GS08-M04"
+    },
+    {
+      "from": "GS08-M03",
+      "to": "GS08-M05"
+    },
+    {
+      "from": "GS08-M03",
+      "to": "GS08-M06"
+    },
+    {
+      "from": "GS08-M04",
+      "to": "GS08-M05"
+    },
+    {
+      "from": "GS08-M04",
+      "to": "GS08-M06"
+    },
+    {
+      "from": "GS08-M04",
+      "to": "GS08-M07"
+    },
+    {
+      "from": "GS08-M04",
+      "to": "GS08-M08"
+    },
+    {
+      "from": "GS08-M05",
+      "to": "GS08-M04"
+    },
+    {
+      "from": "GS08-M05",
+      "to": "GS08-M06"
+    },
+    {
+      "from": "GS08-M05",
+      "to": "GS08-M07"
+    },
+    {
+      "from": "GS08-M05",
+      "to": "GS08-M08"
+    },
+    {
+      "from": "GS08-M05",
+      "to": "GS08-M09"
+    },
+    {
+      "from": "GS08-M06",
+      "to": "GS08-M07"
+    },
+    {
+      "from": "GS08-M06",
+      "to": "GS08-M08"
+    },
+    {
+      "from": "GS08-M06",
+      "to": "GS08-M09"
+    },
+    {
+      "from": "GS08-M06",
+      "to": "GS08-M10"
+    },
+    {
+      "from": "GS08-M07",
+      "to": "GS08-M08"
+    },
+    {
+      "from": "GS08-M07",
+      "to": "GS08-M09"
+    },
+    {
+      "from": "GS08-M07",
+      "to": "GS08-M10"
+    },
+    {
+      "from": "GS08-M07",
+      "to": "GS08-M11"
+    },
+    {
+      "from": "GS08-M08",
+      "to": "GS08-M09"
+    },
+    {
+      "from": "GS08-M08",
+      "to": "GS08-M10"
+    },
+    {
+      "from": "GS08-M08",
+      "to": "GS08-M11"
+    },
+    {
+      "from": "GS08-M08",
+      "to": "GS08-M12"
+    },
+    {
+      "from": "GS08-M09",
+      "to": "GS08-M10"
+    },
+    {
+      "from": "GS08-M09",
+      "to": "GS08-M11"
+    },
+    {
+      "from": "GS08-M09",
+      "to": "GS08-M12"
+    },
+    {
+      "from": "GS08-M09",
+      "to": "GS08-M13"
+    },
+    {
+      "from": "GS08-M10",
+      "to": "GS08-M11"
+    },
+    {
+      "from": "GS08-M10",
+      "to": "GS08-M12"
+    },
+    {
+      "from": "GS08-M10",
+      "to": "GS08-M13"
+    },
+    {
+      "from": "GS08-M10",
+      "to": "GS08-M14"
+    },
+    {
+      "from": "GS08-M10",
+      "to": "GS08-M15"
+    },
+    {
+      "from": "GS08-M11",
+      "to": "GS08-M12"
+    },
+    {
+      "from": "GS08-M11",
+      "to": "GS08-M13"
+    },
+    {
+      "from": "GS08-M11",
+      "to": "GS08-M14"
+    },
+    {
+      "from": "GS08-M11",
+      "to": "GS08-M15"
+    },
+    {
+      "from": "GS08-M11",
+      "to": "GS08-M02"
+    },
+    {
+      "from": "GS08-M11",
+      "to": "GS03-M08"
+    },
+    {
+      "from": "GS08-M12",
+      "to": "GS08-M11"
+    },
+    {
+      "from": "GS08-M12",
+      "to": "GS08-M13"
+    },
+    {
+      "from": "GS08-M12",
+      "to": "GS08-M14"
+    },
+    {
+      "from": "GS08-M12",
+      "to": "GS08-M15"
+    },
+    {
+      "from": "GS08-M12",
+      "to": "GS08-M02"
+    },
+    {
+      "from": "GS08-M12",
+      "to": "GS03-M08"
+    },
+    {
+      "from": "GS08-M13",
+      "to": "GS08-M11"
+    },
+    {
+      "from": "GS08-M13",
+      "to": "GS08-M14"
+    },
+    {
+      "from": "GS08-M13",
+      "to": "GS08-M15"
+    },
+    {
+      "from": "GS08-M13",
+      "to": "GS08-M02"
+    },
+    {
+      "from": "GS08-M13",
+      "to": "GS03-M08"
+    },
+    {
+      "from": "GS08-M14",
+      "to": "GS08-M15"
+    },
+    {
+      "from": "GS08-M14",
+      "to": "GS08-M02"
+    },
+    {
+      "from": "GS08-M14",
+      "to": "GS03-M08"
+    },
+    {
+      "from": "GS08-M15",
+      "to": "GS08-M02"
+    },
+    {
+      "from": "GS08-M15",
+      "to": "GS03-M08"
+    },
+    {
+      "from": "GS01-M10",
+      "to": "GS09-M02"
+    },
+    {
+      "from": "GS01-M10",
+      "to": "GS09-M03"
+    },
+    {
+      "from": "GS01-M10",
+      "to": "GS09-M06"
+    },
+    {
+      "from": "GS01-M10",
+      "to": "GS09-M05"
+    },
+    {
+      "from": "GS01-M10",
+      "to": "GS09-M07"
+    },
+    {
+      "from": "GS01-M10",
+      "to": "GS09-M04"
+    },
+    {
+      "from": "GS01-M10",
+      "to": "GS09-M11"
+    },
+    {
+      "from": "GS09-M01",
+      "to": "GS01-M10"
+    },
+    {
+      "from": "GS09-M01",
+      "to": "GS09-M02"
+    },
+    {
+      "from": "GS09-M01",
+      "to": "GS09-M03"
+    },
+    {
+      "from": "GS09-M01",
+      "to": "GS09-M06"
+    },
+    {
+      "from": "GS09-M01",
+      "to": "GS09-M05"
+    },
+    {
+      "from": "GS09-M01",
+      "to": "GS09-M07"
+    },
+    {
+      "from": "GS09-M01",
+      "to": "GS09-M04"
+    },
+    {
+      "from": "GS09-M01",
+      "to": "GS09-M11"
+    },
+    {
+      "from": "GS09-M02",
+      "to": "GS09-M03"
+    },
+    {
+      "from": "GS09-M02",
+      "to": "GS09-M06"
+    },
+    {
+      "from": "GS09-M02",
+      "to": "GS09-M05"
+    },
+    {
+      "from": "GS09-M02",
+      "to": "GS09-M07"
+    },
+    {
+      "from": "GS09-M02",
+      "to": "GS09-M04"
+    },
+    {
+      "from": "GS09-M02",
+      "to": "GS09-M11"
+    },
+    {
+      "from": "GS09-M03",
+      "to": "GS09-M06"
+    },
+    {
+      "from": "GS09-M03",
+      "to": "GS09-M05"
+    },
+    {
+      "from": "GS09-M03",
+      "to": "GS09-M07"
+    },
+    {
+      "from": "GS09-M03",
+      "to": "GS09-M04"
+    },
+    {
+      "from": "GS09-M03",
+      "to": "GS09-M11"
+    },
+    {
+      "from": "GS09-M04",
+      "to": "GS09-M11"
+    },
+    {
+      "from": "GS09-M04",
+      "to": "GS09-M05"
+    },
+    {
+      "from": "GS09-M04",
+      "to": "GS09-M06"
+    },
+    {
+      "from": "GS09-M04",
+      "to": "GS09-M03"
+    },
+    {
+      "from": "GS09-M04",
+      "to": "GS09-M07"
+    },
+    {
+      "from": "GS09-M04",
+      "to": "GS09-M08"
+    },
+    {
+      "from": "GS09-M05",
+      "to": "GS09-M07"
+    },
+    {
+      "from": "GS09-M05",
+      "to": "GS09-M04"
+    },
+    {
+      "from": "GS09-M05",
+      "to": "GS09-M11"
+    },
+    {
+      "from": "GS09-M05",
+      "to": "GS09-M06"
+    },
+    {
+      "from": "GS09-M05",
+      "to": "GS09-M03"
+    },
+    {
+      "from": "GS09-M05",
+      "to": "GS09-M08"
+    },
+    {
+      "from": "GS09-M06",
+      "to": "GS09-M05"
+    },
+    {
+      "from": "GS09-M06",
+      "to": "GS09-M07"
+    },
+    {
+      "from": "GS09-M06",
+      "to": "GS09-M04"
+    },
+    {
+      "from": "GS09-M06",
+      "to": "GS09-M11"
+    },
+    {
+      "from": "GS09-M06",
+      "to": "GS09-M03"
+    },
+    {
+      "from": "GS09-M06",
+      "to": "GS09-M08"
+    },
+    {
+      "from": "GS09-M07",
+      "to": "GS09-M04"
+    },
+    {
+      "from": "GS09-M07",
+      "to": "GS09-M11"
+    },
+    {
+      "from": "GS09-M07",
+      "to": "GS09-M05"
+    },
+    {
+      "from": "GS09-M07",
+      "to": "GS09-M06"
+    },
+    {
+      "from": "GS09-M07",
+      "to": "GS09-M03"
+    },
+    {
+      "from": "GS09-M07",
+      "to": "GS09-M08"
+    },
+    {
+      "from": "GS09-M08",
+      "to": "GS09-M09"
+    },
+    {
+      "from": "GS09-M08",
+      "to": "GS09-M10"
+    },
+    {
+      "from": "GS09-M08",
+      "to": "GS09-M11"
+    },
+    {
+      "from": "GS09-M09",
+      "to": "GS09-M10"
+    },
+    {
+      "from": "GS09-M09",
+      "to": "GS09-M11"
+    },
+    {
+      "from": "GS09-M10",
+      "to": "GS09-M11"
+    },
+    {
+      "from": "GS09-M11",
+      "to": "GS09-M05"
+    },
+    {
+      "from": "GS09-M11",
+      "to": "GS09-M06"
+    },
+    {
+      "from": "GS09-M11",
+      "to": "GS09-M03"
+    },
+    {
+      "from": "GS09-M11",
+      "to": "GS09-M07"
+    },
+    {
+      "from": "GS09-M11",
+      "to": "GS09-M08"
+    },
+    {
+      "from": "GS09-M11",
+      "to": "GS09-M09"
+    },
+    {
+      "from": "GS09-M09",
+      "to": "GS10-M03"
+    },
+    {
+      "from": "GS09-M09",
+      "to": "GS10-M04"
+    },
+    {
+      "from": "GS09-M09",
+      "to": "GS10-M02"
+    },
+    {
+      "from": "GS09-M09",
+      "to": "GS10-M05"
+    },
+    {
+      "from": "GS09-M09",
+      "to": "GS10-M06"
+    },
+    {
+      "from": "GS10-M01",
+      "to": "GS10-M02"
+    },
+    {
+      "from": "GS10-M01",
+      "to": "GS09-M09"
+    },
+    {
+      "from": "GS10-M01",
+      "to": "GS10-M03"
+    },
+    {
+      "from": "GS10-M02",
+      "to": "GS09-M09"
+    },
+    {
+      "from": "GS10-M02",
+      "to": "GS10-M03"
+    },
+    {
+      "from": "GS10-M02",
+      "to": "GS10-M04"
+    },
+    {
+      "from": "GS10-M02",
+      "to": "GS10-M05"
+    },
+    {
+      "from": "GS10-M03",
+      "to": "GS10-M04"
+    },
+    {
+      "from": "GS10-M03",
+      "to": "GS10-M02"
+    },
+    {
+      "from": "GS10-M03",
+      "to": "GS10-M05"
+    },
+    {
+      "from": "GS10-M03",
+      "to": "GS10-M06"
+    },
+    {
+      "from": "GS10-M04",
+      "to": "GS10-M02"
+    },
+    {
+      "from": "GS10-M04",
+      "to": "GS10-M05"
+    },
+    {
+      "from": "GS10-M04",
+      "to": "GS10-M06"
+    },
+    {
+      "from": "GS10-M04",
+      "to": "GS10-M01"
+    },
+    {
+      "from": "GS10-M04",
+      "to": "GS10-M07"
+    },
+    {
+      "from": "GS10-M04",
+      "to": "GS10-M08"
+    },
+    {
+      "from": "GS10-M05",
+      "to": "GS10-M06"
+    },
+    {
+      "from": "GS10-M05",
+      "to": "GS10-M01"
+    },
+    {
+      "from": "GS10-M05",
+      "to": "GS10-M07"
+    },
+    {
+      "from": "GS10-M05",
+      "to": "GS10-M08"
+    },
+    {
+      "from": "GS10-M05",
+      "to": "GS10-M09"
+    },
+    {
+      "from": "GS10-M06",
+      "to": "GS10-M01"
+    },
+    {
+      "from": "GS10-M06",
+      "to": "GS10-M07"
+    },
+    {
+      "from": "GS10-M06",
+      "to": "GS10-M08"
+    },
+    {
+      "from": "GS10-M06",
+      "to": "GS10-M09"
+    },
+    {
+      "from": "GS10-M07",
+      "to": "GS10-M08"
+    },
+    {
+      "from": "GS10-M07",
+      "to": "GS10-M09"
+    },
+    {
+      "from": "GS10-M08",
+      "to": "GS10-M09"
+    },
+    {
+      "from": "GS11-M01",
+      "to": "GS11-M02"
+    },
+    {
+      "from": "GS11-M01",
+      "to": "GS11-M03"
+    },
+    {
+      "from": "GS11-M01",
+      "to": "GS11-M04"
+    },
+    {
+      "from": "GS11-M01",
+      "to": "GS11-M05"
+    },
+    {
+      "from": "GS11-M01",
+      "to": "GS11-M06"
+    },
+    {
+      "from": "GS11-M02",
+      "to": "GS11-M03"
+    },
+    {
+      "from": "GS11-M02",
+      "to": "GS11-M04"
+    },
+    {
+      "from": "GS11-M02",
+      "to": "GS11-M05"
+    },
+    {
+      "from": "GS11-M02",
+      "to": "GS11-M06"
+    },
+    {
+      "from": "GS11-M02",
+      "to": "GS11-M07"
+    },
+    {
+      "from": "GS11-M03",
+      "to": "GS11-M04"
+    },
+    {
+      "from": "GS11-M03",
+      "to": "GS11-M05"
+    },
+    {
+      "from": "GS11-M03",
+      "to": "GS11-M06"
+    },
+    {
+      "from": "GS11-M03",
+      "to": "GS11-M07"
+    },
+    {
+      "from": "GS11-M03",
+      "to": "GS11-M08"
+    },
+    {
+      "from": "GS11-M04",
+      "to": "GS11-M05"
+    },
+    {
+      "from": "GS11-M04",
+      "to": "GS11-M06"
+    },
+    {
+      "from": "GS11-M04",
+      "to": "GS11-M07"
+    },
+    {
+      "from": "GS11-M04",
+      "to": "GS11-M08"
+    },
+    {
+      "from": "GS11-M04",
+      "to": "GS11-M09"
+    },
+    {
+      "from": "GS11-M05",
+      "to": "GS11-M04"
+    },
+    {
+      "from": "GS11-M05",
+      "to": "GS11-M06"
+    },
+    {
+      "from": "GS11-M05",
+      "to": "GS11-M07"
+    },
+    {
+      "from": "GS11-M05",
+      "to": "GS11-M08"
+    },
+    {
+      "from": "GS11-M05",
+      "to": "GS11-M09"
+    },
+    {
+      "from": "GS11-M05",
+      "to": "GS11-M10"
+    },
+    {
+      "from": "GS11-M06",
+      "to": "GS11-M07"
+    },
+    {
+      "from": "GS11-M06",
+      "to": "GS11-M08"
+    },
+    {
+      "from": "GS11-M06",
+      "to": "GS11-M05"
+    },
+    {
+      "from": "GS11-M06",
+      "to": "GS11-M09"
+    },
+    {
+      "from": "GS11-M06",
+      "to": "GS11-M10"
+    },
+    {
+      "from": "GS11-M06",
+      "to": "GS11-M11"
+    },
+    {
+      "from": "GS11-M07",
+      "to": "GS11-M08"
+    },
+    {
+      "from": "GS11-M07",
+      "to": "GS11-M05"
+    },
+    {
+      "from": "GS11-M07",
+      "to": "GS11-M09"
+    },
+    {
+      "from": "GS11-M07",
+      "to": "GS11-M10"
+    },
+    {
+      "from": "GS11-M07",
+      "to": "GS11-M11"
+    },
+    {
+      "from": "GS11-M08",
+      "to": "GS11-M05"
+    },
+    {
+      "from": "GS11-M08",
+      "to": "GS11-M09"
+    },
+    {
+      "from": "GS11-M08",
+      "to": "GS11-M10"
+    },
+    {
+      "from": "GS11-M08",
+      "to": "GS11-M11"
+    },
+    {
+      "from": "GS11-M09",
+      "to": "GS11-M10"
+    },
+    {
+      "from": "GS11-M09",
+      "to": "GS11-M11"
+    },
+    {
+      "from": "GS11-M10",
+      "to": "GS11-M11"
+    },
+    {
+      "from": "XD01-M01",
+      "to": "XD01-M02"
+    },
+    {
+      "from": "XD01-M01",
+      "to": "XD01-M03"
+    },
+    {
+      "from": "XD01-M01",
+      "to": "XD01-M04"
+    },
+    {
+      "from": "XD01-M02",
+      "to": "XD01-M03"
+    },
+    {
+      "from": "XD01-M02",
+      "to": "XD01-M04"
+    },
+    {
+      "from": "XD01-M03",
+      "to": "XD01-M04"
+    },
+    {
+      "from": "XD02-M01",
+      "to": "XD02-M02"
+    },
+    {
+      "from": "XD02-M01",
+      "to": "XD02-M03"
+    },
+    {
+      "from": "XD02-M01",
+      "to": "XD02-M04"
+    },
+    {
+      "from": "XD02-M01",
+      "to": "XD02-M05"
+    },
+    {
+      "from": "XD02-M01",
+      "to": "XD02-M06"
+    },
+    {
+      "from": "XD02-M01",
+      "to": "XD02-M07"
+    },
+    {
+      "from": "XD02-M02",
+      "to": "XD02-M03"
+    },
+    {
+      "from": "XD02-M02",
+      "to": "XD02-M04"
+    },
+    {
+      "from": "XD02-M02",
+      "to": "XD02-M05"
+    },
+    {
+      "from": "XD02-M02",
+      "to": "XD02-M06"
+    },
+    {
+      "from": "XD02-M02",
+      "to": "XD02-M07"
+    },
+    {
+      "from": "XD02-M02",
+      "to": "XD02-M08"
+    },
+    {
+      "from": "XD02-M03",
+      "to": "XD02-M04"
+    },
+    {
+      "from": "XD02-M03",
+      "to": "XD02-M05"
+    },
+    {
+      "from": "XD02-M03",
+      "to": "XD02-M02"
+    },
+    {
+      "from": "XD02-M03",
+      "to": "XD02-M06"
+    },
+    {
+      "from": "XD02-M03",
+      "to": "XD02-M07"
+    },
+    {
+      "from": "XD02-M03",
+      "to": "XD02-M08"
+    },
+    {
+      "from": "XD02-M03",
+      "to": "XD02-M09"
+    },
+    {
+      "from": "XD02-M04",
+      "to": "XD02-M05"
+    },
+    {
+      "from": "XD02-M04",
+      "to": "XD02-M02"
+    },
+    {
+      "from": "XD02-M04",
+      "to": "XD02-M03"
+    },
+    {
+      "from": "XD02-M04",
+      "to": "XD02-M06"
+    },
+    {
+      "from": "XD02-M04",
+      "to": "XD02-M07"
+    },
+    {
+      "from": "XD02-M04",
+      "to": "XD02-M08"
+    },
+    {
+      "from": "XD02-M04",
+      "to": "XD02-M09"
+    },
+    {
+      "from": "XD02-M05",
+      "to": "XD02-M02"
+    },
+    {
+      "from": "XD02-M05",
+      "to": "XD02-M03"
+    },
+    {
+      "from": "XD02-M05",
+      "to": "XD02-M06"
+    },
+    {
+      "from": "XD02-M05",
+      "to": "XD02-M07"
+    },
+    {
+      "from": "XD02-M05",
+      "to": "XD02-M08"
+    },
+    {
+      "from": "XD02-M05",
+      "to": "XD02-M09"
+    },
+    {
+      "from": "XD02-M06",
+      "to": "XD02-M07"
+    },
+    {
+      "from": "XD02-M06",
+      "to": "XD02-M08"
+    },
+    {
+      "from": "XD02-M06",
+      "to": "XD02-M09"
+    },
+    {
+      "from": "XD02-M07",
+      "to": "XD02-M08"
+    },
+    {
+      "from": "XD02-M07",
+      "to": "XD02-M09"
+    },
+    {
+      "from": "XD02-M08",
+      "to": "XD02-M09"
+    },
+    {
+      "from": "XD03-M01",
+      "to": "XD03-M02"
+    },
+    {
+      "from": "XD03-M01",
+      "to": "XD03-M03"
+    },
+    {
+      "from": "XD03-M01",
+      "to": "XD03-M04"
+    },
+    {
+      "from": "XD03-M01",
+      "to": "XD03-M05"
+    },
+    {
+      "from": "XD03-M02",
+      "to": "XD03-M03"
+    },
+    {
+      "from": "XD03-M02",
+      "to": "XD03-M04"
+    },
+    {
+      "from": "XD03-M02",
+      "to": "XD03-M05"
+    },
+    {
+      "from": "XD03-M03",
+      "to": "XD03-M04"
+    },
+    {
+      "from": "XD03-M03",
+      "to": "XD03-M05"
+    },
+    {
+      "from": "XD03-M04",
+      "to": "XD03-M05"
+    },
+    {
+      "from": "XD04-M01",
+      "to": "XD04-M02"
+    },
+    {
+      "from": "XD04-M01",
+      "to": "XD04-M03"
+    },
+    {
+      "from": "XD04-M01",
+      "to": "XD04-M04"
+    },
+    {
+      "from": "XD04-M01",
+      "to": "XD04-M05"
+    },
+    {
+      "from": "XD04-M02",
+      "to": "XD04-M03"
+    },
+    {
+      "from": "XD04-M02",
+      "to": "XD04-M04"
+    },
+    {
+      "from": "XD04-M02",
+      "to": "XD04-M05"
+    },
+    {
+      "from": "XD04-M03",
+      "to": "XD04-M04"
+    },
+    {
+      "from": "XD04-M03",
+      "to": "XD04-M05"
+    },
+    {
+      "from": "XD04-M04",
+      "to": "XD04-M05"
+    },
+    {
+      "from": "XD05-M01",
+      "to": "XD05-M02"
+    },
+    {
+      "from": "XD05-M01",
+      "to": "XD05-M03"
+    },
+    {
+      "from": "XD05-M01",
+      "to": "XD05-M04"
+    },
+    {
+      "from": "XD05-M01",
+      "to": "XD05-M05"
+    },
+    {
+      "from": "XD05-M01",
+      "to": "XD05-M06"
+    },
+    {
+      "from": "XD05-M01",
+      "to": "XD05-M07"
+    },
+    {
+      "from": "XD05-M02",
+      "to": "XD05-M03"
+    },
+    {
+      "from": "XD05-M02",
+      "to": "XD05-M04"
+    },
+    {
+      "from": "XD05-M02",
+      "to": "XD05-M05"
+    },
+    {
+      "from": "XD05-M02",
+      "to": "XD05-M06"
+    },
+    {
+      "from": "XD05-M02",
+      "to": "XD05-M07"
+    },
+    {
+      "from": "XD05-M03",
+      "to": "XD05-M04"
+    },
+    {
+      "from": "XD05-M03",
+      "to": "XD05-M05"
+    },
+    {
+      "from": "XD05-M03",
+      "to": "XD05-M06"
+    },
+    {
+      "from": "XD05-M03",
+      "to": "XD05-M07"
+    },
+    {
+      "from": "XD05-M04",
+      "to": "XD05-M05"
+    },
+    {
+      "from": "XD05-M04",
+      "to": "XD05-M06"
+    },
+    {
+      "from": "XD05-M04",
+      "to": "XD05-M07"
+    },
+    {
+      "from": "XD05-M05",
+      "to": "XD05-M06"
+    },
+    {
+      "from": "XD05-M05",
+      "to": "XD05-M07"
+    },
+    {
+      "from": "XD05-M06",
+      "to": "XD05-M07"
+    },
+    {
+      "from": "XD06-M01",
+      "to": "XD06-M02"
+    },
+    {
+      "from": "XD06-M01",
+      "to": "XD06-M03"
+    },
+    {
+      "from": "XD06-M01",
+      "to": "XD06-M04"
+    },
+    {
+      "from": "XD06-M01",
+      "to": "XD06-M05"
+    },
+    {
+      "from": "XD06-M01",
+      "to": "XD06-M06"
+    },
+    {
+      "from": "XD06-M02",
+      "to": "XD06-M03"
+    },
+    {
+      "from": "XD06-M02",
+      "to": "XD06-M04"
+    },
+    {
+      "from": "XD06-M02",
+      "to": "XD06-M05"
+    },
+    {
+      "from": "XD06-M02",
+      "to": "XD06-M06"
+    },
+    {
+      "from": "XD06-M03",
+      "to": "XD06-M04"
+    },
+    {
+      "from": "XD06-M03",
+      "to": "XD06-M05"
+    },
+    {
+      "from": "XD06-M03",
+      "to": "XD06-M06"
+    },
+    {
+      "from": "XD06-M04",
+      "to": "XD06-M05"
+    },
+    {
+      "from": "XD06-M04",
+      "to": "XD06-M06"
+    },
+    {
+      "from": "XD06-M05",
+      "to": "XD06-M06"
+    }
+  ]
+}

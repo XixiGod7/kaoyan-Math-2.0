@@ -1,0 +1,15 @@
+{
+  "name": "数砖 · 考研数学",
+  "short_name": "数砖",
+  "description": "考研数学真题分析与刷题：真题浏览、逐题练习、公式手册、概念讲解图",
+  "lang": "zh-CN",
+  "start_url": "/math?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0A9A6E",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

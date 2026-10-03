@@ -1,0 +1,13 @@
+node_modules/
+.wrangler/
+.npm-cache/
+.dev.vars*
+.env*
+!.env.example
+/data/
+__pycache__/
+*.pyc
+artifacts/
+dist/
+worker-configuration.d.ts
+/.github/workflows/

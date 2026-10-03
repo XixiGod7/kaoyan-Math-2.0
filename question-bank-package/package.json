@@ -1,0 +1,15 @@
+{
+  "name": "kaoyan-math-question-bank",
+  "version": "2.0.0",
+  "description": "考研数学 1987-2026 全量 40 年真题题库与多维标签拓扑工具包",
+  "main": "index.js",
+  "keywords": [
+    "kaoyan",
+    "math",
+    "question-bank",
+    "dataset",
+    "latex"
+  ],
+  "author": "",
+  "license": "ISC"
+}

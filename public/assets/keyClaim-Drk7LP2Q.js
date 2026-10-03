@@ -1,0 +1,1 @@
+const t=new Map;function a(s){const n=s.map(e=>e.toUpperCase());for(const e of n)t.set(e,(t.get(e)??0)+1);let o=!1;return()=>{if(!o){o=!0;for(const e of n){const r=(t.get(e)??1)-1;r>0?t.set(e,r):t.delete(e)}}}}function c(s){return(t.get(s.toUpperCase())??0)>0}export{a as c,c as i};

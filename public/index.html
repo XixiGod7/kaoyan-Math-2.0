@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#0A9A6E" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="数砖" />
+    <title>数砖 · 考研数学真题分析</title>
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('mb_theme');          // 'dark' | 'light' | null(跟随系统)
+          var dark = t === 'dark' || (t !== 'light' && window.matchMedia
+            && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (dark) document.documentElement.setAttribute('data-theme', 'dark');
+          var f = parseFloat(localStorage.getItem('mb_fontscale') || '1');
+          if (f >= 0.9 && f <= 1.6 && f !== 1) document.documentElement.style.setProperty('--fs', String(f));
+          
+          // 免登录初始化：默认赋予本地令牌，畅享全站功能
+          if (!localStorage.getItem('mb_token')) {
+            localStorage.setItem('mb_token', 'local_authorized_token');
+          }
+        } catch (e) { /* 读不到偏好就用默认外观 */ }
+      })();
+    </script>
+    <script type="module" crossorigin src="/assets/index-BKBOZrcM.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/vendor-C1PfG1cZ.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-7hNXkCrV.css">
+    <link rel="stylesheet" href="/assets/custom.css">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="/assets/ai-settings.js"></script>
+  </body>
+</html>

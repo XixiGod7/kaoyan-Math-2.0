@@ -1,0 +1,1 @@
+const c="eb_selfcheck_v1",r=0,a=1,o=2;function n(){try{return JSON.parse(localStorage.getItem(c)||"{}")}catch{return{}}}let e=n();function S(t){return e[t]}function l(){return Object.entries(e).map(([t,s])=>({sid:t,r:s.r,ts:s.ts}))}function f(t,s){e={...e,[t]:{r:s,ts:Date.now()}},localStorage.setItem(c,JSON.stringify(e))}export{r as S,a,o as b,l as c,S as g,f as s};

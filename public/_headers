@@ -1,0 +1,11 @@
+/assets/*
+  Cache-Control: public, max-age=0, must-revalidate
+/viz/assets/*
+  Cache-Control: public, max-age=0, must-revalidate
+/assets/ai-settings.js
+  Cache-Control: no-cache
+/assets/custom.css
+  Cache-Control: no-cache
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
