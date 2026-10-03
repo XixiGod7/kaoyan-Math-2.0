@@ -1,6 +1,6 @@
 # 功能验证记录
 
-验证日期：2026-10-03（北京时间）。
+验证日期：2026-10-03 至 2026-10-04（北京时间）。
 
 ## 已完成的验证
 
@@ -21,6 +21,14 @@
 `npm test`：12 项通过，Cloudflare 专属检查在纯 Node 环境跳过。
 
 对 Cloudflare 本地运行时设置 `TEST_BASE_URL=http://127.0.0.1:8787` 后执行同一测试：13 项通过。
+
+对已部署地址设置 `TEST_BASE_URL=https://kaoyan-math-2-0.cxmxibing.workers.dev` 后执行同一测试：13 项通过、0 失败、0 跳过。其中 11 项接口测试连接线上服务，2 项资源及数据检查读取本地已上传版本。
+
+线上地址：[数砖数学平台](https://kaoyan-math-2-0.cxmxibing.workers.dev/math)。代码仓库：[XixiGod7/kaoyan-Math-2.0](https://github.com/XixiGod7/kaoyan-Math-2.0)（公开）。
+
+Cloudflare 控制台构建 `c0c10e52` 已显示发布成功，初次部署版本为 `526ff737-65ad-48ef-8982-023022bef7a5`。生产分支为 `main`；构建执行测试与部署预检，通过后发布。后续推送由 Cloudflare 仓库连接自动部署，未依赖 GitHub Actions 模板。
+
+浏览器已实际检查线上首页、题库矩阵、题号跳转、公式显示、选择题提交、收藏及解析。90101 选 A 显示正确；90102 提交时明确提示暂无核验答案，没有生成错误成绩。检查期间页面控制台未出现错误。
 
 `npm run build`：Wrangler 部署预检通过。未通过预检的情况不可作为部署成功的证据。
 
