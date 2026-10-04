@@ -98,7 +98,7 @@ app.post('/api/answer', (req, res) => {
   const today = growth.dayKey();
   if (progress.lastActive !== today) progress.todayCount = 0;
   progress.lastActive = today;
-  progress.todayCount = (progress.todayCount || 0) + 1;
+  if (!prior || growth.dayKey(prior.timestamp) !== today) progress.todayCount = (progress.todayCount || 0) + 1;
   progress.answered[String(questionId)] = {
     correct, attempts: (prior?.attempts || 0) + 1,
     firstCorrect: prior?.firstCorrect ?? correct,
@@ -125,6 +125,15 @@ function collectWrong(questionId) {
   if (!list.some(item => String(item.id) === String(questionId))) {
     list.unshift({ ...q, paper: q.papers[0], createdAt: new Date().toISOString(), mastered: false });
     db.saveWrongBook(list);
+  }
+  enrollWrongReview(q.id);
+}
+
+function enrollWrongReview(questionId) {
+  const cards = db.getReviewCards();
+  if (!cards.some(c => String(c.id) === String(questionId))) {
+    cards.push({ id: questionId, interval: 1, reps: 0, nextDue: Date.now() });
+    db.saveReviewCards(cards);
   }
 }
 
@@ -251,6 +260,7 @@ app.post('/api/math/grade', (req, res) => {
       });
       db.saveWrongBook(wrongBook);
     }
+    enrollWrongReview(q.id);
   }
 
   res.json({
@@ -487,7 +497,7 @@ app.post('/api/review/answer', (req, res) => {
   let card = cards.find(c => String(c.id) === String(questionId));
   if (!card || card.nextDue > Date.now()) return res.status(400).json({ error: '该题尚未到复习时间' });
 
-  // Simple FSRS / SuperMemo interval scaling
+  // Simplified interval scheduling; not a full FSRS implementation.
   if (rating === 'again') {
     card.interval = 1;
   } else if (rating === 'hard') {

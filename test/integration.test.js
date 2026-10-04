@@ -4,8 +4,9 @@ const { spawn } = require('node:child_process');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
-let child, base, cookie = '', book, chapter, single, multi;
+let child, base, cookie = '', book, chapter, single, multi, reviewUI;
 before(async () => {
+  reviewUI = await import('../public/shared/math-review.mjs');
   if (process.env.TEST_BASE_URL) base = process.env.TEST_BASE_URL;
   else {
     const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'study-integration-'));
@@ -39,6 +40,10 @@ async function req(url, data, headers = {}, method = data === undefined ? 'GET' 
 }
 const overview = async () => (await req('/api/study/overview')).body;
 const action = (name, data = {}, key = crypto.randomUUID()) => req('/api/incentive/' + name, data, { 'Idempotency-Key': key });
+async function reviewRequest(url, options) {
+  const result = await req(url, options?.body ? JSON.parse(options.body) : undefined);
+  return new Response(JSON.stringify(result.body), { status: result.status, headers: { 'Content-Type': 'application/json' } });
+}
 
 test('总览、数学、政治、打卡、档案和政治深层链接均能打开', async () => {
   for (const [url, expected] of [['/', '学习总览'], ['/math', '数砖'], ['/politics', '政治练习'], ['/growth', '成长打卡'], ['/library', '学习档案'], ['/politics/practice/' + chapter.code, '政治练习']]) {
@@ -100,10 +105,37 @@ test('政治收藏可重复设置且不重复增加，数学收藏独立保存',
 
 test('数学到期复习领取奖励，重复复习被拒绝', async () => {
   await req('/api/review/enroll', { questionIds: [90103] });
-  const first = await req('/api/review/answer', { questionId: 90103, rating: 'good' });
-  assert.equal(first.body.reward.points, 3);
+  const day = await reviewUI.loadReviewDay(reviewRequest);
+  assert.ok(day.due.includes(90103), '旧前端读取到期题号，而不是卡片对象');
+  const before = await overview();
+  const first = await reviewUI.submitMathReview(reviewRequest, 90103, true);
+  assert.equal(first.reward.points, 3);
+  const after = await overview();
+  assert.equal(after.points - before.points, 3, '复习只领取复习奖励');
+  assert.equal(after.today.math, before.today.math, '复习不增加普通答题目标');
+  assert.equal(after.today.reviews - before.today.reviews, 1);
+  assert.ok(!(await reviewUI.loadReviewDay(reviewRequest)).due.includes(90103));
+  const known = (await req('/api/questions/90101/solution')).body;
+  const unknown = (await req('/api/questions/90103/solution')).body;
+  assert.equal(reviewUI.getVerifiedChoice(known), 'A');
+  assert.equal(reviewUI.getVerifiedChoice(unknown), null, '未核验答案不会用于自动判分');
+  assert.equal(reviewUI.getVerifiedChoice({ answer: 'A', verified: false }), null);
+  await assert.rejects(reviewUI.submitMathReview(reviewRequest, 90103, false), /尚未到复习时间/);
   assert.equal((await req('/api/review/answer', { questionId: 90103, rating: 'good' })).status, 400);
   assert.equal((await req('/api/review/answer', { questionId: 90103, rating: 'fake' })).status, 400);
+});
+
+test('数学错题自动加入复习，重复作答不刷当日题数或重置复习排期', async () => {
+  const before = (await req('/api/state')).body.choiceToday;
+  await req('/api/answer', { questionId: 90104, correct: false });
+  await req('/api/answer', { questionId: 90104, correct: false });
+  assert.equal((await req('/api/state')).body.choiceToday - before, 1);
+  assert.ok((await req('/api/review/today')).body.due.some(q => q.id === 90104));
+  assert.equal((await req('/api/review/answer', { questionId: 90104, rating: 'good' })).body.reward.points, 3);
+  await req('/api/answer', { questionId: 90104, correct: false });
+  assert.equal((await req('/api/review/answer', { questionId: 90104, rating: 'good' })).status, 400);
+  await req('/api/math/grade', { id: 90101, answer: 'B' });
+  assert.ok((await req('/api/review/today')).body.due.some(q => q.id === 90101));
 });
 
 test('每日目标可调整，重复开始和重新打卡保留当日积累', async () => {
