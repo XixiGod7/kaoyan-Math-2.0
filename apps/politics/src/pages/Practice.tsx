@@ -35,8 +35,11 @@ export const PracticePage: React.FC = () => {
 
         // 默认定位到第一个未作答的题目
         if (chapRes && chapRes.questions.length > 0) {
+          const remembered=(window as any).studyPosition?.get('politics:chapter:'+code)?.question;
+          const explicit=new URLSearchParams(location.search).get('question');
+          const index=chapRes.questions.findIndex(q=>String(q.id)===String(explicit||remembered));
           const firstUnanswered = chapRes.questions.findIndex(q => !map[String(q.id)]);
-          setCurrentIndex(firstUnanswered < 0 ? 0 : firstUnanswered);
+          setCurrentIndex(index>=0?index:firstUnanswered<0?0:firstUnanswered);
         }
       }
     ).catch(e => { if (active) { setError(e.message || '章节加载失败'); setLoading(false); } });
@@ -48,6 +51,7 @@ export const PracticePage: React.FC = () => {
 
   const questions = chapter?.questions ?? [];
   const currentQ = questions[currentIndex];
+  useEffect(()=>{if(currentQ)(window as any).studyPosition?.set('politics:chapter:'+code,{question:String(currentQ.id)});},[code,currentQ?.id]);
 
   const doneCount = useMemo(
     () => questions.filter(q => answeredMap[String(q.id)]).length,

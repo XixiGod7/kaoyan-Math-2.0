@@ -334,6 +334,8 @@ export const IntensiveReadingView: React.FC<IntensiveReadingViewProps> = ({
   const handleSelectPassage = (year: number, textNo: number) => {
     const key = `${year}-t${textNo}`;
     setCurrentKey(key);
+    window.studyPosition?.url('/english?tab=reading&pass='+key);
+    window.studyPosition?.set('english:tab:reading',{pass:key});
     setIsYearPickerOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation,useNavigate } from 'react-router-dom';
 import {
   getDueReviewsApi,
   getFavoriteIdsApi,
@@ -15,6 +15,7 @@ type TabType = 'review' | 'wrong' | 'fav';
 
 export const ReviewPage: React.FC = () => {
   const location = useLocation();
+  const navigate=useNavigate();
 
   const activeTab: TabType = location.pathname.endsWith('/wrong')
     ? 'wrong'
@@ -22,10 +23,11 @@ export const ReviewPage: React.FC = () => {
     ? 'fav'
     : 'review';
 
-  const [currentTab, setCurrentTab] = useState<TabType>(activeTab);
+  const [currentTab, updateTab] = useState<TabType>(activeTab);
+  const setCurrentTab=(tab:TabType)=>{updateTab(tab);navigate('/politics/'+({review:'review',wrong:'wrong',fav:'favorites'})[tab]);};
 
   useEffect(() => {
-    setCurrentTab(activeTab);
+    updateTab(activeTab);
   }, [activeTab]);
 
   return (
@@ -88,7 +90,8 @@ const DueReviewTab: React.FC = () => {
     getDueReviewsApi(20).then(res => {
       setItems(res.items);
       setTotalCount(res.total);
-      setCurrentIndex(0);
+      const remembered=(window as any).studyPosition?.get('politics:due')?.question;
+      const position=res.items.findIndex(q=>String(q.id)===remembered);setCurrentIndex(position<0?0:position);
       setGrading(false);
       setLoading(false);
     }).catch(e => { setError(e.message || '复习加载失败'); setLoading(false); });
@@ -97,6 +100,7 @@ const DueReviewTab: React.FC = () => {
   useEffect(() => {
     fetchDue();
   }, [fetchDue]);
+  useEffect(()=>{if(items[currentIndex])(window as any).studyPosition?.set('politics:due',{question:String(items[currentIndex].id)});},[items,currentIndex]);
 
   async function handleGrade(grade: 0 | 1 | 2) {
     const cur = items[currentIndex];
@@ -182,8 +186,9 @@ const DueReviewTab: React.FC = () => {
 
 // 2. 错题本 Tab
 const WrongBookTab: React.FC = () => {
-  const [subjectFilter, setSubjectFilter] = useState('');
-  const [page, setPage] = useState(0);
+  const [subjectFilter, setSubjectFilter] = useState(()=>(window as any).studyPosition?.get('politics:wrong')?.subject||'');
+  const [page, setPage] = useState(()=>(window as any).studyPosition?.get('politics:wrong')?.page||0);
+  useEffect(()=>{(window as any).studyPosition?.set('politics:wrong',{page,subject:subjectFilter});},[page,subjectFilter]);
   const [data, setData] = useState<{ total: number; items: Question[] }>({ total: 0, items: [] });
   const [favSet, setFavSet] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
@@ -277,7 +282,8 @@ const WrongBookTab: React.FC = () => {
 
 // 3. 收藏 Tab
 const FavoritesTab: React.FC = () => {
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(()=>(window as any).studyPosition?.get('politics:favorites')?.page||0);
+  useEffect(()=>{(window as any).studyPosition?.set('politics:favorites',{page});},[page]);
   const [items, setItems] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

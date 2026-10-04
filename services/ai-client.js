@@ -25,9 +25,9 @@ async function complete(messages, { onDelta, config = db.getAiConfig() } = {}) {
         if (!/^<(?:t(?:h(?:i(?:n(?:k)?)?)?)?)?$/.test(clean) && clean.startsWith(emitted) && clean.length > emitted.length) { onDelta(clean.slice(emitted.length)); emitted = clean; }
       }
     };
-    while (true) { const part = await reader.read(); if (part.done) break; pending += decoder.decode(part.value, { stream: true }); const lines = pending.split('\n'); pending = lines.pop(); for (const value of lines) line(value.trimEnd()); }
+    try { while (true) { const part = await reader.read(); if (part.done) break; pending += decoder.decode(part.value, { stream: true }); if(pending.length>1000000||answer.length>100000)throw new Error('模型输出过长，请缩小问题范围');const lines = pending.split('\n'); pending = lines.pop(); for (const value of lines) line(value.trimEnd()); } } finally { await reader.cancel().catch(()=>{}); }
     pending += decoder.decode(); if (pending.trim()) line(pending.trimEnd());
-  } else { const data = await response.json(); answer = data.choices?.[0]?.message?.content || ''; if (onDelta && stripThinking(answer)) onDelta(stripThinking(answer)); }
+  } else { const reader=response.body.getReader(),decoder=new TextDecoder();let text='';try{while(true){const part=await reader.read();if(part.done)break;text+=decoder.decode(part.value,{stream:true});if(text.length>1000000)throw new Error('模型输出过长，请缩小问题范围');}text+=decoder.decode();}finally{await reader.cancel().catch(()=>{});}const data=JSON.parse(text);answer = data.choices?.[0]?.message?.content || ''; if (onDelta && stripThinking(answer)) onDelta(stripThinking(answer)); }
   answer = stripThinking(answer).trim(); if (!answer) throw new Error('模型没有返回正式答复，请重试或关闭深度推理'); return answer;
 }
 module.exports = { complete, endpoint, stripThinking };

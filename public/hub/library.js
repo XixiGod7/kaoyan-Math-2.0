@@ -3,6 +3,7 @@
   const safe = window.platformEscape, content = document.getElementById('library-content'), status = document.getElementById('library-status'), pager = document.getElementById('library-pages');
   const fetchJSON = async url => { const r = await fetch(url); if (!r.ok) throw new Error('档案加载失败，请稍后重试'); return r.json(); };
   async function load() {
+    window.studyPosition?.set('library:page',{kind,page});
     const version = ++generation; status.textContent = '正在加载学习档案…'; content.replaceChildren(); pager.replaceChildren();
     const mathURLs = { notes: '/api/notes', favorites: '/api/favorites', review: '/api/review/today', wrong: '/api/wrong-book' };
     try {
@@ -18,5 +19,5 @@
     } catch (e) { if (version === generation) status.textContent = e.message; }
   }
   document.querySelectorAll('[data-kind]').forEach(b => b.onclick = () => { kind = b.dataset.kind; page = 0; document.querySelectorAll('[data-kind]').forEach(el => el.classList.toggle('active', el === b)); load(); });
-  load();
+  window.studyReady.then(()=>{const previous=window.studyPosition?.get('library:page');if(previous&&['notes','favorites','review','wrong'].includes(previous.kind)){kind=previous.kind;page=Number(previous.page)||0;document.querySelectorAll('[data-kind]').forEach(el=>el.classList.toggle('active',el.dataset.kind===kind));}load();});
 })();

@@ -46,11 +46,13 @@ export const PhrasesView: React.FC<PhrasesViewProps> = ({
   const [items, setItems] = useState<PhraseItem[]>([]);
   const [parts, setParts] = useState<{ k: string; n: number }[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [mode, setMode] = useState<'browse' | 'dictate'>('browse');
-  const [selectedPart, setSelectedPart] = useState<string>('');
-  const [realOnly, setRealOnly] = useState<boolean>(false);
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const remembered=React.useRef(window.studyPosition?.get('english:phrases')||{});
+  const [mode, setMode] = useState<'browse' | 'dictate'>(remembered.current.mode||'browse');
+  const [selectedPart, setSelectedPart] = useState<string>(remembered.current.part||'');
+  const [realOnly, setRealOnly] = useState<boolean>(remembered.current.realOnly||false);
+  const [searchQuery, setSearchQuery] = useState<string>(remembered.current.query||'');
+  const [currentPage, setCurrentPage] = useState<number>(remembered.current.page||1);
+  useEffect(()=>{window.studyPosition?.set('english:phrases',{mode,part:selectedPart,realOnly,query:searchQuery,page:currentPage});},[mode,selectedPart,realOnly,searchQuery,currentPage]);
   const [expandedSents, setExpandedSents] = useState<Record<string, boolean>>({});
 
   // Dictate mode state

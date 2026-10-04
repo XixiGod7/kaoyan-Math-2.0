@@ -53,7 +53,8 @@ export const EssayGradingView: React.FC<EssayGradingViewProps> = ({
   const [loading, setLoading] = useState(true);
 
   // Selected year and part
-  const [selectedYear, setSelectedYear] = useState<number>(2026);
+  const [selectedYear, setSelectedYear] = useState<number>(()=>window.studyPosition?.get('english:essay')?.year||2026);
+  useEffect(()=>{window.studyPosition?.set('english:essay',{year:selectedYear});},[selectedYear]);
   const [selectedPart, setSelectedPart] = useState<'A' | 'B'>('B');
   useStudyTarget(selectedYear,selectedPart==='A'?51:52);
 
@@ -85,7 +86,7 @@ export const EssayGradingView: React.FC<EssayGradingViewProps> = ({
       .then(res => res.json())
       .then((data: EssayItem[]) => {
         setEssays(data);
-        if (data.length > 0) {
+        if (data.length > 0 && !data.some(item=>item.year===selectedYear)) {
           // Set to newest year
           setSelectedYear(data[0].year);
         }

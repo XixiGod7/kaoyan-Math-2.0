@@ -42,7 +42,8 @@ export const TranslationPracticeView: React.FC<TranslationPracticeViewProps> = (
   const isDark = theme === 'dark';
   const fontConfig = FONT_SIZE_CONFIGS[fontSizeLevel];
   const [transIndex, setTransIndex] = useState<YearTransGroup[]>([]);
-  const [selectedYear, setSelectedYear] = useState<number>(2025);
+  const [selectedYear, setSelectedYear] = useState<number>(()=>window.studyPosition?.get('english:translation')?.year||2025);
+  useEffect(()=>{window.studyPosition?.set('english:translation',{year:selectedYear});},[selectedYear]);
   useStudyTarget(selectedYear,46);
   const [passageContent, setPassageContent] = useState<string>('');
   const [showFullPassage, setShowFullPassage] = useState<boolean>(false);

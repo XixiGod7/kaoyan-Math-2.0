@@ -88,3 +88,7 @@ npm run deploy
 `docs/workflows/` 中提供 Verify 与 Deploy to Cloudflare 工作流模板。当前 GitHub 登录令牌没有工作流写入权限，因此模板尚未启用。后续可将其放入 `.github/workflows/`，并为手动部署工作流配置仓库 Secrets `CLOUDFLARE_API_TOKEN` 与 `CLOUDFLARE_ACCOUNT_ID`。当前仓库 main 已关联 Cloudflare Workers Builds，每次推送自动运行检查、构建和部署。
 
 用户个人记录、现有 AI 密钥和本地运行目录均被 `.gitignore` 排除。云端默认使用内置导师提示，可在网站的 AI 设置中按浏览器配置个人模型密钥。
+
+## 账号与本地、云端保存
+
+顶部支持用户名、密码和一次性恢复码。登录自动合并访客记录，换设备登录即可继续学习；本机保留学习副本和待同步队列。各科入口自动恢复上次浏览位置，“科目首页”可回到首页。英语笔记和 AI 面板均覆盖正文，不改变页面宽度。账号、安全、迁移与同步边界见 [账号与同步说明](docs/ACCOUNTS-SYNC.md)。

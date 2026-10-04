@@ -18,7 +18,7 @@ test('前端页面、模块和样式引用的本地资源均存在', () => {
       if (/^(?:https?:|data:|#)/.test(ref) || (!ref.startsWith('.') && !ref.startsWith('/') && !ref.startsWith('assets/'))) continue;
       // Extensionless links are app routes, not static file dependencies.
       if (/^\/(?:math|politics|english|growth|library)(?:\/[^.]*)?$/.test(ref.split('?')[0])) continue;
-      const resolved = ref.startsWith('/') || ref.startsWith('assets/') ? path.join(publicRoot, ref) : path.resolve(path.dirname(file), ref.split('?')[0]);
+      const resolved = ref.startsWith('/') ? path.join(publicRoot,ref) : ref.startsWith('assets/') && path.basename(path.dirname(file))==='assets' ? path.join(path.dirname(path.dirname(file)),ref) : ref.startsWith('assets/') ? path.join(publicRoot, ref) : path.resolve(path.dirname(file), ref.split('?')[0]);
       if (!fs.existsSync(resolved)) missing.push(path.relative(publicRoot, file) + ' -> ' + ref);
     }
   }

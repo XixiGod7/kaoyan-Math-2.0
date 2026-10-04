@@ -1,5 +1,4 @@
 const express = require('express');
-const cors = require('cors');
 const path = require('path');
 
 const db = require('./db');
@@ -12,10 +11,14 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.disable('x-powered-by');
-if (require.main === module) app.use(cors());
+app.use(require('./services/auth-local').middleware);
+app.use('/api/auth', express.json({limit:'4kb'}));
 app.use('/api/english/storage', express.json({limit:'4mb'}));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
+require('./services/auth-local').mount(app);
+app.use(require('./services/study-sync').writes);
+require('./services/study-sync').mount(app);
 require('./services/integration').mount(app);
 
 // Load static datasets into memory for fast querying
@@ -45,11 +48,13 @@ app.get('/api/me', (req, res) => {
 });
 
 app.post('/api/me/beta', (req, res) => {
+  if(typeof req.body.betaDsl!=='boolean')return res.status(400).json({error:'偏好设置无效'});
   const profile = db.updateProfile({ betaDsl: req.body.betaDsl });
   res.json({ ok: true, betaDsl: profile.betaDsl });
 });
 
 app.post('/api/me/nickname', (req, res) => {
+  if(typeof req.body.nickname!=='string'||!req.body.nickname.trim()||req.body.nickname.length>30)return res.status(400).json({error:'昵称需为 1–30 个字符'});
   const profile = db.updateProfile({ nickname: req.body.nickname });
   res.json({ ok: true, nickname: profile.nickname });
 });
@@ -59,16 +64,7 @@ app.post('/api/me/wrong-streak', (req, res) => {
   res.json({ ok: true });
 });
 
-app.post('/api/login/start', (req, res) => {
-  res.json({ code: "888888", sessionId: "local_session_id" });
-});
-
-app.get('/api/login/check', (req, res) => {
-  res.json({
-    token: "local_authorized_token",
-    user: db.getProfile()
-  });
-});
+app.all(['/api/login/start','/api/login/check'], (req,res) => res.status(410).json({error:'请使用顶部账号入口登录'}));
 
 // -------------------------------------------------------------
 // State & User Progress Endpoints
@@ -720,6 +716,7 @@ app.post('/api/ai/config', (req, res) => {
   }
   if (baseUrl !== undefined && !validAiUrl(baseUrl)) return res.status(400).json({ ok: false, error: '请填写公网 HTTPS API 地址' });
   const current = db.getAiConfig();
+  if(current.apiKey&&baseUrl&&new URL(baseUrl).hostname!==new URL(current.baseUrl).hostname&&!apiKey?.trim())return res.status(400).json({ok:false,error:'切换接口域名时，请同时填写该接口的密钥，避免旧密钥被发送到新地址'});
   if (apiKey !== undefined) current.apiKey = apiKey.trim();
   if (baseUrl !== undefined) current.baseUrl = baseUrl.trim();
   if (model !== undefined) current.model = model.trim();
@@ -732,11 +729,13 @@ app.post('/api/ai/config', (req, res) => {
 // 测试大模型 API 连通性
 app.post('/api/ai/test', async (req, res) => {
   const { apiKey, baseUrl, model } = req.body;
+  if([apiKey,baseUrl,model].some(value=>value!==undefined&&typeof value!=='string'))return res.status(400).json({error:'配置字段必须为文字'});
   const cfg = db.getAiConfig();
   const key = (apiKey !== undefined && apiKey !== '') ? apiKey.trim() : cfg.apiKey;
   const url = (baseUrl !== undefined && baseUrl !== '') ? baseUrl.trim() : cfg.baseUrl;
   const mod = (model !== undefined && model !== '') ? model.trim() : cfg.model;
   if (!validAiUrl(url)) return res.status(400).json({ ok: false, error: '请填写公网 HTTPS API 地址' });
+  if(key&&new URL(url).hostname!==new URL(cfg.baseUrl).hostname&&!apiKey?.trim())return res.status(400).json({ok:false,error:'测试新接口时，请填写该接口的密钥'});
 
   if (!key || !key.trim()) {
     return res.json({ ok: false, error: '请先填写 API Key（密钥）' });
@@ -1031,7 +1030,9 @@ app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-if (require.main === module) app.listen(PORT, () => {
+app.use((error,req,res,next)=>{if(res.headersSent)return next(error);const status=error.type==='entity.too.large'?413:error.status===400?400:500;res.status(status).json({error:status===413?'内容超过保存大小限制':status===400?'请求内容无法读取，请重新提交':'服务暂时无法完成保存，请稍后重试'});});
+
+if (require.main === module) app.listen(PORT, process.env.HOST || '127.0.0.1', () => {
   console.log(`=======================================================`);
   console.log(` 数砖 · 考研数学真题分析平台已成功启动！`);
   console.log(` 本地访问地址: http://localhost:${PORT}`);

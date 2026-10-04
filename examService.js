@@ -32,10 +32,12 @@ function filterQuestions(params = {}) {
 }
 
 function createPaper(payload) {
-  const questions = (payload.questionIds?.length ? payload.questionIds.map(id => byId.get(String(id))) : payload.questions || []).filter(Boolean);
+  const ids=payload.questionIds?.length?payload.questionIds:(payload.questions||[]).map(q=>q.id);
+  if(!Array.isArray(ids)||ids.length>100||new Set(ids.map(String)).size!==ids.length||ids.some(id=>!byId.has(String(id))))throw new Error('试卷需包含 1–100 道不重复的有效题目');
+  const questions = ids.map(id => byId.get(String(id)));
   if (!questions.length) throw new Error('请至少选择一道题');
   const paper = {
-    id: 'ep_' + randomUUID(), name: String(payload.name || '自选模拟卷'),
+    id: 'ep_' + randomUUID(), name: String(payload.name || '自选模拟卷').slice(0,100),
     questions, questionIds: questions.map(q => q.id), questionCount: questions.length,
     fullPoints: Number(payload.fullPoints) || questions.reduce((sum, q) => sum + (q.type === '选择题' || q.type === '填空题' ? 5 : 10), 0),
     timed: payload.timed ?? Boolean(payload.timeLimitSec),

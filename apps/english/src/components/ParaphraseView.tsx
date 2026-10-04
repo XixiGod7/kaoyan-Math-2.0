@@ -31,13 +31,14 @@ export const ParaphraseView: React.FC<ParaphraseViewProps> = ({
 }) => {
   const [items, setItems] = useState<ParaphraseItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [currentIndex, setCurrentIndex] = useState<number>(()=>window.studyPosition?.get('english:paraphrase')?.index||0);
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [progress, setProgress] = useState<Record<string, { myChoice: string; correct: boolean }>>(() => {
     return loadParaphraseProgress();
   });
-  const [filterMode, setFilterMode] = useState<'all' | 'wrong' | 'unattempted'>('all');
+  const [filterMode, setFilterMode] = useState<'all' | 'wrong' | 'unattempted'>(()=>window.studyPosition?.get('english:paraphrase')?.filter||'all');
+  useEffect(()=>{if(items.length)window.studyPosition?.set('english:paraphrase',{index:currentIndex,filter:filterMode});},[currentIndex,filterMode,items.length]);
 
   useEffect(() => {
     async function loadData() {

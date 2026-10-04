@@ -7,7 +7,9 @@ const storageContext = new AsyncLocalStorage();
 const DATA_DIR = process.env.DATA_DIR || path.join(typeof __dirname === 'string' ? __dirname : '/tmp', 'data');
 
 function getFilePath(name) {
-  return path.join(DATA_DIR, `${name}.json`);
+  if (!/^[a-zA-Z0-9_-]+$/.test(name)) throw new Error('无效记录名称');
+  const scope = storageContext.getStore()?.scope;
+  return path.join(DATA_DIR, ...(scope ? ['users', scope.replace(':', '_')] : []), `${name}.json`);
 }
 
 function readJSON(name, defaultValue) {
@@ -16,6 +18,7 @@ function readJSON(name, defaultValue) {
     const rows = sql.exec('SELECT value FROM documents WHERE name = ?', name).toArray();
     if (!rows.length) return structuredClone(defaultValue);
     const value = JSON.parse(rows[0].value);
+    if(value===null&&defaultValue!==null)return structuredClone(defaultValue);
     if (!value?.__mb_chunks) return value;
     let content = '';
     for (let i = 0; i < value.count; i++) {
@@ -27,14 +30,13 @@ function readJSON(name, defaultValue) {
   }
   const file = getFilePath(name);
   if (!fs.existsSync(file)) {
-    saveJSON(name, defaultValue);
-    return defaultValue;
+    return structuredClone(defaultValue);
   }
   try {
-    return JSON.parse(fs.readFileSync(file, 'utf-8'));
+    const value=JSON.parse(fs.readFileSync(file, 'utf-8'));return value===null&&defaultValue!==null?structuredClone(defaultValue):value;
   } catch (err) {
     console.error(`Error reading ${name}.json:`, err);
-    return defaultValue;
+    throw new Error(`学习记录 ${name} 读取失败，请从备份恢复`);
   }
 }
 
@@ -54,9 +56,11 @@ function saveJSON(name, data) {
     if (oldValue?.__mb_chunks) for (let i = 0; i < oldValue.count; i++) sql.exec('DELETE FROM documents WHERE name = ?', `${name}::${oldValue.__mb_chunks}:${i}`);
     return;
   }
-  fs.mkdirSync(DATA_DIR, { recursive: true });
   const file = getFilePath(name);
-  fs.writeFileSync(file, JSON.stringify(data, null, 2), 'utf-8');
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  const temporary = `${file}.${randomUUID()}.tmp`;
+  fs.writeFileSync(temporary, JSON.stringify(data), 'utf-8');
+  fs.renameSync(temporary, file);
 }
 
 // Initial datasets
@@ -79,7 +83,11 @@ const initialProfile = {
 };
 
 module.exports = {
-  runWithStorage: (sql, callback, assets) => storageContext.run({ sql, assets }, callback),
+  runWithStorage: (sql, callback, assets, identity) => storageContext.run({ sql, assets, identity }, callback),
+  runAsUser: (identity, callback) => storageContext.run({ identity, scope: identity.scope }, callback),
+  identity: () => storageContext.getStore()?.identity,
+  hasSql: () => Boolean(storageContext.getStore()?.sql),
+  dataDir: DATA_DIR,
   getAssets: () => storageContext.getStore()?.assets,
   readJSON,
   saveJSON,
@@ -124,7 +132,7 @@ module.exports = {
   savePaperAttempts: (obj) => saveJSON('user_paper_attempts', obj),
 
   getAiConfig: () => readJSON('ai_config', {
-    apiKey: process.env.AI_API_KEY || "",
+    apiKey: storageContext.getStore()?.sql ? '' : (process.env.AI_API_KEY || ""),
     baseUrl: process.env.AI_BASE_URL || "https://api.deepseek.com/v1",
     model: process.env.AI_MODEL || "deepseek-chat",
     temperature: 0.6

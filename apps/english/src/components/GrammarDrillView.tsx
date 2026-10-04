@@ -39,16 +39,19 @@ export const GrammarDrillView: React.FC<GrammarDrillViewProps> = ({
 }) => {
   const [data, setData] = useState<GrammarResult | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [selectedCat, setSelectedCat] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [debouncedQuery, setDebouncedQuery] = useState<string>('');
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const previous=React.useRef(window.studyPosition?.get('english:grammar')||{});
+  const [selectedCat, setSelectedCat] = useState<string>(previous.current.category||'all');
+  const [searchQuery, setSearchQuery] = useState<string>(previous.current.query||'');
+  const [debouncedQuery, setDebouncedQuery] = useState<string>((previous.current.query||'').trim().toLowerCase());
+  const [currentPage, setCurrentPage] = useState<number>(previous.current.page||1);
+  useEffect(()=>{window.studyPosition?.set('english:grammar',{category:selectedCat,query:searchQuery,page:currentPage});},[selectedCat,searchQuery,currentPage]);
   const [expandedSids, setExpandedSids] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedQuery(searchQuery.trim().toLowerCase());
-      setCurrentPage(1);
+      if(searchQuery!==(previous.current.query||''))setCurrentPage(1);
+      previous.current.query=searchQuery;
     }, 250);
     return () => clearTimeout(timer);
   }, [searchQuery]);

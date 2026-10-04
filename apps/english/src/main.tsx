@@ -6,10 +6,10 @@ import {hydrateEnglish} from './utils/platformStorage'
 import {hydrateAiConfig} from './utils/aiConfigStorage'
 
 async function start() {
-try { await Promise.all([hydrateEnglish(),hydrateAiConfig()]);
+try { await window.studyReady; await Promise.all([hydrateEnglish(),hydrateAiConfig().catch(()=>{})]);
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+    <React.Suspense fallback={<p className="platform-empty">正在载入学习页面…</p>}><App /></React.Suspense>
   </React.StrictMode>,
 )
 

@@ -14,9 +14,18 @@ function mount(app) {
   app.post('/api/english/storage',wrap((req,res)=>{
     const patch=req.body.patch;if(!patch || Array.isArray(patch) || typeof patch!=='object') throw new Error('学习记录无效');
     const data=db.readJSON('english_storage',{});
+    const mergedPatch={};
+    for(const [key,value] of Object.entries(patch))if(/^kaoyan_quiz_progress_\d{4}$/.test(key)&&typeof value==='string'&&data[key]){
+      const old=JSON.parse(data[key]),incoming=JSON.parse(value);
+      if(old&&incoming&&typeof incoming==='object'){
+        const merged={...(Number(old.lastUpdated)>Number(incoming.lastUpdated)?old:incoming),answers:{...old.answers,...incoming.answers},elapsedSeconds:Math.max(Number(old.elapsedSeconds)||0,Number(incoming.elapsedSeconds)||0)};
+        // Clearing progress is an explicit null patch handled below.
+        patch[key]=JSON.stringify(merged);if(patch[key]!==value)mergedPatch[key]=patch[key];
+      }
+    }
     for(const [key,value] of Object.entries(patch)) {if(!validKey(key) || (value!==null && (typeof value!=='string' || value.length>1500000))) throw new Error('学习记录字段无效');if(value===null)delete data[key];else{if(!key.startsWith('kaoyan_essay_'))JSON.parse(value);data[key]=value;}}
     if(JSON.stringify(data).length>3500000)throw new Error('英语学习记录超过保存上限，请导出并清理旧记录');
-    db.saveJSON('english_storage',data);res.json({ok:true});
+    db.saveJSON('english_storage',data);res.json({ok:true,mergedPatch});
   }));
   app.get('/api/english/note',(req,res)=>res.json({text:state().notes[req.query.sourceId]?.text || ''}));
   app.get('/api/english/stats',(req,res)=>res.json(stats()));

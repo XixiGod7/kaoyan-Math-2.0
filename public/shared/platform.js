@@ -17,8 +17,10 @@
   }
   window.platformToast = toast;
   window.addEventListener('study:save-error',e=>toast(e.detail));window.addEventListener('study:reward',e=>{toast(`学习已记录 · +${e.detail} 积分`);refresh();});
-  window.addEventListener('study:update',()=>refresh());
+  let refreshPending;
   async function refresh() {
+    if(refreshPending)return refreshPending;
+    refreshPending=(async()=>{
     try {
       const res = await fetch('/api/study/overview'); if (!res.ok) return;
       const data = await res.json(); window.platformOverview = data;
@@ -27,6 +29,7 @@
       localStorage.setItem('mb_nickname', data.nickname || '研友');
       window.dispatchEvent(new CustomEvent('study:overview', { detail: data }));
     } catch {}
+    })();try{return await refreshPending;}finally{refreshPending=null;}
   }
   window.refreshStudyOverview = refresh;
   function mount() {
@@ -42,7 +45,7 @@
     document.getElementById('platform-font-down').onclick=()=>resize(-.1);document.getElementById('platform-font-up').onclick=()=>resize(.1);document.getElementById('platform-font-reset').onclick=()=>resize(0);document.getElementById('platform-export').onclick=exportDialog;
     new ResizeObserver(()=>document.documentElement.style.setProperty('--platform-header-height',header.offsetHeight+'px')).observe(header);
     theme(); refresh();
-    setInterval(() => { if (!document.hidden) refresh(); }, 30000);
+    setInterval(() => { if (!document.hidden) refresh(); }, 60000);
   }
 
   async function exportDialog(){

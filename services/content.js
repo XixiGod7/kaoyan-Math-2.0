@@ -3,9 +3,12 @@ const path = require('node:path');
 const db = require('../db');
 // Cache public content only. Private records always go through the visitor store.
 const cache = new Map();
+const inFlight = new Map();
 async function readContent(relative) {
   if (!/^[a-zA-Z0-9_./-]+$/.test(relative) || relative.includes('..')) throw new Error('无效内容路径');
   if (cache.has(relative)) return cache.get(relative);
+  if(inFlight.has(relative))return inFlight.get(relative);
+  const task=(async()=>{
   const assets = db.getAssets();
   let data;
   if (assets) {
@@ -16,5 +19,6 @@ async function readContent(relative) {
   if (cache.size >= 30) cache.delete(cache.keys().next().value);
   cache.set(relative, data);
   return data;
+  })();inFlight.set(relative,task);try{return await task;}finally{inFlight.delete(relative);}
 }
 module.exports = { readContent };

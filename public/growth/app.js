@@ -131,8 +131,8 @@
     } catch (e) { chat.push({ text: e.message + '，请稍后重试。' }); }
     finally { asking = false; render(); }
   });
-  document.querySelectorAll('[data-tab]').forEach(button => button.addEventListener('click', () => { activeTab = button.dataset.tab; document.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('active', b === button)); render(); }));
+  document.querySelectorAll('[data-tab]').forEach(button => button.addEventListener('click', () => { activeTab = button.dataset.tab;window.studyPosition?.set('growth:tab',{tab:activeTab});document.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('active', b === button)); render(); }));
   window.addEventListener('focus', () => { if (!dialog.open && !pending && !asking) load(); });
   setInterval(() => { if (!document.hidden && !dialog.open && !pending && !asking && !content.contains(document.activeElement)) load(); }, 30000);
-  load();
+  window.studyReady.then(()=>{const previous=window.studyPosition?.get('growth:tab')?.tab;if([...document.querySelectorAll('[data-tab]')].some(b=>b.dataset.tab===previous))activeTab=previous;document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===activeTab));load();});
 })();

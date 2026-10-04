@@ -10,16 +10,16 @@ import { StudyProgressModal } from './components/StudyProgressModal';
 import { DesktopAppModal } from './components/DesktopAppModal';
 import { AiConfigModal } from './components/AiConfigModal';
 import { ExamWall } from './components/ExamWall';
-import QuizMode from './components/QuizMode';
-import { IntensiveReadingView } from './components/IntensiveReadingView';
-import { ParaphraseView } from './components/ParaphraseView';
-import { GrammarDrillView } from './components/GrammarDrillView';
-import { PhrasesView } from './components/PhrasesView';
+const QuizMode=React.lazy(()=>import('./components/QuizMode'));
+const IntensiveReadingView=React.lazy(()=>import('./components/IntensiveReadingView').then(module=>({default:module.IntensiveReadingView})));
+const ParaphraseView=React.lazy(()=>import('./components/ParaphraseView').then(module=>({default:module.ParaphraseView})));
+const GrammarDrillView=React.lazy(()=>import('./components/GrammarDrillView').then(module=>({default:module.GrammarDrillView})));
+const PhrasesView=React.lazy(()=>import('./components/PhrasesView').then(module=>({default:module.PhrasesView})));
 import { VocabStatsView } from './components/VocabStatsView';
 import { PersonalCenterView } from './components/PersonalCenterView';
-import { TranslationPracticeView } from './components/TranslationPracticeView';
+const TranslationPracticeView=React.lazy(()=>import('./components/TranslationPracticeView').then(module=>({default:module.TranslationPracticeView})));
 import { SentenceReviewView } from './components/SentenceReviewView';
-import { EssayGradingView } from './components/EssayGradingView';
+const EssayGradingView=React.lazy(()=>import('./components/EssayGradingView').then(module=>({default:module.EssayGradingView})));
 import { HomeView } from './components/HomeView';
 import { WordLookupPopover } from './components/WordLookupPopover';
 import { PaperGroup, KaoyanDict, WordFreqItem } from './types/kaoyan';
@@ -89,6 +89,13 @@ export const App: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<AppTab>((new URLSearchParams(location.search).get('tab') || 'home') as AppTab);
   const [currentPassKey, setCurrentPassKey] = useState<string>(new URLSearchParams(location.search).get('pass') || '2026-t1');
   const [selectedYear, setSelectedYear] = useState<string | null>(new URLSearchParams(location.search).get('year'));
+  useEffect(()=>{
+    const params=new URLSearchParams(location.search);if(params.get('tab')!==currentTab){params.delete('note');params.delete('review');params.delete('import');}params.set('tab',currentTab);params.delete('home');params.delete('year');params.delete('pass');
+    if(currentTab==='reading')params.set('pass',currentPassKey);
+    if(currentTab==='quiz' && selectedYear)params.set('year',selectedYear);
+    window.studyPosition?.set('english:tab:'+currentTab,{year:selectedYear,pass:currentPassKey});
+    window.studyPosition?.url('/english?'+params.toString());
+  },[currentTab,currentPassKey,selectedYear]);
   const [selectedWord, setSelectedWord] = useState<WordFreqItem | null>(null);
   const [lookupTarget, setLookupTarget] = useState<{ word: string; rect: DOMRect } | null>(null);
 
@@ -378,7 +385,9 @@ export const App: React.FC = () => {
           currentTab={currentTab}
           onSelectTab={(tab) => {
             setCurrentTab(tab);
-            setSelectedYear(null);
+            const previous=window.studyPosition?.get('english:tab:'+tab);
+            setSelectedYear(tab==='quiz'?(previous?.year||null):null);
+            if(tab==='reading'&&previous?.pass)setCurrentPassKey(previous.pass);
             setTargetSentenceId(null);
             setTargetTab(null);
             setTargetSectionId(null);
