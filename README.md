@@ -1,10 +1,12 @@
-# 研砖 · 数学、政治与成长打卡
+# 研砖 · 数学、政治、英语与成长打卡
 
-一个统一的考研学习平台：数学研习、政治练习和个人成长账本共用导航、主题、昵称与 AI 设置。数学保留 2185 道题和 199 个方法；政治导入 54 册、1490 章、28796 道生成与整理题目。
+一个统一的考研学习平台：数学研习、政治练习、英语研习和个人成长账本共用导航、主题、昵称与 AI 设置。数学保留 2185 道题和 199 个方法；政治导入 54 册、1490 章、28796 道生成与整理题目。
 
-在线入口：[学习总览](https://kaoyan-math-2-0.cxmxibing.workers.dev/)、[数学](https://kaoyan-math-2-0.cxmxibing.workers.dev/math)、[政治](https://kaoyan-math-2-0.cxmxibing.workers.dev/politics)、[成长打卡](https://kaoyan-math-2-0.cxmxibing.workers.dev/growth)。Cloudflare Workers Builds 已关联本仓库，推送到 `main` 后执行测试、构建与部署。
+在线入口：[学习总览](https://kaoyan-math-2-0.cxmxibing.workers.dev/)、[数学](https://kaoyan-math-2-0.cxmxibing.workers.dev/math)、[政治](https://kaoyan-math-2-0.cxmxibing.workers.dev/politics)、[英语](https://kaoyan-math-2-0.cxmxibing.workers.dev/english)、[成长打卡](https://kaoyan-math-2-0.cxmxibing.workers.dev/growth)。Cloudflare Workers Builds 已关联本仓库，推送到 `main` 后执行测试、构建与部署。
 
-学习完成会自动记入同一积分账本：不同题目 +2、到期复习 +3、至少 10 字的笔记 +2、完整模考 +20。同一天同一行为按题目或试卷去重，模考不同时发放逐题积分。每日数学、政治、复习和笔记目标可在成长打卡中调整；行动契约和考研里程碑可随学习自动推进。详见 [整合说明](docs/INTEGRATION.md)。
+学习完成会自动记入同一积分账本：不同题目 +2、到期复习 +3、至少 10 字的笔记 +2、完整模考 +20。同一天同一行为按题目或试卷去重，模考不同时发放逐题积分。每日数学、政治、英语、复习和笔记目标可在成长打卡中调整；行动契约和考研里程碑可随学习自动推进。详见 [整合说明](docs/INTEGRATION.md)。
+
+英语保留 17 套试卷、精读、词汇复习、翻译和作文批阅；三科与成长复盘支持图片上传，共用 AI 设置与积分联动。详见 [图片与英语说明](docs/AI-IMAGES-ENGLISH.md)。
 
 ---
 

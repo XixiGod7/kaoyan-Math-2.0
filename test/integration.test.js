@@ -141,7 +141,7 @@ test('数学错题自动加入复习，重复作答不刷当日题数或重置�
 test('每日目标可调整，重复开始和重新打卡保留当日积累', async () => {
   const before = await overview();
   await action('goals', { math: 12, politics: 15, reviews: 4, notes: 2 });
-  assert.deepEqual((await overview()).goals.map(g => g.target), [12, 15, 4, 2]);
+  assert.deepEqual((await overview()).goals.map(g => g.target), [12, 15, 20, 4, 2]);
   assert.equal((await action('goals', { math: 0 })).status, 400);
   await action('session/start'); const first = (await req('/api/incentive/state')).body.state.daily_session;
   await action('session/start'); assert.equal((await req('/api/incentive/state')).body.state.daily_session.session_round, first.session_round);

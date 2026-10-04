@@ -26,3 +26,10 @@ body.math-body .topbar .eb-subject,body.math-body .topbar .um{display:none!impor
 .day-stamp{white-space:pre-line}
 @media(max-width:900px){.platform-header{gap:15px;padding:12px 16px;flex-wrap:wrap}.platform-header nav{order:3;width:100%}.platform-header nav a{padding:7px 12px}.platform-tools{margin-left:auto}.platform-tools .platform-score{display:none}.hub-two-columns{grid-template-columns:1fr}.subject-context{padding:12px 16px}.platform-main{padding:26px 16px}.platform-main h1{font-size:28px}}
 @media(max-width:600px){.hub-metrics{grid-template-columns:1fr 1fr}.hub-courses,.library-grid{grid-template-columns:1fr}.platform-hero{align-items:flex-start}.day-stamp{display:none}.platform-header nav{overflow:auto;flex-wrap:nowrap}.platform-header nav a{padding:7px 10px;font-size:13px}.platform-tools button{padding:6px 8px}.subject-context{flex-direction:column;align-items:flex-start;gap:12px}.subject-context nav{gap:14px}.hub-course{padding:21px}}
+/* Shared private image attachments for all learning assistants. */
+.study-images{margin:12px 0;display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:13px}
+.study-images-list{display:flex;gap:8px;flex-wrap:wrap}.study-image{position:relative;width:88px;height:72px;border:1px solid var(--border,#e5e7eb);border-radius:10px;overflow:hidden}
+.study-image img{width:100%;height:100%;object-fit:contain;background:#fff}.study-image button{position:absolute;right:0;top:0;min-width:24px;height:24px;border:0;border-radius:0 0 0 8px;background:#26283ccc;color:#fff;cursor:pointer;padding:0;font-size:18px;line-height:22px}
+.study-images-upload{display:inline-flex;align-items:center;cursor:pointer;padding:9px 12px;border:1px solid #cfc5eb;border-radius:10px;color:#7c3aed;white-space:nowrap}.study-images input[hidden]{display:none!important}.study-images-status{color:var(--dim,#777);max-width:100%;line-height:1.5}
+
+@media(min-width:980px){.hub-courses{grid-template-columns:repeat(3,minmax(0,1fr))}}

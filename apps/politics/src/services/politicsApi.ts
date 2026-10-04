@@ -42,4 +42,4 @@ export const getPaperHistoryApi = (code: string) => api<PaperHistoryItem[]>('/pa
 export const getPaperDraftApi = (code: string) => api<{ choices: Record<string, string>; elapsed: number } | null>('/papers/' + encodeURIComponent(code) + '/draft');
 export const savePaperDraftApi = (code: string, choices: Record<string, string>, elapsed: number) => api<{ ok: boolean }>('/papers/' + encodeURIComponent(code) + '/draft', { choices, elapsed });
 export const getStatsApi = () => api<Stats>('/stats');
-export const askAiApi = (qid: string | number, question: string) => api<{ ok: boolean; answer: string; message?: string }>('/ask', { qid, question });
+export const askAiApi = (qid: string | number, question: string, imageIds: string[] = []) => api<{ ok: boolean; answer: string; message?: string }>('/ask', { qid, question, imageIds });

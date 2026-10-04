@@ -4,7 +4,7 @@
   let modalEl = null;
 
   const presets = [
-    { label: '商汤日日新 (SenseNova)', url: 'https://token.sensenova.cn/v1', model: 'deepseek-v4-flash' },
+    { label: '商汤日日新 (SenseNova)', url: 'https://token.sensenova.cn/v1', model: 'sensenova-6.8-flash-lite' },
     { label: 'DeepSeek Chat (推荐)', url: 'https://api.deepseek.com/v1', model: 'deepseek-chat' },
     { label: 'DeepSeek 深度思考 (R1)', url: 'https://api.deepseek.com/v1', model: 'deepseek-reasoner' },
     { label: '阿里通义千问 (Qwen)', url: 'https://dashscope.aliyuncs.com/compatible-mode/v1', model: 'qwen-plus' },
@@ -58,13 +58,13 @@
             <input id="ai-input-model" class="ai-form-input" placeholder="例如：deepseek-chat" autocomplete="off" />
           </div>
 
-          <div class="ai-form-group" style="margin-top: 10px; background: rgba(59, 130, 246, 0.05); padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.15);">
+          <div class="ai-form-group"><label class="ai-form-label" for="ai-input-vision">图片模型（可选）</label><input id="ai-input-vision" class="ai-form-input" placeholder="商汤自动使用 sensenova-6.8-flash-lite；其他接口留空沿用上方模型" /><small>纯文字模型无法读取图片；可单独设置支持图像的模型。</small></div><div class="ai-form-group" style="margin-top: 10px; background: rgba(59, 130, 246, 0.05); padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.15);">
             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text, #1f2937); margin: 0;">
               <input type="checkbox" id="ai-input-thinking" checked style="width: 16px; height: 16px; cursor: pointer;" />
-              <span>输出 AI 深度思考过程（前端折叠显示，点击可展开）</span>
+              <span>启用模型深度推理</span>
             </label>
             <div style="font-size:11.5px;color:var(--dim, #6b7280);margin-top:5px;padding-left:24px;line-height:1.4;">
-              💡 提示：开启时，网页端将以精简折叠卡片展示思考过程，不干扰正文；关闭时，将直接输出极速纯净正式回答，速度提升 3 倍。
+              开启后可能需要更长时间。页面显示正式答复，不展示内部思考内容。
             </div>
           </div>
 
@@ -161,12 +161,12 @@
         const res = await fetch('/api/ai/config', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ baseUrl: url, ...(key ? { apiKey: key } : {}), model: model, enableThinking: enableThinking })
+          body: JSON.stringify({ baseUrl: url, ...(key ? { apiKey: key } : {}), model: model, visionModel:modalEl.querySelector('#ai-input-vision').value.trim(), enableThinking: enableThinking })
         });
         const data = await res.json();
         if (data.ok) {
           showResult('✅ 配置已成功保存！当前「讲讲思路」与「追问」将立即使用新配置。', 'ok');
-          loadConfig();
+          loadConfig();window.dispatchEvent(new Event('study:ai-config'));
         } else {
           showResult('❌ ' + (data.error || '保存失败，稍后再试'), 'err');
         }
@@ -215,6 +215,7 @@
       const data = await res.json();
 
       modalEl.querySelector('#ai-input-url').value = data.baseUrl || 'https://api.deepseek.com/v1';
+      modalEl.querySelector('#ai-input-vision').value=data.visionModel || '';
       modalEl.querySelector('#ai-input-model').value = data.model || 'deepseek-chat';
       modalEl.querySelector('#ai-input-thinking').checked = data.enableThinking !== false;
 

@@ -24,6 +24,7 @@ export default {
     if (!url.pathname.startsWith('/api/')) {
       if (url.pathname === '/') url.pathname = '/hub/index.html';
       else if (url.pathname === '/library') url.pathname = '/hub/library.html';
+      else if (url.pathname === '/english' || url.pathname.startsWith('/english/')) url.pathname = '/english-app/index.html';
       else if (url.pathname === '/politics' || url.pathname.startsWith('/politics/')) url.pathname = '/politics-app/index.html';
       else if (url.pathname === '/growth' || url.pathname.startsWith('/growth/')) {
         if (!/\.[a-z0-9]+$/i.test(url.pathname)) url.pathname = '/growth/index.html';

@@ -13,6 +13,7 @@ const PORT = process.env.PORT || 3000;
 
 app.disable('x-powered-by');
 if (require.main === module) app.use(cors());
+app.use('/api/english/storage', express.json({limit:'4mb'}));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 require('./services/integration').mount(app);
@@ -214,10 +215,16 @@ app.get('/api/questions/:id/solution', (req, res) => {
 // -------------------------------------------------------------
 // Grading & Math Evaluation
 // -------------------------------------------------------------
-app.post('/api/math/grade', (req, res) => {
+app.post('/api/math/grade', async (req, res) => {
   const { id, answer } = req.body;
   const q = allQuestionsMap.get(String(id));
   if (!q) return res.status(404).json({ error: '题目不存在' });
+  if (req.body.byImage) {
+    const imageId = db.readJSON('math_images', {})[id];
+    if (!imageId) return res.status(400).json({error:'请先上传答案图片'});
+    const result = await require('./services/assistant').reply('你是考研数学老师。先识别手写解答，再说明计算和推理问题。AI 反馈只供自评，不能冒充已核验的标准答案或正式成绩。', '题干：' + q.stem + '\n请检查图片中的解答。', '请配置支持图片的 AI 模型。', [imageId]);
+    return res.json({needsSelfReview:true,feedback:result.answer,error:result.answer,mode:result.mode});
+  }
   const sol = getSolutionForQuestion(q);
   if (!sol.verified) return res.json({ error: '本题尚无核验答案，暂不自动判分，请使用自评。', needsSelfReview: true });
   if (typeof answer !== 'string' || !answer.trim() || answer.length > 2000) return res.status(400).json({ error: '请输入有效答案' });
@@ -612,7 +619,7 @@ app.post('/api/why', async (req, res) => {
       return res.json({ ok: false, error: "未找到该题目" });
     }
     const sol = getSolutionForQuestion(q);
-    const result = await aiService.getWhyHint(q, sol);
+    const result = await aiService.getWhyHint(q, sol, req.body.imageIds || []);
     res.json(result);
   } catch (err) {
     console.error('Error in /api/why:', err);
@@ -634,6 +641,7 @@ app.post('/api/qa/ask/stream', (req, res) => {
     sessionId,
     questionId,
     anchorQuestion: anchorQ,
+    imageIds,
     onDelta: (text) => {
       res.write(`event: delta\ndata: ${JSON.stringify({ t: text })}\n\n`);
     },
@@ -682,17 +690,8 @@ app.delete('/api/qa/sessions/:id', (req, res) => {
 });
 
 // 图片与讲解图相关支持接口
-app.post('/api/qa/image', (req, res) => {
-  res.status(501).json({ ok: false, message: '此版本尚不支持图片上传，请输入文字题目。' });
-});
-
-app.get('/api/qa/image/:id', (req, res) => {
-  res.status(404).send('Not found');
-});
-
-app.delete('/api/qa/image/:id', (req, res) => {
-  res.json({ ok: true });
-});
+require('./services/images').mount(app, id => allQuestionsMap.get(String(id)));
+require('./services/ai-routes').mount(app);
 
 app.post('/api/qa/figure', (req, res) => {
   res.json({ none: true });
@@ -708,14 +707,15 @@ app.get('/api/ai/config', (req, res) => {
   res.json({
     baseUrl: cfg.baseUrl,
     model: cfg.model,
+    visionModel: cfg.visionModel || '',
     enableThinking: cfg.enableThinking !== false,
     hasKey: Boolean(cfg.apiKey && cfg.apiKey.trim().length > 0)
   });
 });
 
 app.post('/api/ai/config', (req, res) => {
-  const { apiKey, baseUrl, model, enableThinking } = req.body;
-  if ([apiKey, baseUrl, model].some(value => value !== undefined && typeof value !== 'string')) {
+  const { apiKey, baseUrl, model, visionModel, enableThinking } = req.body;
+  if ([apiKey, baseUrl, model, visionModel].some(value => value !== undefined && typeof value !== 'string')) {
     return res.status(400).json({ ok: false, error: '配置字段必须为文字' });
   }
   if (baseUrl !== undefined && !validAiUrl(baseUrl)) return res.status(400).json({ ok: false, error: '请填写公网 HTTPS API 地址' });
@@ -723,6 +723,7 @@ app.post('/api/ai/config', (req, res) => {
   if (apiKey !== undefined) current.apiKey = apiKey.trim();
   if (baseUrl !== undefined) current.baseUrl = baseUrl.trim();
   if (model !== undefined) current.model = model.trim();
+  if (visionModel !== undefined) current.visionModel = visionModel.trim();
   if (enableThinking !== undefined) current.enableThinking = Boolean(enableThinking);
   db.saveAiConfig(current);
   res.json({ ok: true, message: 'AI配置已更新' });
@@ -742,7 +743,7 @@ app.post('/api/ai/test', async (req, res) => {
   }
 
   try {
-    const fetchRes = await fetch(`${url.replace(/\/+$/, '')}/chat/completions`, {
+    const fetchRes = await fetch(require('./services/ai-client').endpoint(url), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -751,14 +752,15 @@ app.post('/api/ai/test', async (req, res) => {
       body: JSON.stringify({
         model: mod || 'deepseek-chat',
         messages: [{ role: 'user', content: '测试连接，请回复：OK' }],
-        max_tokens: 15
+        max_tokens: 1024,
+        ...(new URL(url).hostname === 'token.sensenova.cn' ? { reasoning_effort: 'none' } : {})
       }),
       signal: AbortSignal.timeout(30000)
     });
 
     if (!fetchRes.ok) {
       const errText = await fetchRes.text();
-      return res.json({ ok: false, error: `API 返回 HTTP ${fetchRes.status}: ${errText.slice(0, 200)}` });
+      return res.json({ ok: false, error: `API 返回 HTTP ${fetchRes.status}，请检查密钥、模型与余额` });
     }
 
     const data = await fetchRes.json();
@@ -1007,9 +1009,9 @@ app.get('/api/exam-papers/:id/attempts', (req, res) => {
 // -------------------------------------------------------------
 // Static Files & SPA Fallback
 // -------------------------------------------------------------
-if (require.main === module) app.get(['/', '/library', '/politics', '/politics/{*rest}', '/growth', '/growth/{*rest}'], (req, res, next) => {
+if (require.main === module) app.get(['/', '/library', '/english', '/english/{*rest}', '/politics', '/politics/{*rest}', '/growth', '/growth/{*rest}'], (req, res, next) => {
   if (path.extname(req.path)) return next();
-  const file = req.path.startsWith('/politics') ? 'politics-app/index.html' : req.path.startsWith('/growth') ? 'growth/index.html' : req.path === '/library' ? 'hub/library.html' : 'hub/index.html';
+  const file = req.path.startsWith('/english') ? 'english-app/index.html' : req.path.startsWith('/politics') ? 'politics-app/index.html' : req.path.startsWith('/growth') ? 'growth/index.html' : req.path === '/library' ? 'hub/library.html' : 'hub/index.html';
   res.sendFile(path.join(__dirname, 'public', file));
 });
 if (require.main === module) app.use(express.static(path.join(__dirname, 'public'), {

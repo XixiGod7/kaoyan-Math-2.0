@@ -5,11 +5,11 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "prepare:data": "node scripts/prepare-politics.cjs",
+    "prepare:data": "node scripts/prepare-politics.cjs && node scripts/prepare-english.cjs",
     "pretest": "npm run build:ui",
     "test": "node --test test/*.test.js",
     "dev:cloudflare": "wrangler dev",
-    "build:ui": "npm run prepare:data && tsc -p apps/politics/tsconfig.json && vite build --config apps/politics/vite.config.mts",
+    "build:ui": "npm run prepare:data && tsc -p apps/politics/tsconfig.json && vite build --config apps/politics/vite.config.mts && tsc -p apps/english/tsconfig.json && vite build --config apps/english/vite.config.mts",
     "build": "npm run build:ui && wrangler deploy --dry-run --outdir dist",
     "deploy": "wrangler deploy",
     "cf:types": "wrangler types"
@@ -21,15 +21,20 @@
   "dependencies": {
     "cors": "^2.8.6",
     "express": "^5.2.1",
+    "lucide-react": "^1.51.0",
+    "pdfjs-dist": "^4.10.38",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.18.4"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20261003.1",
+    "@tailwindcss/vite": "^4.3.3",
     "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^6.1.1",
+    "autoprefixer": "^10.6.1",
+    "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",
     "vite": "^8.3.2",
     "wrangler": "^4.147.0"

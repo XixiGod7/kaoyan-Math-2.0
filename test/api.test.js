@@ -132,7 +132,72 @@ test('内置答疑流完整结束并保存会话', async () => {
 test('未知接口返回 JSON 错误，图片接口不假装成功', async () => {
   const missing = await request('/api/unsupported-feature');
   assert.equal(missing.status, 404); assert.match(missing.headers.get('content-type'), /json/);
-  assert.equal((await request('/api/qa/image', 'POST', {})).status, 501);
+  assert.equal((await request('/api/qa/image', 'POST', {})).status, 400);
+});
+
+test('真实图片上传、读取、移除及访客隔离，伪装图片被拒绝',async()=>{
+  const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a9l8AAAAASUVORK5CYII=','base64');
+  const upload=async(bytes,type)=>{const form=new FormData();form.append('file',new Blob([bytes],{type}),'sample.png');const r=await fetch(base+'/api/qa/image',{method:'POST',headers:cookie?{Cookie:cookie}:{},body:form});return {status:r.status,body:await r.json()};};
+  assert.equal((await upload(Buffer.from('<svg onload="alert(1)"></svg>'),'image/png')).status,400);
+  const added=await upload(png,'image/png');assert.equal(added.status,200);assert.equal(added.body.ok,true);
+  const r=await fetch(base+'/api/qa/image/'+added.body.id,{headers:cookie?{Cookie:cookie}:{}});assert.equal(r.headers.get('content-type'),'image/png');assert.deepEqual(Buffer.from(await r.arrayBuffer()),png);
+  if(process.env.TEST_BASE_URL)assert.equal((await fetch(base+'/api/qa/image/'+added.body.id)).status,404);
+  const stream=await fetch(base+'/api/qa/ask/stream',{method:'POST',headers:{'Content-Type':'application/json',...(cookie?{Cookie:cookie}:{})},body:JSON.stringify({imageIds:[added.body.id],content:'分析图片'})});assert.match(await stream.text(),/尚未识别图片内容/);
+  assert.equal((await request('/api/qa/image/'+added.body.id,'DELETE')).body.ok,true);assert.equal((await request('/api/qa/image/'+added.body.id)).status,404);
+  const large=fs.readFileSync(path.join(__dirname,'../apps/english/public/images/writing/2008.png'));assert.ok(large.length>1000000);
+  const largeAdded=await upload(large,'image/png');assert.equal(largeAdded.status,200);
+  const loaded=await fetch(base+'/api/qa/image/'+largeAdded.body.id,{headers:cookie?{Cookie:cookie}:{}});assert.deepEqual(Buffer.from(await loaded.arrayBuffer()),large);await request('/api/qa/image/'+largeAdded.body.id,'DELETE');
+});
+
+test('英语草稿与备份持久化，不发积分；禁止密钥写入学习备份',async()=>{
+  const before=(await request('/api/study/overview')).body.points;
+  const patch={kaoyan_word_statuses:JSON.stringify({scientist:'unfamiliar'}),kaoyan_quiz_progress_2026:JSON.stringify({year:'2026',answers:{21:'C'}}),kaoyan_essay_2026_B:'My handwritten practice essay.',kaoyan_trans_2026:JSON.stringify({46:'科学知识帮助人们理解世界。'})};
+  assert.equal((await request('/api/english/storage','POST',{patch})).status,200);
+  assert.equal((await request('/api/english/storage')).body.items.kaoyan_word_statuses,patch.kaoyan_word_statuses);
+  assert.equal((await request('/api/study/overview')).body.points,before);
+  assert.equal((await request('/api/english/storage','POST',{patch:{kaoyan_ai_config:'{}'}})).status,400);
+  if(process.env.TEST_BASE_URL){const other=await fetch(base+'/api/english/storage');assert.deepEqual((await other.json()).items,{});}
+});
+
+test('英语练习与精读共用题目标识，奖励去重，笔记进入统一档案',async()=>{
+  const submit={year:'2026',passKey:'2026-t1',answers:{21:'C'}};
+  const first=await request('/api/english/submit','POST',submit);assert.equal(first.body.reward.points,2);assert.equal(first.body.fullPaper,false);
+  assert.equal((await request('/api/english/submit','POST',{year:'2026',answers:{21:'C'}})).body.reward.points,0);
+  assert.equal((await request('/api/english/submit','POST',{year:'2025',answers:{21:'A'}})).body.reward.points,2);
+  const catalog=await(await fetch(base+'/english-data/catalog.json')).json();const legacyId=Object.keys(catalog.passages['2025-t1'])[0];
+  const legacy=await request('/api/english/submit','POST',{year:'2025',passKey:'2025-t1',answers:{[legacyId]:'A'}});assert.equal(legacy.status,200);assert.equal(legacy.body.reward.points,0);
+  assert.equal((await request('/api/english/submit','POST',{year:'2026',passKey:'2026-t1',answers:{26:'A'}})).status,400);
+  assert.equal((await request('/api/english/note','POST',{sourceId:'2026:21',text:'短笔记'})).body.reward.points,0);
+  assert.equal((await request('/api/english/note','POST',{sourceId:'2026:21',text:'通过时间对比定位作者在第一段表达的驯化先后顺序。'})).body.reward.points,2);
+  assert.equal((await request('/api/english/library?kind=notes')).body.total,1);
+  assert.equal((await request('/api/incentive/goals','POST',{english:35})).status,200);assert.equal((await request('/api/study/overview')).body.goals.find(g=>g.key==='english').target,35);
+});
+
+test('英语单项练习不冒充整卷，完整模考仅一次 +20 且不逐题奖励',async()=>{
+  const partial=await request('/api/english/submit','POST',{year:'2024',answers:{1:'A',2:'B'}});assert.equal(partial.body.fullPaper,false);assert.equal(partial.body.reward.points,4);
+  const c=await (await fetch(base+'/english-data/catalog.json')).json(),answers={};for(const id of c.papers['2023']){const q=c.questions[id];answers[q.number]=q.objective?(q.options[0] || 'A'):'完成主观作答内容';}
+  const full=await request('/api/english/submit','POST',{year:'2023',answers});assert.equal(full.body.fullPaper,true);assert.equal(full.body.reward.points,20);
+  assert.equal((await request('/api/english/submit','POST',{year:'2023',answers})).body.reward.points,0);
+});
+
+test('英语到期词汇复习联动，提前重复复习不重复奖励',async()=>{
+  const first=await request('/api/english/review','POST',{word:'scientist',rating:'good'});assert.equal(first.body.reward.points,3);assert.ok(first.body.card.nextDue>Date.now());
+  assert.equal((await request('/api/english/review','POST',{word:'scientist',rating:'good'})).body.reward.points,0);
+  assert.equal((await request('/api/english/review','POST',{word:'not-a-real-dictionary-word',rating:'good'})).status,400);
+});
+
+test('同义替换与词组默写联动成长，导入记录不会替代实际提交',async()=>{
+  const c=await(await fetch(base+'/english-data/catalog.json')).json(),id=Object.keys(c.practice).find(k=>k.startsWith('paraphrase:'));
+  const result=await request('/api/english/practice','POST',{id,answer:c.practice[id].answer});assert.equal(result.body.reward.points,2);assert.equal(result.body.correct,true);
+  assert.equal((await request('/api/english/practice','POST',{id,answer:c.practice[id].answer})).body.reward.points,0);
+  assert.equal((await request('/api/english/practice','POST',{id:'paraphrase:made-up',answer:'A'})).status,400);
+});
+
+test('旧精读参考答案与试卷一致，缺题资料按已载入试卷完整度判定',async()=>{
+  const c=await(await fetch(base+'/english-data/catalog.json')).json(),reading=await(await fetch(base+'/english-data/reading/questions/2010-t1.json')).json();
+  assert.equal(reading[0].answer,c.questions['2010:21'].answer);
+  const answers={};for(const id of c.papers['2011']){const q=c.questions[id];answers[q.number]=q.objective?q.options[0]:'完成所载入题目的主观作答';}
+  const value=await request('/api/english/submit','POST',{year:'2011',answers});assert.equal(value.body.paperQuestions,51);assert.equal(value.body.sourceIncomplete,true);assert.equal(value.body.fullPaper,true);assert.equal(value.body.reward.points,20);
 });
 
 test('Cloudflare 访客身份隔离与跨站保护', { skip: !process.env.TEST_BASE_URL }, async () => {

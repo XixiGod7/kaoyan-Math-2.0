@@ -396,11 +396,18 @@ const UserNoteSection: React.FC<{
 
 // AI 智能答疑组件
 const AiQuestionAssistant: React.FC<{ qid: string | number }> = ({ qid }) => {
+  const imageBox = useRef<HTMLDivElement>(null);
+  const picker = useRef<{ ids: () => string[]; busy: () => boolean } | null>(null);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [asking, setAsking] = useState(false);
   const [reply, setReply] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (open && imageBox.current) picker.current = (window as any).createStudyImagePicker(imageBox.current);
+    else picker.current = null;
+  }, [open, qid]);
 
   useEffect(() => {
     setOpen(false);
@@ -410,11 +417,13 @@ const AiQuestionAssistant: React.FC<{ qid: string | number }> = ({ qid }) => {
   }, [qid]);
 
   async function handleAsk() {
-    if (asking || query.trim().length < 2) return;
+    if (asking || picker.current?.busy()) return;
+    const imageIds = picker.current?.ids() || [];
+    if (!query.trim() && !imageIds.length) return;
     setAsking(true);
     setError(null);
 
-    const res = await askAiApi(qid, query.trim());
+    const res = await askAiApi(qid, query.trim() || '请结合题目分析这张图片。', imageIds);
     setAsking(false);
 
     if (res.ok && res.answer) {
@@ -447,13 +456,14 @@ const AiQuestionAssistant: React.FC<{ qid: string | number }> = ({ qid }) => {
         <button
           type="button"
           className="pb-submit"
-          disabled={asking || query.trim().length < 2}
+          disabled={asking}
           onClick={handleAsk}
         >
           {asking ? '想一下…' : '问'}
         </button>
       </div>
 
+      <div ref={imageBox}></div>
       {error && <div className="pb-err">{error}</div>}
 
       {reply && (

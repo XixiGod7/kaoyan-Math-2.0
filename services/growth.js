@@ -3,12 +3,12 @@ const db = require('../db');
 const defaults = require('./growth-defaults.json');
 const DAY = 86400000;
 const rewardRules = { answer: 2, review: 3, note: 2, exam: 20 };
-const subjectNames = { math: '数学', politics: '政治' };
+const subjectNames = { math: '数学', politics: '政治', english: '英语' };
 const kindNames = { answer: '完成答题', review: '完成复习', note: '记录笔记', exam: '完成模考' };
 const dayKey = (now = Date.now()) => new Date(now + 8 * 3600000).toISOString().slice(0, 10);
 const stamp = () => new Date().toISOString();
 const id = prefix => prefix + '_' + randomUUID();
-const emptyCounts = () => ({ math: 0, politics: 0, reviews: 0, notes: 0, exams: 0 });
+const emptyCounts = () => ({ math: 0, politics: 0, english: 0, reviews: 0, notes: 0, exams: 0 });
 
 function newState() {
   return {
@@ -17,13 +17,13 @@ function newState() {
     loans: [], deposits: [], secondary_payments: [], caterpillar_list: [], caterpillar_today_done_count: 0,
     pbl_projects: [{ id: 'study-journey', title: '考研成长之路', deadline: '', deliverable: '让每一次练习都成为看得见的积累',
       milestones: [
-        { id: 'first-ten', title: '完成 10 道数学与政治练习', metric: 'answers', target: 10, points: 0, status: 'in_progress', automatic: true },
+        { id: 'first-ten', title: '完成 10 道数学、政治与英语练习', metric: 'answers', target: 10, points: 0, status: 'in_progress', automatic: true },
         { id: 'review-ten', title: '完成 10 次到期复习', metric: 'reviews', target: 10, points: 0, status: 'in_progress', automatic: true },
         { id: 'notes-five', title: '积累 5 篇学习笔记', metric: 'notes', target: 5, points: 0, status: 'in_progress', automatic: true },
         { id: 'papers-three', title: '完成 3 套模拟试卷', metric: 'exams', target: 3, points: 0, status: 'in_progress', automatic: true }
       ] }],
     history_logs: [], session_history: [], requests: {},
-    learning: { goals: { math: 10, politics: 20, reviews: 5, notes: 1 }, days: {}, totals: emptyCounts() }
+    learning: { goals: { math: 10, politics: 20, english: 20, reviews: 5, notes: 1 }, days: {}, totals: emptyCounts() }
   };
 }
 
@@ -53,7 +53,7 @@ function rollDay(state, now = Date.now()) {
   }
   return state;
 }
-function getState() { return rollDay(db.readJSON('growth_state', newState())); }
+function getState() { const state=db.readJSON('growth_state',newState());state.learning.goals={math:10,politics:20,english:20,reviews:5,notes:1,...state.learning.goals};state.learning.totals={...emptyCounts(),...state.learning.totals};for(const date of Object.keys(state.learning.days))state.learning.days[date]={...emptyCounts(),...state.learning.days[date]};return rollDay(state); }
 function save(state) { db.saveJSON('growth_state', state); }
 function points(state, amount, reason, type = 'POINTS') {
   if (state.points + amount < 0) throw new Error('积分不足');
@@ -85,7 +85,7 @@ function tokens(state, curr, amount, reason) {
 }
 function advanceMilestones(state) {
   const t = state.learning.totals;
-  const metrics = { answers: t.math + t.politics, ...t };
+  const metrics = { answers: t.math + t.politics + t.english, ...t };
   for (const project of state.pbl_projects) for (const m of project.milestones) if (m.automatic) {
     m.progress = Math.min(m.target, metrics[m.metric] || 0);
     if (m.progress >= m.target && m.status !== 'completed') {
@@ -103,7 +103,7 @@ function recordLearning(subject, kind, sourceId, detail = {}) {
   if (daily.events[key]) return { credited: false, points: 0, totalPoints: state.points };
   const amount = rewardRules[kind];
   daily.events[key] = { at: stamp(), subject, kind, sourceId: String(sourceId), points: amount,
-    href: subject === 'math' ? (kind === 'exam' ? '/math/papers' : `/math/q/${sourceId}`) : (detail.href || '/politics') };
+    href: subject === 'math' ? (kind === 'exam' ? '/math/papers' : `/math/q/${sourceId}`) : (detail.href || (subject === 'english' ? '/english' : '/politics')) };
   const counter = kind === 'answer' ? subject : ({ review: 'reviews', note: 'notes', exam: 'exams' })[kind];
   daily[counter]++; state.learning.totals[counter]++; daily.earned += amount;
   points(state, amount, `${subjectNames[subject]} · ${kindNames[kind]}`, 'STUDY');
@@ -145,7 +145,7 @@ function mutate(action, data, requestId) {
   let message = '已保存', item;
   switch (action) {
     case 'goals':
-      for (const key of ['math', 'politics', 'reviews', 'notes']) if (data[key] !== undefined) state.learning.goals[key] = number(data[key], 1, 500);
+      for (const key of ['math', 'politics', 'english', 'reviews', 'notes']) if (data[key] !== undefined) state.learning.goals[key] = number(data[key], 1, 500);
       break;
     case 'session/start': {
       if (state.user_profile.status === 'cooling') throw new Error('休息时间尚未结束，请先休息或解除冷却');

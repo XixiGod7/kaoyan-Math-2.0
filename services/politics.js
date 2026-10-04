@@ -153,7 +153,7 @@ function mount(app) {
     if (typeof req.body.question !== 'string' || !req.body.question.trim() || req.body.question.length > 4000) throw new Error('请输入有效问题');
     const answer = await require('./assistant').reply('你是考研政治学习助手。解释概念和选项，题库答案未独立核验，不确定时明确说明。',
       `题目：${q.stem}\n选项：${JSON.stringify(q.choices)}\n题库参考答案：${q.answer}\n题库解析：${q.analysis || ''}\n用户问题：${req.body.question}`,
-      `【题库参考解析，未启用外部 AI】\n参考答案：${q.answer}\n${q.analysis || '该题尚无详细解析，请结合教材核对。'}\n\n可以在顶部统一 AI 设置中配置个人模型，以获得针对问题的回复。`);
+      `【题库参考解析，未启用外部 AI】\n参考答案：${q.answer}\n${q.analysis || '该题尚无详细解析，请结合教材核对。'}\n\n可以在顶部统一 AI 设置中配置个人模型，以获得针对问题的回复。`, req.body.imageIds || []);
     res.json({ ok: true, ...answer });
   }));
 }
