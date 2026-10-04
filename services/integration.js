@@ -2,6 +2,7 @@ const db = require('../db');
 const growth = require('./growth');
 const politics = require('./politics');
 function mount(app) {
+  require('./study-export').mount(app);
   politics.mount(app);
   require('./english').mount(app);
   app.get('/api/incentive/state', (req, res) => {

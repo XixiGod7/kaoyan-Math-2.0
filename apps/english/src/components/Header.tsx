@@ -123,7 +123,7 @@ export const Header: React.FC<HeaderProps> = ({
     currentTab === 'vocab';
 
   return (
-    <header className={`${isDark ? 'bg-slate-900 border-slate-800 text-slate-100' : 'bg-white border-gray-200 text-gray-900'} border-b sticky top-0 z-40 shadow-sm transition-colors duration-200`}>
+    <header className={`english-module-header ${isDark ? 'bg-slate-900 border-slate-800 text-slate-100' : 'bg-white border-gray-200 text-gray-900'} border-b sticky top-0 z-40 shadow-sm transition-colors duration-200`}>
       <div className="w-full px-3 sm:px-4 md:px-6 h-14 flex items-center justify-between gap-2">
         {/* Left: Brand Logo & Navigation */}
         <div className="flex items-center gap-3 sm:gap-6">

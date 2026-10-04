@@ -1,3 +1,4 @@
+import {useStudyTarget,QuestionNote} from './StudyTarget';
 import {recordEnglish} from '../utils/platformStorage';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
@@ -203,6 +204,7 @@ export const IntensiveReadingView: React.FC<IntensiveReadingViewProps> = ({
 
   const currentYear = currentItem?.year || 2025;
   const currentTextNo = currentItem?.text_no || 1;
+  useStudyTarget(currentYear,21+(currentTextNo-1)*5);
 
   // Group passage sentences by paragraph number for unified reading layout
   const paragraphGroups = useMemo(() => {
@@ -855,7 +857,7 @@ export const IntensiveReadingView: React.FC<IntensiveReadingViewProps> = ({
           </div>
 
           <div className="space-y-6">
-            {questions.map((q) => {
+            {questions.map((q,index) => {
               const myChoice = userAnswers[q.id];
               const isSubmitted = !!quizSubmitted[q.id];
               const isCorrect = q.answer && myChoice ? myChoice.toUpperCase() === q.answer.toUpperCase() : false;
@@ -863,13 +865,14 @@ export const IntensiveReadingView: React.FC<IntensiveReadingViewProps> = ({
               return (
                 <div
                   key={q.id}
+                  data-study-year={currentYear} data-study-question={21+(currentTextNo-1)*5+index}
                   className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 p-5 space-y-4"
                 >
                   {/* Stem */}
                   <div className="flex items-start justify-between gap-3">
                     <div className="font-medium text-slate-900 dark:text-slate-100 text-base leading-relaxed">
                       <b className="font-mono text-indigo-600 dark:text-indigo-400 mr-2">{q.qNo}.</b>
-                      {q.stem}
+                      {q.stem}<QuestionNote year={currentYear} number={21+(currentTextNo-1)*5+index}/>
                     </div>
                   </div>
 

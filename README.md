@@ -43,9 +43,13 @@
    - 成长打卡支持个人积分、六类代币、预支与还款、积分存单、行动契约、奖励兑换、任务清单、项目里程碑和学习复盘；
    - 学习总览和学习档案提供跨学科目标、笔记、收藏、错题与复习入口。
 
-> 政治原资料含生成模板题，年份与参考答案未独立核验，页面已明确标注。数学完整答案库、图片识别与英语后端仍未补齐；复习采用简化间隔排期。验证范围和限制见 [功能验证记录](docs/VERIFICATION.md)。
+> 政治原资料含生成模板题，年份与参考答案未独立核验，页面已明确标注。数学完整答案库仍未补齐；英语与 AI 图片附件已接入公共后端，图片识别需配置支持视觉的模型及有效密钥；复习采用简化间隔排期。验证范围和限制见 [功能验证记录](docs/VERIFICATION.md)。
 
 ---
+
+## 全站阅读与学习进度
+
+各学科采用统一居中页面、间距与绿色主色。顶部 A− / A+ 调整全站字号，百分比按钮恢复默认；“学习进度”汇总并导出三科学习记录与成长账本。英语试卷预览恢复 17 年 153 张原始缩略图，题目笔记自动跟随年份、题号及当前阅读/翻译/作文位置。操作与验证说明见 [界面整合说明](docs/UI-UNIFICATION.md)。
 
 ## 启动与使用指南
 
@@ -81,6 +85,6 @@ npm run deploy
 
 `npm run dev:cloudflare` 启动 Cloudflare 本地预览，`npm run cf:types` 生成绑定类型。
 
-`docs/workflows/` 中提供 Verify 与 Deploy to Cloudflare 工作流模板。当前 GitHub 登录令牌没有工作流写入权限，因此模板尚未启用。后续可将其放入 `.github/workflows/`，并为手动部署工作流配置仓库 Secrets `CLOUDFLARE_API_TOKEN` 与 `CLOUDFLARE_ACCOUNT_ID`。也可以直接从 Cloudflare 控制台关联仓库并使用 `npm run deploy` 部署。
+`docs/workflows/` 中提供 Verify 与 Deploy to Cloudflare 工作流模板。当前 GitHub 登录令牌没有工作流写入权限，因此模板尚未启用。后续可将其放入 `.github/workflows/`，并为手动部署工作流配置仓库 Secrets `CLOUDFLARE_API_TOKEN` 与 `CLOUDFLARE_ACCOUNT_ID`。当前仓库 main 已关联 Cloudflare Workers Builds，每次推送自动运行检查、构建和部署。
 
 用户个人记录、现有 AI 密钥和本地运行目录均被 `.gitignore` 排除。云端默认使用内置导师提示，可在网站的 AI 设置中按浏览器配置个人模型密钥。

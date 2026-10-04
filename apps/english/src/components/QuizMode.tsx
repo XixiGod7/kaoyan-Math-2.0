@@ -1,3 +1,4 @@
+import {useStudyTarget,QuestionNote,selectStudyTarget} from './StudyTarget';
 import {englishStorage,recordEnglish} from '../utils/platformStorage';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { YearPaperBundle, TaskBundleItem, TaskQuestion } from '../types/quizTask';
@@ -608,6 +609,7 @@ export default function QuizMode({
 
   const allQuestionsCount = 52;
   const answeredCount = Object.keys(answers).length;
+  useStudyTarget(year, ({cloze:1,reading_1:21,reading_2:26,reading_3:31,reading_4:36,matching:41,translation:46,writing_clinical:51,writing_essay:52} as Record<string,number>)[activeTab] || 1);
   const currentTab = TABS.find(t => t.id === activeTab) || TABS[0];
 
   const getTabStats = useCallback((tab: TabItem) => {
@@ -625,6 +627,7 @@ export default function QuizMode({
     };
   }, [answers]);
 
+  useEffect(()=>{const n=Number(new URLSearchParams(location.search).get('note'));if(loading||!paperData||!n)return;const timer=setTimeout(()=>{selectStudyTarget(year,n,true);document.getElementById('question-'+n)?.scrollIntoView({block:'center'});},100);return()=>clearTimeout(timer);},[loading,paperData,year]);
   if (loading) return (
     <div className={`flex items-center justify-center h-full min-h-0 font-bold ${
       isDark ? 'bg-slate-950 text-slate-400' : 'bg-slate-50 text-slate-500'
@@ -1275,9 +1278,9 @@ export default function QuizMode({
             return (
               <div key={q.qid || qNum} className={`scroll-mt-24 p-4 sm:p-6 rounded-2xl border ${
                 isDark ? 'bg-slate-850 border-slate-750' : 'bg-gray-50/50 border-gray-200/80'
-              }`} id={`question-${qNum}`}>
+              }`} data-study-year={year} data-study-question={qNum} id={`question-${qNum}`}>
                 <div className="flex items-center justify-between mb-3 sm:mb-4">
-                  <span className="text-xl font-black text-blue-500 font-sans">{qNum}.</span>
+                  <span className="text-xl font-black text-blue-500 font-sans">{qNum}.</span><QuestionNote year={year} number={qNum}/>
 
                   {isSubmitted && (
                     <div className="flex items-center gap-2">
@@ -1568,7 +1571,7 @@ export default function QuizMode({
                   const isCorrect = isSubmitted && currentAns && correctAns && currentAns.toUpperCase() === correctAns.toUpperCase();
 
                   return (
-                    <div key={q.qid || qNum} className={`scroll-mt-24 p-4 sm:p-6 rounded-xl border ${isDark ? 'bg-slate-850 border-slate-750' : 'bg-gray-50 border-gray-200'}`} id={`question-${qNum}`}>
+                    <div key={q.qid || qNum} className={`scroll-mt-24 p-4 sm:p-6 rounded-xl border ${isDark ? 'bg-slate-850 border-slate-750' : 'bg-gray-50 border-gray-200'}`} data-study-year={year} data-study-question={qNum} id={`question-${qNum}`}>
                       <div className="flex items-center justify-between mb-4">
                         <span className={`text-base sm:text-lg font-bold flex items-center ${isDark ? 'text-slate-100' : 'text-gray-800'}`}>
                           <span className="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm mr-2.5 font-sans">
@@ -1745,7 +1748,7 @@ export default function QuizMode({
                     const isCorrect = isSubmitted && currentAns && correctAns && currentAns.toUpperCase() === correctAns.toUpperCase();
 
                     return (
-                      <div key={q.qid || qNum} className={`scroll-mt-24 p-4 sm:p-5 rounded-xl border ${isDark ? 'bg-slate-850/80 border-slate-750' : 'bg-gray-50 border-gray-200'}`} id={`question-${qNum}`}>
+                      <div key={q.qid || qNum} className={`scroll-mt-24 p-4 sm:p-5 rounded-xl border ${isDark ? 'bg-slate-850/80 border-slate-750' : 'bg-gray-50 border-gray-200'}`} data-study-year={year} data-study-question={qNum} id={`question-${qNum}`}>
                         <div className="flex items-center justify-between mb-3">
                           <span className={`text-sm sm:text-base font-bold flex items-center ${isDark ? 'text-slate-100' : 'text-gray-800'}`}>
                             <span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs mr-2 font-sans">
@@ -2047,7 +2050,7 @@ export default function QuizMode({
                   return (
                     <div
                       key={num}
-                      id={`question-${num}`}
+                      data-study-year={year} data-study-question={num} id={`question-${num}`}
                       className={`scroll-mt-24 p-4 sm:p-6 md:p-8 rounded-2xl border shadow-sm transition-all ${
                         isDark
                           ? 'bg-slate-850 border-slate-750 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20'
@@ -2307,7 +2310,7 @@ export default function QuizMode({
 
               <textarea
                 placeholder={`在此输入您的${titleName}作答内容...`}
-                value={answers[qid] || ''}
+                data-study-year={year} data-study-question={qid} value={answers[qid] || ''}
                 onChange={e => handleAnswerSelect(qid, e.target.value)}
                 className={`w-full flex-1 min-h-[260px] p-4 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-y mb-4 text-base leading-relaxed font-sans ${isDark ? 'bg-slate-950 border-slate-800 text-slate-100 placeholder-slate-500' : 'bg-white border-gray-300 text-gray-900'}`}
               ></textarea>
@@ -2348,6 +2351,7 @@ export default function QuizMode({
   };
 
   const scrollToQuestion = (qid: number) => {
+    selectStudyTarget(year,qid);
     if (qid >= 1 && qid <= 20 && activeTab !== 'cloze') setActiveTab('cloze');
     else if (qid >= 21 && qid <= 25 && activeTab !== 'reading_1') setActiveTab('reading_1');
     else if (qid >= 26 && qid <= 30 && activeTab !== 'reading_2') setActiveTab('reading_2');

@@ -44,7 +44,7 @@ export const App: React.FC = () => {
   const [papers, setPapers] = useState<PaperGroup[]>([]);
   const [dict, setDict] = useState<KaoyanDict | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isBackupModalOpen, setIsBackupModalOpen] = useState(false);
+  const [isBackupModalOpen, setIsBackupModalOpen] = useState(new URLSearchParams(location.search).get('import')==='1');
   const [isEbbinghausOpen, setIsEbbinghausOpen] = useState(false);
   const [isProgressOpen, setIsProgressOpen] = useState(false);
   const [isDesktopAppOpen, setIsDesktopAppOpen] = useState(false);
@@ -319,7 +319,7 @@ export const App: React.FC = () => {
   }, [dict, wordStatuses]);
 
   const [targetSentenceId, setTargetSentenceId] = useState<number | null>(null);
-  const [targetTab, setTargetTab] = useState<string | null>(null);
+  const [targetTab, setTargetTab] = useState<string | null>(()=>{const n=Number(new URLSearchParams(location.search).get('note'));return n>0?(n<=20?'cloze':n<=40?'reading_'+Math.ceil((n-20)/5):n<=45?'matching':n<=50?'translation':n===51?'writing_clinical':'writing_essay'):null;});
   const [targetSectionId, setTargetSectionId] = useState<number | null>(null);
   const [wordModalItem, setWordModalItem] = useState<WordFreqItem | null>(null);
 
@@ -338,6 +338,7 @@ export const App: React.FC = () => {
     setTargetSentenceId(sentenceId || null);
   };
 
+  useEffect(()=>{const open=()=>setIsBackupModalOpen(true);window.addEventListener('study:legacy-english-import',open);return()=>window.removeEventListener('study:legacy-english-import',open);},[]);
   const isDark = theme === 'dark';
 
   // Compute due review words count for Ebbinghaus badge
@@ -360,7 +361,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className={`h-screen flex flex-col font-sans antialiased transition-colors duration-200 overflow-hidden ${
+    <div className={`english-shell flex flex-col font-sans antialiased transition-colors duration-200 overflow-hidden ${
       isDark ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-gray-900'
     }`}>
       {/* Top Bar Navigation */}
@@ -383,15 +384,15 @@ export const App: React.FC = () => {
             }
           }}
           theme={theme}
-          onToggleTheme={handleToggleTheme}
-          onOpenDataBackup={() => setIsBackupModalOpen(true)}
+          onToggleTheme={undefined}
+          onOpenDataBackup={undefined}
           onOpenEbbinghaus={() => setIsEbbinghausOpen(true)}
           onOpenProgress={() => setIsProgressOpen(true)}
           onOpenDesktopApp={() => setIsDesktopAppOpen(true)}
-          onOpenAiConfig={() => setIsAiConfigOpen(true)}
+          onOpenAiConfig={undefined}
           dueReviewCount={dueReviewCount}
           fontSizeLevel={fontSizeLevel}
-          onSetFontSize={handleSetFontSize}
+          onSetFontSize={undefined}
         />
       )}
 
@@ -412,12 +413,12 @@ export const App: React.FC = () => {
             initialTab={targetTab}
             initialSectionId={targetSectionId}
             theme={theme}
-            onToggleTheme={handleToggleTheme}
+            onToggleTheme={undefined}
             dict={dict}
             wordStatuses={wordStatuses}
             onToggleWordStatus={handleToggleStatus}
             onOpenWordModal={item => setWordModalItem(item)}
-            onOpenAiConfig={() => setIsAiConfigOpen(true)}
+            onOpenAiConfig={undefined}
             fontSizeLevel={fontSizeLevel}
             onSetFontSize={handleSetFontSize}
             onBackToHome={() => {
@@ -442,8 +443,8 @@ export const App: React.FC = () => {
             }}
             onOpenEbbinghaus={() => setIsEbbinghausOpen(true)}
             onOpenProgress={() => setIsProgressOpen(true)}
-            onOpenAiConfig={() => setIsAiConfigOpen(true)}
-            onOpenBackup={() => setIsBackupModalOpen(true)}
+            onOpenAiConfig={undefined}
+            onOpenBackup={() => window.dispatchEvent(new Event('study:export'))}
           />
         </main>
       ) : currentTab === 'reading' ? (

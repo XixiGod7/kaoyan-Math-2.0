@@ -33,3 +33,10 @@ test('真题编号唯一，各卷的 2026 年题号完整', () => {
     assert.deepEqual(indices, Array.from({ length: 22 }, (_, i) => i + 1));
   }
 });
+
+test('英语全部 17 年 153 张试卷缩略图已发布为有效 PNG',()=>{
+  const papers=JSON.parse(fs.readFileSync(path.join(publicRoot,'english-data/papers_by_type.json'),'utf8'));
+  const thumbs=papers.flatMap(p=>p.questions.map(q=>q.thumbnail_id));
+  assert.equal(papers.length,17);assert.equal(thumbs.length,153);
+  for(const id of thumbs){const bytes=fs.readFileSync(path.join(publicRoot,'english-thumbs',id+'.png'));assert.equal(bytes.subarray(0,8).toString('hex'),'89504e470d0a1a0a');assert.ok(bytes.length>100);}
+});

@@ -1,3 +1,4 @@
+import {useStudyTarget,QuestionNote} from './StudyTarget';
 import {englishStorage,recordEnglish} from '../utils/platformStorage';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
@@ -54,6 +55,7 @@ export const EssayGradingView: React.FC<EssayGradingViewProps> = ({
   // Selected year and part
   const [selectedYear, setSelectedYear] = useState<number>(2026);
   const [selectedPart, setSelectedPart] = useState<'A' | 'B'>('B');
+  useStudyTarget(selectedYear,selectedPart==='A'?51:52);
 
   // User input text
   const [userEssay, setUserEssay] = useState<string>('');

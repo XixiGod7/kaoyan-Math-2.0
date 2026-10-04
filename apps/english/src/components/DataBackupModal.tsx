@@ -1,4 +1,3 @@
-import {englishStorage,recordEnglish} from '../utils/platformStorage';
 import React, { useState, useRef } from 'react';
 import {
   Download,
@@ -6,12 +5,9 @@ import {
   Trash2,
   CheckCircle2,
   AlertCircle,
-  Copy,
-  FileText,
   X,
   Database,
   Sparkles,
-  RefreshCw
 } from 'lucide-react';
 
 interface DataBackupModalProps {
@@ -33,7 +29,6 @@ export const DataBackupModal: React.FC<DataBackupModalProps> = ({
 }) => {
   const isDark = theme === 'dark';
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [copied, setCopied] = useState(false);
   const [importMessage, setImportMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [showConfirmClear, setShowConfirmClear] = useState(false);
 
@@ -49,84 +44,9 @@ export const DataBackupModal: React.FC<DataBackupModalProps> = ({
     else unknownCount++;
   });
 
-  const getFullBackupPayload = () => {
-    const quizHistoryRaw = englishStorage.getItem('kaoyan_quiz_history') || englishStorage.getItem('kaoyan_quiz_records') || '{}';
-    let quizHistory = {};
-    try {
-      quizHistory = JSON.parse(quizHistoryRaw);
-    } catch {}
-
-    const ebbinghausRaw = englishStorage.getItem('kaoyan_ebbinghaus_records') || '{}';
-    let ebbinghausRecords = {};
-    try {
-      ebbinghausRecords = JSON.parse(ebbinghausRaw);
-    } catch {}
-
-    const favSentencesRaw = englishStorage.getItem('kaoyan_favorite_sentences') || '[]';
-    let favoriteSentences = [];
-    try { favoriteSentences = JSON.parse(favSentencesRaw); } catch {}
-
-    const wrongQRaw = englishStorage.getItem('kaoyan_wrong_questions') || '[]';
-    let wrongQuestions = [];
-    try { wrongQuestions = JSON.parse(wrongQRaw); } catch {}
-
-    const paraphraseRaw = englishStorage.getItem('kaoyan_paraphrase_progress') || '{}';
-    let paraphraseProgress = {};
-    try { paraphraseProgress = JSON.parse(paraphraseRaw); } catch {}
-
-    const phraseDictateRaw = englishStorage.getItem('kaoyan_phrase_dictate_history') || '{}';
-    let phraseDictateHistory = {};
-    try { phraseDictateHistory = JSON.parse(phraseDictateRaw); } catch {}
-
-    const readingProgressRaw = englishStorage.getItem('kaoyan_reading_progress') || '{}';
-    let readingProgress = {};
-    try { readingProgress = JSON.parse(readingProgressRaw); } catch {}
-
-    return {
-      appName: '考研英语一真题长难句精读与题库系统',
-      version: '2.0.0',
-      exportTime: new Date().toISOString(),
-      stats: {
-        familiarCount,
-        unfamiliarCount,
-        totalMarkedWords: familiarCount + unfamiliarCount,
-        favoriteSentencesCount: favoriteSentences.length,
-        wrongQuestionsCount: wrongQuestions.length,
-      },
-      data: {
-        wordStatuses,
-        ebbinghausRecords,
-        quizHistory,
-        favoriteSentences,
-        wrongQuestions,
-        paraphraseProgress,
-        phraseDictateHistory,
-        readingProgress,
-        theme: localStorage.getItem('mb_theme') || 'dark',
-      }
-    };
-  };
-
-  // Export JSON file
   const handleExportFile = () => {
-    const payload = getFullBackupPayload();
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(payload, null, 2));
-    const downloadAnchor = document.createElement('a');
-    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-    downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `kaoyan_english_study_data_${dateStr}.json`);
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
-  };
-
-  // Copy JSON to clipboard
-  const handleCopyJson = () => {
-    const payload = getFullBackupPayload();
-    navigator.clipboard.writeText(JSON.stringify(payload, null, 2)).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
-    });
+    onClose();
+    window.dispatchEvent(new CustomEvent('study:export'));
   };
 
   // Handle file select
@@ -144,7 +64,7 @@ export const DataBackupModal: React.FC<DataBackupModalProps> = ({
         if (success) {
           setImportMessage({
             type: 'success',
-            text: `🎉 成功导入学习数据！已同步更新生词本与做题记录。`,
+            text: `🎉 成功导入旧英语备份！已同步更新生词本与做题记录。`,
           });
         } else {
           setImportMessage({
@@ -179,10 +99,10 @@ export const DataBackupModal: React.FC<DataBackupModalProps> = ({
             </div>
             <div>
               <h3 className={`text-lg font-black tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                学习数据管理
+                旧英语备份导入
               </h3>
               <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                支持多端备份、导入导出与生词本进度同步
+                兼容原英语项目备份；新的学习进度统一导出
               </p>
             </div>
           </div>
@@ -208,7 +128,7 @@ export const DataBackupModal: React.FC<DataBackupModalProps> = ({
                 isDark ? 'text-slate-400' : 'text-gray-500'
               }`}>
                 <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                当前本地学习数据统计
+                当前英语学习数据统计
               </span>
               <span className={`text-xs font-mono font-bold ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
                 共标 {familiarCount + unfamiliarCount} 词
@@ -234,7 +154,7 @@ export const DataBackupModal: React.FC<DataBackupModalProps> = ({
                 isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200'
               }`}>
                 <div className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>存储介质</div>
-                <div className={`text-xs font-bold mt-1 ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>本地离线</div>
+                <div className={`text-xs font-bold mt-1 ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>学习档案</div>
               </div>
             </div>
           </div>
@@ -264,10 +184,10 @@ export const DataBackupModal: React.FC<DataBackupModalProps> = ({
               <div>
                 <div className="flex items-center gap-2 mb-1.5 font-bold text-sm">
                   <Download className="w-4 h-4 text-blue-500" />
-                  <span>导出学习备份</span>
+                  <span>全站学习进度</span>
                 </div>
                 <p className={`text-xs mb-4 leading-relaxed ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                  将您的熟词、生词标记及做题进度导出为标准 JSON 备份文件。
+                  统一导出数学、政治、英语及成长记录，包含英语词汇与做题进度。
                 </p>
               </div>
 
@@ -277,29 +197,10 @@ export const DataBackupModal: React.FC<DataBackupModalProps> = ({
                   className="w-full py-2 px-3 rounded-lg text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 active:scale-98 transition shadow-sm flex items-center justify-center gap-1.5"
                 >
                   <Download className="w-3.5 h-3.5" />
-                  下载备份文件 (.json)
+                  打开全站进度工具
                 </button>
 
-                <button
-                  onClick={handleCopyJson}
-                  className={`w-full py-1.5 px-3 rounded-lg text-xs font-semibold border transition flex items-center justify-center gap-1.5 ${
-                    isDark
-                      ? 'bg-slate-800 hover:bg-slate-750 text-slate-200 border-slate-700'
-                      : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'
-                  }`}
-                >
-                  {copied ? (
-                    <>
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                      <span className="text-emerald-500">已复制数据至剪贴板</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-3.5 h-3.5" />
-                      <span>复制 JSON 数据文本</span>
-                    </>
-                  )}
-                </button>
+
               </div>
             </div>
 
@@ -313,7 +214,7 @@ export const DataBackupModal: React.FC<DataBackupModalProps> = ({
                   <span>导入学习数据</span>
                 </div>
                 <p className={`text-xs mb-4 leading-relaxed ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                  从之前导出的备份文件恢复您的生词本与刷题记录。
+                  从原英语项目导出的 JSON 备份恢复生词本与刷题记录。
                 </p>
               </div>
 
@@ -349,7 +250,7 @@ export const DataBackupModal: React.FC<DataBackupModalProps> = ({
                   }`}
                 >
                   <Trash2 className="w-3.5 h-3.5" />
-                  清空本地学习数据
+                  清空英语学习数据
                 </button>
 
                 <button
@@ -373,7 +274,7 @@ export const DataBackupModal: React.FC<DataBackupModalProps> = ({
                       setShowConfirmClear(false);
                       setImportMessage({
                         type: 'success',
-                        text: '已成功重置所有本地学习数据。',
+                        text: '已成功重置所有英语学习数据。',
                       });
                     }}
                     className="px-3.5 py-1.5 text-xs font-bold bg-rose-600 text-white rounded-lg hover:bg-rose-700 active:scale-95 transition shadow-sm"

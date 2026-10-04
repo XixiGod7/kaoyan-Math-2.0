@@ -39,7 +39,7 @@ export const WordFreqSidebar: React.FC<WordFreqSidebarProps> = ({
   // Collapse state persisted in localStorage
   const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
     try {
-      return englishStorage.getItem('kaoyan_wordfreq_sidebar_collapsed') === 'true';
+      return englishStorage.getItem('kaoyan_wordfreq_sidebar_collapsed') !== 'false';
     } catch {
       return false;
     }

@@ -19,3 +19,6 @@ export const englishStorage={
 };
 window.addEventListener('pagehide',()=>{if(Object.keys(pending).length)fetch('/api/english/storage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({patch:pending}),keepalive:true}).catch(()=>{});});
 export function recordEnglish(url:string,data:unknown) {return englishApi(url,data).then(value=>{window.dispatchEvent(new Event('study:update'));if(value.reward?.points)window.dispatchEvent(new CustomEvent('study:reward',{detail:value.reward.points}));return value;});}
+
+declare global {interface Window {beforeStudyExport?:()=>Promise<void>}}
+window.beforeStudyExport=async()=>{const end=Date.now()+8000;while(sending||Object.keys(pending).length){if(Date.now()>end)throw new Error('英语记录仍在保存，请稍后再导出');if(!sending)await flushEnglish();await new Promise(resolve=>setTimeout(resolve,100));}};

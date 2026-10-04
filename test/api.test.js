@@ -210,3 +210,15 @@ test('Cloudflare 访客身份隔离与跨站保护', { skip: !process.env.TEST_B
   assert.equal((await request('/api/me')).body.nickname, '验证访客甲');
   assert.equal((await request('/api/me/nickname', 'POST', { nickname: '跨站请求' }, { Origin: 'https://example.net' })).status, 403);
 });
+
+test('全站进度导出包含学习模块且排除密钥和图片存储', async () => {
+  const note='导出验收：逐题梳理英文长难句的主干和修饰关系。';
+  assert.equal((await request('/api/english/note','POST',{sourceId:'2024:27',text:note})).status,200);
+  const result=await request('/api/study/export');
+  assert.equal(result.status,200);assert.equal(result.body.format,'yanzhuan-study');
+  assert.equal(result.body.data.english_state.notes['2024:27'].text,note);
+  if(process.env.TEST_BASE_URL){const other=await (await fetch(base+'/api/study/export')).json();assert.ok(!other.data.english_state?.notes?.['2024:27']);}
+  for(const key of ['user_progress','user_notes','politics_state','english_storage','growth_state'])assert.ok(Object.hasOwn(result.body.data,key));
+  assert.ok(!Object.hasOwn(result.body.data,'ai_config'));assert.ok(!Object.hasOwn(result.body.data,'ai_images'));
+  assert.match(result.headers.get('cache-control'),/no-store/);
+});

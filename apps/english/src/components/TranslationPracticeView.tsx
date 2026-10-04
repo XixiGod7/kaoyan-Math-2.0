@@ -1,3 +1,4 @@
+import {useStudyTarget,QuestionNote} from './StudyTarget';
 import {englishStorage,recordEnglish} from '../utils/platformStorage';
 import React, { useState, useEffect } from 'react';
 import {
@@ -42,6 +43,7 @@ export const TranslationPracticeView: React.FC<TranslationPracticeViewProps> = (
   const fontConfig = FONT_SIZE_CONFIGS[fontSizeLevel];
   const [transIndex, setTransIndex] = useState<YearTransGroup[]>([]);
   const [selectedYear, setSelectedYear] = useState<number>(2025);
+  useStudyTarget(selectedYear,46);
   const [passageContent, setPassageContent] = useState<string>('');
   const [showFullPassage, setShowFullPassage] = useState<boolean>(false);
   const [sentences, setSentences] = useState<PassageSentence[]>([]);
@@ -294,7 +296,7 @@ export const TranslationPracticeView: React.FC<TranslationPracticeViewProps> = (
 
             return (
               <div
-                key={sent.sid || idx}
+                key={sent.sid || idx} data-study-year={selectedYear} data-study-question={qNum}
                 className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4 transition-all"
               >
                 {/* Sentence Header */}
@@ -304,7 +306,7 @@ export const TranslationPracticeView: React.FC<TranslationPracticeViewProps> = (
                       ({qNum})
                     </span>
                     <span className="text-xs font-bold text-slate-900 dark:text-slate-100">
-                      第 {qNum} 题 · 英译汉 (2.0 分)
+                      第 {qNum} 题 · 英译汉 (2.0 分)<QuestionNote year={selectedYear} number={qNum}/>
                     </span>
                   </div>
 

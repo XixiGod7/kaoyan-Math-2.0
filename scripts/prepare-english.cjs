@@ -2,6 +2,7 @@ const fs = require('node:fs'), path = require('node:path');
 const source = path.join(__dirname, '../apps/english/public/data'), target = path.join(__dirname, '../public/english-data');
 fs.mkdirSync(target, {recursive:true}); fs.cpSync(source,target,{recursive:true});
 fs.cpSync(path.join(source,'../images'),path.join(target,'../english-images'),{recursive:true});
+fs.cpSync(path.join(source,'../thumbs'),path.join(target,'../english-thumbs'),{recursive:true});
 const load = name => JSON.parse(fs.readFileSync(path.join(source,name),'utf8'));
 const catalog = {version:1,source:'XixiGod7/kaoyan-english@f1120a0',papers:{},questions:{},passages:{},sentences:{},words:{},practice:{}};
 for(const file of fs.readdirSync(path.join(source,'papers'))) {
@@ -28,6 +29,8 @@ for(const file of fs.readdirSync(path.join(source,'reading/passages'))) {
   }
   fs.writeFileSync(path.join(target,'reading/questions',file),JSON.stringify(questions));
 }
+for(const group of load('translation/translation_all.json'))for(const task of group.tasks){const id=group.year+':'+task.no;catalog.questions[id] ||= {id,year:String(group.year),number:task.no,title:group.year+' 年第 '+task.no+' 题翻译',objective:false,options:[]};}
+for(const item of load('essay/essays_all.json')){const number=item.part==='A'?51:52,id=item.year+':'+number;catalog.questions[id] ||= {id,year:String(item.year),number,title:item.directions,objective:false,options:[]};}
 for(const [word,entry] of Object.entries(load('kaoyan1_dict.json').entries)) catalog.words[word]=entry.definition_cn || '';
 fs.writeFileSync(path.join(target,'catalog.json'),JSON.stringify(catalog));
 console.log(`英语资料：${Object.keys(catalog.papers).length} 套试卷，${Object.keys(catalog.questions).length} 道题，${Object.keys(catalog.sentences).length} 个精读句子`);
