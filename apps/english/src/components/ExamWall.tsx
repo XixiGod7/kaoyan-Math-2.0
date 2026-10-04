@@ -350,10 +350,7 @@ export const ExamWall: React.FC<ExamWallProps> = ({
             <span className={`font-bold ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
               共 17 套卷 · 153 篇文章 · 762 个大纲核心重点单词
             </span>
-            <div className="flex items-center gap-4">
-              <span>💡 点击左侧单词高亮真题出现位置</span>
-              <span>👉 点击试卷卡片直接跳转该部分作答</span>
-            </div>
+
           </div>
         </div>
       )}

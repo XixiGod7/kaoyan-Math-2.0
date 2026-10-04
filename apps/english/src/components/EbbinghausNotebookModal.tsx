@@ -531,7 +531,7 @@ export const EbbinghausNotebookModal: React.FC<EbbinghausNotebookModalProps> = (
   const currentStageInfo = currentDueWord ? STAGE_LABELS[currentDueWord.stage] : null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+    <div className="study-modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
       <div className={`rounded-3xl max-w-4xl w-full max-h-[94vh] flex flex-col shadow-2xl border transition-colors overflow-hidden ${
         isDark ? 'bg-slate-900 border-slate-800 text-slate-100' : 'bg-white border-gray-200 text-gray-900'
       }`}>

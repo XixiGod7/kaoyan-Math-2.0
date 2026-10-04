@@ -30,10 +30,6 @@ export const App: React.FC = () => {
           <Route path="*" element={<Navigate to="/politics" replace />} />
         </Routes>
       </main>
-
-      <footer className="eb-footer">
-        <span>研砖 · 每一次认真练习，都算数</span>
-      </footer>
     </div>
   );
 };

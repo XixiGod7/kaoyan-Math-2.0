@@ -33,10 +33,10 @@ body.math-body .topbar .eb-subject,body.math-body .topbar .um{display:none!impor
 .study-images-upload{display:inline-flex;align-items:center;cursor:pointer;padding:9px 12px;border:1px solid #cfc5eb;border-radius:10px;color:#7c3aed;white-space:nowrap}.study-images input[hidden]{display:none!important}.study-images-status{color:var(--dim,#777);max-width:100%;line-height:1.5}
 
 @media(min-width:980px){.hub-courses{grid-template-columns:repeat(3,minmax(0,1fr))}}
-/* One centered study canvas across subjects. */
-:root{--study-width:1440px;--study-gutter:24px;--platform-header-height:66px}
+/* Shared fluid canvas across subjects, including maximized windows. */
+:root{--study-width:none;--study-gutter:20px;--platform-header-height:66px;--study-modal-scrim:rgba(19,31,45,.38);--study-modal-filter:blur(8px) saturate(1.15)}
 html{font-size:calc(16px * var(--fs,1))}
-.platform-header{position:sticky;top:0;z-index:110;padding-left:max(var(--study-gutter),calc((100vw - var(--study-width))/2));padding-right:max(var(--study-gutter),calc((100vw - var(--study-width))/2));gap:22px;min-height:66px}
+.platform-header{position:sticky;top:0;z-index:110;padding-left:var(--study-gutter);padding-right:var(--study-gutter);gap:22px;min-height:66px}
 .platform-header nav a{padding:7px 10px}.platform-font{display:flex;border:1px solid var(--platform-line);border-radius:9px;overflow:hidden}.platform-font button{border:0;border-radius:0;padding:6px}.platform-font #platform-font-reset{color:var(--platform-muted);font-size:calc(11px * var(--fs,1));min-width:39px}
 .platform-main,body.math-body .app,.politics-body .pb-app main{width:calc(100% - 2 * var(--study-gutter));max-width:var(--study-width);margin:0 auto;padding:28px 0 60px;box-sizing:border-box}
 body.math-body .app .page{max-width:none;margin:0;width:100%;box-sizing:border-box}body.math-body .topbar{max-width:var(--study-width);margin:0 auto;box-sizing:border-box}.subject-context,.source-notice{width:calc(100% - 2 * var(--study-gutter));max-width:var(--study-width);box-sizing:border-box;margin-left:auto;margin-right:auto}.subject-context{padding:16px 0}.politics-body .pb-app{background:var(--platform-bg)}
@@ -45,3 +45,13 @@ body.math-body .app .page{max-width:none;margin:0;width:100%;box-sizing:border-b
 @media(max-width:1100px){.platform-header{flex-wrap:wrap;gap:10px}.platform-header nav{order:3;width:100%;overflow:auto;flex-wrap:nowrap}.platform-tools{margin-left:auto}.platform-header nav a{flex-shrink:0}}
 @media(max-width:650px){:root{--study-gutter:14px}.platform-tools{gap:4px}.platform-tools #platform-profile,.platform-score{display:none!important}.platform-header{padding:10px 14px}.platform-brand{font-size:calc(19px * var(--fs,1));gap:6px}.platform-tools button{padding:6px}.platform-main,body.math-body .app,.politics-body .pb-app main{padding-top:20px}.export-subjects{grid-template-columns:1fr}.export-subjects article{display:flex;align-items:center;justify-content:space-between;gap:10px}.export-subjects b{margin:0;font-size:calc(21px * var(--fs,1))}}
 .politics-body .pb-app{width:100%;max-width:none;margin:0;padding:0}.politics-body .pb-hero h1{font-size:2rem}.politics-body .pb-hero{background:var(--platform-card);border:1px solid var(--platform-line);border-radius:16px;padding:24px}
+
+/* One backdrop for native dialogs and the legacy subject popup systems. */
+html[data-theme=dark]{--study-modal-scrim:rgba(5,13,22,.52)}
+dialog::backdrop{background:var(--study-modal-scrim)!important;-webkit-backdrop-filter:var(--study-modal-filter)!important;backdrop-filter:var(--study-modal-filter)!important}
+.study-modal-backdrop,.ai-modal-mask,.eb-modal-overlay,.modal-overlay,.mx-shot-mask,.install-mask,.mf-modal-backdrop,.srcpg-mask{background:var(--study-modal-scrim)!important;-webkit-backdrop-filter:var(--study-modal-filter)!important;backdrop-filter:var(--study-modal-filter)!important;z-index:9990!important}
+.study-drawer-backdrop{position:fixed;inset:0}
+.ML__keyboard{z-index:11000!important}.MLK__variant-panel{z-index:11001!important}
+.platform-modal button.study-modal-close{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:8px 13px;margin:0 0 0 16px;flex-shrink:0;border:1px solid var(--platform-line);border-radius:10px;background:var(--platform-soft);color:var(--platform-ink);font-size:calc(14px * var(--fs,1));font-weight:600;line-height:1.4}
+.study-modal-close span{font-size:calc(22px * var(--fs,1));line-height:1}.platform-modal button.study-modal-close:hover{border-color:var(--platform-accent);color:var(--platform-accent)}
+.study-modal-close:focus-visible{outline:3px solid var(--platform-accent);outline-offset:3px}

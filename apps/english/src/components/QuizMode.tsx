@@ -2397,7 +2397,7 @@ export default function QuizMode({
       </div>
 
       {showResultModal && scoreReport && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-fade-in">
+        <div className="study-modal-backdrop fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-fade-in">
           <div className={`rounded-2xl shadow-2xl max-w-xl w-full flex flex-col overflow-hidden border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'}`}>
             <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-6 text-white text-center relative">
               <button onClick={() => setShowResultModal(false)} className="absolute top-4 right-4 text-white/80 hover:text-white text-xl font-bold w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center">✕</button>
@@ -2439,7 +2439,7 @@ export default function QuizMode({
       {/* Image Lightbox Fullscreen Preview Modal */}
       {previewImageUrl && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-fade-in cursor-zoom-out"
+          className="study-modal-backdrop fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-fade-in cursor-zoom-out"
           onClick={() => setPreviewImageUrl(null)}
         >
           <div className="relative max-w-[96vw] max-h-[96vh] flex flex-col items-center cursor-default" onClick={e => e.stopPropagation()}>

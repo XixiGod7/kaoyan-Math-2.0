@@ -85,7 +85,7 @@ export const DataBackupModal: React.FC<DataBackupModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
+    <div className="study-modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
       <div className={`rounded-2xl max-w-xl w-full shadow-2xl overflow-hidden border transition-colors flex flex-col ${
         isDark ? 'bg-slate-900 border-slate-700 text-slate-100' : 'bg-white border-gray-200 text-gray-900'
       }`}>

@@ -565,7 +565,7 @@ ${currentEssay.directions}
       {/* Image Zoom Modal */}
       {isImageZoomed && currentEssay?.image && (
         <div
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 cursor-pointer"
+          className="study-modal-backdrop fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 cursor-pointer"
           onClick={() => setIsImageZoomed(false)}
         >
           <div className="relative max-w-3xl max-h-[90vh] bg-white dark:bg-slate-900 rounded-2xl p-4 overflow-hidden">

@@ -7,7 +7,7 @@ const banks = [], chapters = {};
 let questionCount = 0;
 for (const filename of fs.readdirSync(source).filter(f => f.endsWith('.json')).sort()) {
   const bank = JSON.parse(fs.readFileSync(path.join(source, filename), 'utf8'));
-  const bankName = bank.kind === 'exam' ? `${bank.code.replace('exam-', '')} 年政治选择题练习卷（导入）` : bank.name;
+  const bankName = bank.kind === 'exam' ? `${bank.code.replace('exam-', '')} 年政治选择题练习卷` : bank.name;
   const summaries = bank.chapters.map((chapter, ci) => {
     const code = `${bank.code}--${ci}`;
     const questions = (chapter.questions || []).map((q, qi) => ({

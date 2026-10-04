@@ -37,7 +37,7 @@
 
 公开仓库：[XixiGod7/kaoyan-Math-2.0](https://github.com/XixiGod7/kaoyan-Math-2.0)。生产 Worker 为 `kaoyan-math-2-0`，保留原访客 Durable Object 数据。GitHub `main` 已关联 Cloudflare Workers Builds；构建执行 `npm test && npm run build`，成功后执行 `npm run deploy`。
 
-在线入口：[研砖学习总览](https://kaoyan-math-2-0.cxmxibing.workers.dev/)。前次验收的业务代码提交为 `9da0aed1b23eda921df64daa1419291791080cac`，Cloudflare 生产构建 `b17308b8-b064-41ff-8c0f-67308d2d74f0` 成功，完成时间为 2026-10-04 10:04:12（北京时间）。部署后已完成上述 33 项验收与浏览器复习联动验证。
+在线入口：[真题库学习总览](https://kaoyan-math-2-0.cxmxibing.workers.dev/)。前次验收的业务代码提交为 `9da0aed1b23eda921df64daa1419291791080cac`，Cloudflare 生产构建 `b17308b8-b064-41ff-8c0f-67308d2d74f0` 成功，完成时间为 2026-10-04 10:04:12（北京时间）。部署后已完成上述 33 项验收与浏览器复习联动验证。
 
 ## 仍存在的限制
 
