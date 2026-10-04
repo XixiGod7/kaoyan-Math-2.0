@@ -14,14 +14,22 @@ export class UserStore extends DurableObject {
   }
 
   async fetch(request) {
-    return db.runWithStorage(this.ctx.storage.sql, () => handleAsNodeRequest(3000, request));
+    return db.runWithStorage(this.ctx.storage.sql, () => handleAsNodeRequest(3000, request), this.env.ASSETS);
   }
 }
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    if (!url.pathname.startsWith('/api/')) return env.ASSETS.fetch(request);
+    if (!url.pathname.startsWith('/api/')) {
+      if (url.pathname === '/') url.pathname = '/hub/index.html';
+      else if (url.pathname === '/library') url.pathname = '/hub/library.html';
+      else if (url.pathname === '/politics' || url.pathname.startsWith('/politics/')) url.pathname = '/politics-app/index.html';
+      else if (url.pathname === '/growth' || url.pathname.startsWith('/growth/')) {
+        if (!/\.[a-z0-9]+$/i.test(url.pathname)) url.pathname = '/growth/index.html';
+      }
+      return env.ASSETS.fetch(new Request(url, request));
+    }
     if (!['GET', 'HEAD', 'OPTIONS'].includes(request.method)) {
       const origin = request.headers.get('Origin');
       if ((origin && origin !== url.origin) || request.headers.get('Sec-Fetch-Site') === 'cross-site') {

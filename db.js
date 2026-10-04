@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { AsyncLocalStorage } = require('node:async_hooks');
+const { randomUUID } = require('node:crypto');
 const storageContext = new AsyncLocalStorage();
 
 const DATA_DIR = process.env.DATA_DIR || path.join(typeof __dirname === 'string' ? __dirname : '/tmp', 'data');
@@ -10,10 +11,19 @@ function getFilePath(name) {
 }
 
 function readJSON(name, defaultValue) {
-  const sql = storageContext.getStore();
+  const sql = storageContext.getStore()?.sql;
   if (sql) {
     const rows = sql.exec('SELECT value FROM documents WHERE name = ?', name).toArray();
-    return rows.length ? JSON.parse(rows[0].value) : structuredClone(defaultValue);
+    if (!rows.length) return structuredClone(defaultValue);
+    const value = JSON.parse(rows[0].value);
+    if (!value?.__mb_chunks) return value;
+    let content = '';
+    for (let i = 0; i < value.count; i++) {
+      const part = sql.exec('SELECT value FROM documents WHERE name = ?', `${name}::${value.__mb_chunks}:${i}`).toArray()[0];
+      if (!part) throw new Error('个人记录分片不完整');
+      content += JSON.parse(part.value);
+    }
+    return JSON.parse(content);
   }
   const file = getFilePath(name);
   if (!fs.existsSync(file)) {
@@ -29,9 +39,19 @@ function readJSON(name, defaultValue) {
 }
 
 function saveJSON(name, data) {
-  const sql = storageContext.getStore();
+  const sql = storageContext.getStore()?.sql;
   if (sql) {
-    sql.exec('INSERT INTO documents (name, value) VALUES (?, ?) ON CONFLICT(name) DO UPDATE SET value = excluded.value', name, JSON.stringify(data));
+    const content = JSON.stringify(data), old = sql.exec('SELECT value FROM documents WHERE name = ?', name).toArray()[0];
+    const oldValue = old ? JSON.parse(old.value) : null;
+    const write = (key, value) => sql.exec('INSERT INTO documents (name, value) VALUES (?, ?) ON CONFLICT(name) DO UPDATE SET value = excluded.value', key, value);
+    if (content.length > 128000) {
+      const version = randomUUID(), count = Math.ceil(content.length / 128000);
+      // Publish the new manifest only after all immutable pieces have been written.
+      // Each piece stays below SQLite Durable Objects' per-row size limit.
+      for (let i = 0; i < count; i++) write(`${name}::${version}:${i}`, JSON.stringify(content.slice(i * 128000, (i + 1) * 128000)));
+      write(name, JSON.stringify({ __mb_chunks: version, count }));
+    } else write(name, content);
+    if (oldValue?.__mb_chunks) for (let i = 0; i < oldValue.count; i++) sql.exec('DELETE FROM documents WHERE name = ?', `${name}::${oldValue.__mb_chunks}:${i}`);
     return;
   }
   fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -59,7 +79,8 @@ const initialProfile = {
 };
 
 module.exports = {
-  runWithStorage: (sql, callback) => storageContext.run(sql, callback),
+  runWithStorage: (sql, callback, assets) => storageContext.run({ sql, assets }, callback),
+  getAssets: () => storageContext.getStore()?.assets,
   readJSON,
   saveJSON,
   getProfile: () => readJSON('user_profile', initialProfile),

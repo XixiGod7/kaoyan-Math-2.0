@@ -1,0 +1,188 @@
+{
+  "currencies": [
+    {
+      "id": "gbp",
+      "name": "英镑",
+      "icon": "💷",
+      "color": "#10b981",
+      "desc": "外语与语言学习（如精读生词、句式摘录）",
+      "difficulty": 1
+    },
+    {
+      "id": "code",
+      "name": "码",
+      "icon": "💻",
+      "color": "#3b82f6",
+      "desc": "代码编写、软件开发与技术攻坚",
+      "difficulty": 3
+    },
+    {
+      "id": "knowledge",
+      "name": "知识点",
+      "icon": "🧠",
+      "color": "#8b5cf6",
+      "desc": "大学学科体系通识课程、专业教材研读",
+      "difficulty": 2
+    },
+    {
+      "id": "book",
+      "name": "书币",
+      "icon": "📚",
+      "color": "#f59e0b",
+      "desc": "阅读完整整一本书产出（非零碎刷页）",
+      "difficulty": 3
+    },
+    {
+      "id": "byte",
+      "name": "字节",
+      "icon": "🎞️",
+      "color": "#ec4899",
+      "desc": "自媒体内容创作、视频剪辑与长文产出",
+      "difficulty": 3
+    },
+    {
+      "id": "powder",
+      "name": "粉",
+      "icon": "⚡",
+      "color": "#ef4444",
+      "desc": "高强度运动、减脂体能、动感单车",
+      "difficulty": 2
+    }
+  ],
+  "loan_rules": {
+    "gbp": {
+      "base_days": 2,
+      "per_coin_days": 1
+    },
+    "code": {
+      "base_days": 4,
+      "per_coin_days": 2
+    },
+    "knowledge": {
+      "base_days": 3,
+      "per_coin_days": 1
+    },
+    "book": {
+      "base_days": 4,
+      "per_coin_days": 2
+    },
+    "byte": {
+      "base_days": 4,
+      "per_coin_days": 2
+    },
+    "powder": {
+      "base_days": 3,
+      "per_coin_days": 2
+    }
+  },
+  "deposit_tiers": [
+    {
+      "amount": 500,
+      "days": 10,
+      "daily_interest": 1,
+      "token_reward": 0
+    },
+    {
+      "amount": 500,
+      "days": 20,
+      "daily_interest": 2,
+      "token_reward": 0
+    },
+    {
+      "amount": 500,
+      "days": 30,
+      "daily_interest": 3,
+      "token_reward": 1
+    },
+    {
+      "amount": 1000,
+      "days": 10,
+      "daily_interest": 2,
+      "token_reward": 0
+    },
+    {
+      "amount": 1000,
+      "days": 20,
+      "daily_interest": 3,
+      "token_reward": 0
+    },
+    {
+      "amount": 1000,
+      "days": 30,
+      "daily_interest": 5,
+      "token_reward": 2
+    }
+  ],
+  "default_shop_items": [
+    {
+      "id": "item_coffee",
+      "title": "精品咖啡馆入座自习权 (30-40元)",
+      "category": "lifestyle",
+      "type": "physical",
+      "cost_type": "token_any",
+      "cost_amount": 1,
+      "desc": "在咖啡馆点一杯特调入座专注阅读 2~3 小时"
+    },
+    {
+      "id": "item_muji_low",
+      "title": "MUJI / 文具日常小物 (<20元)",
+      "category": "stationery",
+      "type": "physical",
+      "cost_type": "token_any",
+      "cost_amount": 2,
+      "desc": "购买无印良品或优质文具日用品（需遵守二次支付法则）"
+    },
+    {
+      "id": "item_ikea_mid",
+      "title": "宜家 / 居家升级好物 (40-60元)",
+      "category": "furniture",
+      "type": "physical",
+      "cost_type": "multi_token",
+      "cost_details": "两种货币各2枚（共4枚）",
+      "cost_amount": 4,
+      "desc": "提升居家自习环境的实用收纳或工具"
+    },
+    {
+      "id": "item_new_book",
+      "title": "购买一本新实体书",
+      "category": "books",
+      "type": "physical",
+      "cost_type": "token_any",
+      "cost_amount": 3,
+      "secondary_payment_category": "books",
+      "desc": "购买一本想读的纸质书。注意：前一本未完成二次支付前强制锁定！"
+    },
+    {
+      "id": "item_tv_ep",
+      "title": "追剧 / 动漫特权 (1集)",
+      "category": "privilege",
+      "type": "points",
+      "points_cost": 20,
+      "desc": "兑换看 1 集电视剧或番剧（前置条件：待办事项清单 < 15项）"
+    },
+    {
+      "id": "item_reading_time",
+      "title": "超额自由阅读时间 (30分钟)",
+      "category": "privilege",
+      "type": "points",
+      "points_cost": 50,
+      "desc": "在每日免费 30 分钟阅读用完后，付费购买 30 分钟纯休闲小说/社科阅读权"
+    },
+    {
+      "id": "item_movie",
+      "title": "线上电影观影特权 (30分钟)",
+      "category": "privilege",
+      "type": "points",
+      "points_cost": 60,
+      "desc": "线上优质影片观影权限"
+    },
+    {
+      "id": "item_game_hour",
+      "title": "Steam / 主机游戏时光 (1小时)",
+      "category": "privilege",
+      "type": "points",
+      "points_cost": 80,
+      "desc": "沉浸式游戏时间，不可影响晚间复盘"
+    }
+  ]
+}

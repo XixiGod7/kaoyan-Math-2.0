@@ -6,6 +6,7 @@ const db = require('./db');
 const { getSolutionForQuestion } = require('./solutionEngine');
 const aiService = require('./aiService');
 const examService = require('./examService');
+const growth = require('./services/growth');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,6 +15,7 @@ app.disable('x-powered-by');
 if (require.main === module) app.use(cors());
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
+require('./services/integration').mount(app);
 
 // Load static datasets into memory for fast querying
 const { allQuestionsList, indexAll, indexMain, realMeta, syllabus, pojueMethods, pojueGraph } = require('./datasets');
@@ -73,7 +75,7 @@ app.get('/api/login/check', (req, res) => {
 app.get('/api/state', (req, res) => {
   const progress = db.getProgress();
   res.json({
-    choiceToday: progress.lastActive === new Date().toISOString().slice(0, 10) ? progress.todayCount || 0 : 0,
+    choiceToday: progress.lastActive === growth.dayKey() ? progress.todayCount || 0 : 0,
     choiceLimit: 0, // 0 means unlimited
     answers: Object.keys(progress.answered || {})
   });
@@ -93,7 +95,7 @@ app.post('/api/answer', (req, res) => {
   const progress = db.getProgress();
   progress.answered ||= {};
   const prior = progress.answered[String(questionId)];
-  const today = new Date().toISOString().slice(0, 10);
+  const today = growth.dayKey();
   if (progress.lastActive !== today) progress.todayCount = 0;
   progress.lastActive = today;
   progress.todayCount = (progress.todayCount || 0) + 1;
@@ -105,7 +107,8 @@ app.post('/api/answer', (req, res) => {
   };
   db.saveProgress(progress);
   if (!correct) collectWrong(questionId);
-  res.json({ ok: true, ...progress.answered[String(questionId)] });
+  const reward = growth.recordLearning('math', 'answer', questionId);
+  res.json({ ok: true, ...progress.answered[String(questionId)], reward });
 });
 
 app.delete('/api/answer/:id/time', (req, res) => {
@@ -208,17 +211,25 @@ app.post('/api/math/grade', (req, res) => {
   if (!q) return res.status(404).json({ error: '题目不存在' });
   const sol = getSolutionForQuestion(q);
   if (!sol.verified) return res.json({ error: '本题尚无核验答案，暂不自动判分，请使用自评。', needsSelfReview: true });
+  if (typeof answer !== 'string' || !answer.trim() || answer.length > 2000) return res.status(400).json({ error: '请输入有效答案' });
   const isCorrect = String(answer).trim().toUpperCase() === String(sol.final_answer).trim().toUpperCase();
 
   // Record into progress
   const progress = db.getProgress();
   progress.answered = progress.answered || {};
+  const previous = progress.answered[String(id)], today = growth.dayKey();
+  if (progress.lastActive !== today) progress.todayCount = 0;
   progress.answered[String(id)] = {
+    ...previous,
     answer,
     correct: isCorrect,
-    timestamp: Date.now()
+    firstCorrect: previous?.firstCorrect ?? isCorrect,
+    attempts: (previous?.attempts || 0) + 1,
+    timestamp: Date.now(),
+    lastAt: new Date().toISOString()
   };
-  progress.todayCount = (progress.todayCount || 0) + 1;
+  progress.lastActive = today;
+  if (!previous || growth.dayKey(previous.timestamp) !== today) progress.todayCount = (progress.todayCount || 0) + 1;
   db.saveProgress(progress);
 
   // If wrong, add to wrong book
@@ -250,7 +261,8 @@ app.post('/api/math/grade', (req, res) => {
     total: 1,
     answer: sol.final_answer,
     explanation: sol.analysis_md,
-    wrongIds: isCorrect ? [] : [id]
+    wrongIds: isCorrect ? [] : [id],
+    reward: growth.recordLearning('math', 'answer', id)
   });
 });
 
@@ -432,17 +444,19 @@ app.get('/api/notes', (req, res) => {
 
 app.post('/api/note', (req, res) => {
   const { questionId, text } = req.body;
+  if (!allQuestionsMap.has(String(questionId)) || typeof text !== 'string' || text.length > 20000) return res.status(400).json({ error: '笔记或题目无效' });
   const notes = db.getNotes();
   notes[String(questionId)] = {
     text: text,
     updatedAt: new Date().toISOString()
   };
   db.saveNotes(notes);
-  res.json({ ok: true });
+  res.json({ ok: true, reward: growth.recordLearning('math', 'note', questionId, { text }) });
 });
 
 app.post('/api/note/append', (req, res) => {
   const { questionId, text } = req.body;
+  if (!allQuestionsMap.has(String(questionId)) || typeof text !== 'string' || text.length > 20000) return res.status(400).json({ error: '笔记或题目无效' });
   const notes = db.getNotes();
   const existing = notes[String(questionId)] ? (notes[String(questionId)].text || '') + '\n' : '';
   notes[String(questionId)] = {
@@ -450,7 +464,7 @@ app.post('/api/note/append', (req, res) => {
     updatedAt: new Date().toISOString()
   };
   db.saveNotes(notes);
-  res.json({ ok: true });
+  res.json({ ok: true, reward: growth.recordLearning('math', 'note', questionId, { text: notes[String(questionId)].text }) });
 });
 
 // -------------------------------------------------------------
@@ -468,12 +482,10 @@ app.get('/api/review/today', (req, res) => {
 
 app.post('/api/review/answer', (req, res) => {
   const { questionId, rating } = req.body; // rating: 'again', 'hard', 'good', 'easy'
+  if (!allQuestionsMap.has(String(questionId)) || !['again', 'hard', 'good', 'easy'].includes(rating)) return res.status(400).json({ error: '复习评分或题目无效' });
   const cards = db.getReviewCards();
   let card = cards.find(c => String(c.id) === String(questionId));
-  if (!card) {
-    card = { id: questionId, interval: 1, reps: 0 };
-    cards.push(card);
-  }
+  if (!card || card.nextDue > Date.now()) return res.status(400).json({ error: '该题尚未到复习时间' });
 
   // Simple FSRS / SuperMemo interval scaling
   if (rating === 'again') {
@@ -489,7 +501,7 @@ app.post('/api/review/answer', (req, res) => {
   card.nextDue = Date.now() + card.interval * 86400000;
   db.saveReviewCards(cards);
 
-  res.json({ ok: true, interval: card.interval });
+  res.json({ ok: true, interval: card.interval, reward: growth.recordLearning('math', 'review', questionId) });
 });
 
 app.post('/api/review/enroll', (req, res) => {
@@ -545,11 +557,13 @@ app.get('/api/feedback/board', (req, res) => {
 });
 
 app.post('/api/feedback/board', (req, res) => {
-  const { title, tag } = req.body;
+  const { title, tag, content, subject } = req.body;
+  if (typeof title !== 'string' || !title.trim() || title.length > 120 || (content && (typeof content !== 'string' || content.length > 3000))) return res.status(400).json({ error: '反馈内容无效' });
   const list = db.getFeedback();
   const item = {
     id: 'fb-' + Date.now(),
     title: title || '新功能建议',
+    content: content || '', subject: subject || 'math',
     votes: 1,
     tag: tag || '建议',
     status: '已收录',
@@ -983,6 +997,11 @@ app.get('/api/exam-papers/:id/attempts', (req, res) => {
 // -------------------------------------------------------------
 // Static Files & SPA Fallback
 // -------------------------------------------------------------
+if (require.main === module) app.get(['/', '/library', '/politics', '/politics/{*rest}', '/growth', '/growth/{*rest}'], (req, res, next) => {
+  if (path.extname(req.path)) return next();
+  const file = req.path.startsWith('/politics') ? 'politics-app/index.html' : req.path.startsWith('/growth') ? 'growth/index.html' : req.path === '/library' ? 'hub/library.html' : 'hub/index.html';
+  res.sendFile(path.join(__dirname, 'public', file));
+});
 if (require.main === module) app.use(express.static(path.join(__dirname, 'public'), {
   maxAge: 0,
   etag: false,

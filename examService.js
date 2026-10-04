@@ -72,7 +72,9 @@ function submitPaper(key, questions, payload) {
   const attempts = db.getPaperAttempts();
   attempts[key] = [attempt, ...(attempts[key] || [])];
   db.savePaperAttempts(attempts);
-  return { ok: true, attemptId: attempt.id, ...attempt };
+  const complete = questions.length > 0 && assessed.every(a => String(a.chosen ?? a.answerText ?? '').trim());
+  const reward = complete ? require('./services/growth').recordLearning('math', 'exam', key) : { credited: false, points: 0 };
+  return { ok: true, attemptId: attempt.id, ...attempt, complete, reward };
 }
 
 module.exports = { filterQuestions, createPaper, submitPaper };

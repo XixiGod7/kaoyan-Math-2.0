@@ -11,3 +11,5 @@ artifacts/
 dist/
 worker-configuration.d.ts
 /.github/workflows/
+/public/politics-data/
+/public/politics-app/
