@@ -676,7 +676,7 @@ export default function QuizMode({
       {/* Middle: Desktop Horizontal Tabs (xl+) / Narrow Screen Dropdown Selector (<xl) */}
 
       {/* 1. Desktop Horizontal Tabs (>= 1280px) */}
-      <div className="hidden xl:flex items-center gap-1 overflow-x-auto flex-1 min-w-0 py-1 px-1 no-scrollbar justify-center">
+      <div className="quiz-section-tabs hidden xl:flex items-center gap-1 overflow-x-auto flex-1 min-w-0 py-1 px-1 no-scrollbar justify-center">
         {TABS.map(tab => {
           const stats = getTabStats(tab);
           return (
@@ -703,7 +703,7 @@ export default function QuizMode({
       </div>
 
       {/* 2. Narrow Screen Dropdown Selector (< 1280px) */}
-      <div className="flex xl:hidden items-center relative flex-1 min-w-0 justify-center px-1">
+      <div className="quiz-section-select flex xl:hidden items-center relative flex-1 min-w-0 justify-center px-1">
         <button
           id="section-dropdown-trigger"
           onClick={() => setIsSectionDropdownOpen(prev => !prev)}
@@ -2392,7 +2392,7 @@ export default function QuizMode({
       )}
 
       {/* Main View Container */}
-      <div className="flex-1 overflow-hidden relative min-h-0">
+      <div className="quiz-content flex-1 overflow-hidden relative min-h-0">
         {renderActiveView()}
       </div>
 

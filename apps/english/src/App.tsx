@@ -365,8 +365,7 @@ export const App: React.FC = () => {
       isDark ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-gray-900'
     }`}>
       {/* Top Bar Navigation */}
-      {!selectedYear && (
-        <Header
+      <Header
           onGoHome={() => {
             setCurrentTab('home');
             setSelectedYear(null);
@@ -379,9 +378,10 @@ export const App: React.FC = () => {
           currentTab={currentTab}
           onSelectTab={(tab) => {
             setCurrentTab(tab);
-            if (tab !== 'quiz') {
-              setSelectedYear(null);
-            }
+            setSelectedYear(null);
+            setTargetSentenceId(null);
+            setTargetTab(null);
+            setTargetSectionId(null);
           }}
           theme={theme}
           onToggleTheme={undefined}
@@ -394,9 +394,8 @@ export const App: React.FC = () => {
           fontSizeLevel={fontSizeLevel}
           onSetFontSize={undefined}
         />
-      )}
 
-      <StudyBridge year={selectedYear || currentPassKey.slice(0,4)} context={currentTab+(selectedYear || currentPassKey)} onReview={()=>setIsEbbinghausOpen(true)}/>
+      <StudyBridge context={currentTab+(selectedYear || currentPassKey)}/>
       {loading ? (
         <div className={`flex-1 flex items-center justify-center text-sm font-bold gap-3 ${
           isDark ? 'text-slate-300' : 'text-slate-600'
@@ -406,7 +405,7 @@ export const App: React.FC = () => {
         </div>
       ) : selectedYear ? (
         /* Full Quiz Mode View for Selected Year */
-        <div className="flex-1 h-full min-h-0 overflow-hidden">
+        <div className="english-paper-workspace flex-1 h-full min-h-0 overflow-hidden">
           <QuizMode
             year={selectedYear}
             initialTargetSentenceId={targetSentenceId}

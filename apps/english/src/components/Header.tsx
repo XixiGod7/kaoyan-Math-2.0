@@ -123,28 +123,19 @@ export const Header: React.FC<HeaderProps> = ({
     currentTab === 'vocab';
 
   return (
-    <header className={`english-module-header ${isDark ? 'bg-slate-900 border-slate-800 text-slate-100' : 'bg-white border-gray-200 text-gray-900'} border-b sticky top-0 z-40 shadow-sm transition-colors duration-200`}>
-      <div className="w-full px-3 sm:px-4 md:px-6 h-14 flex items-center justify-between gap-2">
+    <header className={`subject-nav english-module-header ${isDark ? 'bg-slate-900 border-slate-800 text-slate-100' : 'bg-white border-gray-200 text-gray-900'} border-b sticky top-0 z-40 shadow-sm transition-colors duration-200`}>
+      <div className="subject-nav-layout w-full flex items-center justify-between gap-2">
         {/* Left: Brand Logo & Navigation */}
-        <div className="flex items-center gap-3 sm:gap-6">
-          <button
-            onClick={onGoHome}
-            className="flex items-center gap-2 text-base sm:text-xl font-extrabold text-blue-600 hover:opacity-90 transition-all group shrink-0 cursor-pointer"
-            title="点击返回网站首页"
-          >
-            <span className="text-emerald-700 font-bold">英</span>
-            <span className={`tracking-tight font-black flex items-center ${isDark ? 'text-white' : 'text-gray-900'}`}>
-              真题库 <span className={`text-xs font-normal ${isDark ? 'text-slate-400 border-slate-700' : 'text-gray-400 border-gray-300'} border-l pl-2 ml-1.5 hidden xs:inline`}>考研英语一</span>
-            </span>
-          </button>
+        <div className="subject-nav-main flex items-center gap-3 sm:gap-6">
+          <span className="subject-nav-title">英语研习</span>
 
           {/* Navigation Tabs */}
           {onSelectTab && (
-            <nav className="flex items-center gap-1 sm:gap-1.5 text-xs font-medium">
+            <nav aria-label="英语导航" className="subject-nav-items flex items-center gap-1 sm:gap-1.5 text-xs font-medium">
               {/* Tab 0: 首页 */}
               <button
                 type="button"
-                onClick={() => handleTabClick('home')}
+                data-active={currentTab === 'home'} onClick={() => handleTabClick('home')}
                 className={`px-2.5 sm:px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1 cursor-pointer ${
                   currentTab === 'home'
                     ? isDark
@@ -162,7 +153,7 @@ export const Header: React.FC<HeaderProps> = ({
               {/* Tab 1: 长难句精读 */}
               <button
                 type="button"
-                onClick={() => handleTabClick('reading')}
+                data-active={currentTab === 'reading'} onClick={() => handleTabClick('reading')}
                 className={`px-2.5 sm:px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1 cursor-pointer ${
                   currentTab === 'reading'
                     ? isDark
@@ -181,7 +172,7 @@ export const Header: React.FC<HeaderProps> = ({
               <div className="relative" ref={practiceDropdownRef}>
                 <button
                   type="button"
-                  onClick={() => {
+                  data-active={isPracticeActive} aria-expanded={isPracticeDropdownOpen} aria-haspopup="menu" onClick={() => {
                     setIsPracticeDropdownOpen(!isPracticeDropdownOpen);
                     setIsVocabDropdownOpen(false);
                   }}
@@ -197,11 +188,11 @@ export const Header: React.FC<HeaderProps> = ({
                 >
                   <Target className="w-3.5 h-3.5 text-blue-500" />
                   <span>练习</span>
-                  <ChevronDown className="w-3 h-3 opacity-60" />
+                  <ChevronDown className="subject-nav-chevron w-3 h-3 opacity-60" />
                 </button>
 
                 {isPracticeDropdownOpen && (
-                  <div className={`absolute left-0 top-full mt-1.5 w-52 rounded-xl shadow-2xl z-50 p-1.5 space-y-1 border ${
+                  <div className={`subject-nav-menu absolute left-0 top-full mt-1.5 w-52 rounded-xl shadow-2xl z-50 p-1.5 space-y-1 border ${
                     isDark ? 'bg-slate-900 border-slate-700 text-slate-100' : 'bg-white border-gray-200 text-gray-800'
                   }`}>
                     {/* 1. 全真真题卷 */}
@@ -296,7 +287,7 @@ export const Header: React.FC<HeaderProps> = ({
               <div className="relative" ref={vocabDropdownRef}>
                 <button
                   type="button"
-                  onClick={() => {
+                  data-active={isVocabGrammarActive} aria-expanded={isVocabDropdownOpen} aria-haspopup="menu" onClick={() => {
                     setIsVocabDropdownOpen(!isVocabDropdownOpen);
                     setIsPracticeDropdownOpen(false);
                   }}
@@ -312,11 +303,11 @@ export const Header: React.FC<HeaderProps> = ({
                 >
                   <Layers className="w-3.5 h-3.5 text-teal-500" />
                   <span>词汇语法</span>
-                  <ChevronDown className="w-3 h-3 opacity-60" />
+                  <ChevronDown className="subject-nav-chevron w-3 h-3 opacity-60" />
                 </button>
 
                 {isVocabDropdownOpen && (
-                  <div className={`absolute left-0 top-full mt-1.5 w-52 rounded-xl shadow-2xl z-50 p-1.5 space-y-1 border ${
+                  <div className={`subject-nav-menu absolute left-0 top-full mt-1.5 w-52 rounded-xl shadow-2xl z-50 p-1.5 space-y-1 border ${
                     isDark ? 'bg-slate-900 border-slate-700 text-slate-100' : 'bg-white border-gray-200 text-gray-800'
                   }`}>
                     <button
@@ -373,7 +364,7 @@ export const Header: React.FC<HeaderProps> = ({
               {/* Tab 4: 个人中心 */}
               <button
                 type="button"
-                onClick={() => handleTabClick('personal')}
+                data-active={currentTab === 'personal'} onClick={() => handleTabClick('personal')}
                 className={`px-2.5 sm:px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1 ${
                   currentTab === 'personal'
                     ? isDark
@@ -393,7 +384,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+        <div className="subject-nav-actions flex items-center gap-1 sm:gap-2 shrink-0">
           {/* AI Settings Button */}
           {onOpenAiConfig && (
             <button
@@ -411,6 +402,8 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
 
+          <div id="english-study-tools" className="subject-nav-study-tools" />
+
           {/* Ebbinghaus Vocabulary Notebook & Review Button */}
           {onOpenEbbinghaus && (
             <button
@@ -423,7 +416,7 @@ export const Header: React.FC<HeaderProps> = ({
               title="艾宾浩斯抗遗忘背词"
             >
               <Brain className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-              <span className="hidden lg:inline">背词</span>
+              <span className="hidden lg:inline">词汇复习</span>
               {dueReviewCount > 0 && (
                 <span className="bg-rose-500 text-white text-[10px] font-black px-1.5 py-0.2 rounded-full">
                   {dueReviewCount}

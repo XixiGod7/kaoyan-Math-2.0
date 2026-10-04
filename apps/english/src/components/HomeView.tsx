@@ -177,9 +177,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-12 sm:space-y-16 animate-in fade-in duration-300">
+    <div className="english-home w-full space-y-8">
       {/* 1. Hero Section */}
-      <section className="relative rounded-3xl p-6 sm:p-10 lg:p-12 overflow-hidden border border-slate-200/80 dark:border-slate-800/80 bg-gradient-to-br from-indigo-50/70 via-white to-blue-50/50 dark:from-slate-900/95 dark:via-slate-900/90 dark:to-indigo-950/40 shadow-sm">
+      <section className="english-home-hero relative rounded-3xl p-6 sm:p-10 lg:p-12 overflow-hidden border border-slate-200/80 dark:border-slate-800/80 bg-gradient-to-br from-indigo-50/70 via-white to-blue-50/50 dark:from-slate-900/95 dark:via-slate-900/90 dark:to-indigo-950/40 shadow-sm">
         {/* Background glow & decorative shapes */}
         <div className="absolute top-0 right-0 -mr-16 -mt-16 w-80 h-80 rounded-full bg-blue-400/10 dark:bg-indigo-500/10 blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-1/3 -mb-16 w-72 h-72 rounded-full bg-indigo-400/10 dark:bg-blue-600/10 blur-3xl pointer-events-none" />

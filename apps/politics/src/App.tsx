@@ -12,7 +12,6 @@ export const App: React.FC = () => {
   return (
     <div className="app pb-app">
       <TopBar />
-      <div className="source-notice">导入题库含生成与整理内容，答案供练习参考；年份标签不代表已核验的官方真题。</div>
 
       <main>
         <Routes>
