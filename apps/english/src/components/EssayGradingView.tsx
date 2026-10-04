@@ -219,7 +219,7 @@ export const EssayGradingView: React.FC<EssayGradingViewProps> = ({
 
     try {
       const isPartB = currentEssay.part === 'B';
-      const systemPrompt = `你是一位专注考研英语一写作阅卷的国家级专家。
+      const systemPrompt = `你是一位专注考研英语一写作的学习辅导员。
 请根据考生的试题要求，撰写一篇 100% 符合考研英语一阅卷满分档标准的【官方标杆级高分示范范文】。
 
 【输出格式要求】：

@@ -94,7 +94,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
       iconColor: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60',
       actionText: '开始翻译练习 →',
       onClick: () => onNavigateTab('translation'),
-      features: ['历年 Part C 经典翻译划线真题', '中英独立翻译作答与保存自动保存', 'AI 老师评分诊断报告 (满分2.0分)', '资料参考译文对照与拆解']
+      features: ['历年 Part C 经典翻译划线真题', '中英独立翻译作答与云端保存', 'AI 学习评分报告 (满分2.0分)', '资料参考译文对照与拆解']
     },
     {
       id: 'essay',
@@ -169,7 +169,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
     {
       id: 'backup',
       title: '数据离线备份与跨端迁移',
-      desc: '学习记录、背词打卡、生词本完全保存在保存浏览器中，支持一键 JSON 导出与恢复。',
+      desc: '英语学习记录、背词打卡与生词本按访客保存在云端，支持 JSON 备份导出与恢复。',
       icon: HardDriveDownload,
       iconBg: 'bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400',
       onClick: onOpenBackup,
@@ -390,17 +390,17 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
       </section>
 
-      {/* 4. Platform Safety & Offline Architecture Banner */}
+      {/* 4. Cloud storage and backup */}
       <section className="rounded-3xl border border-slate-200/80 dark:border-slate-800/80 bg-slate-100/60 dark:bg-slate-900/60 p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="space-y-2 text-center md:text-left">
           <div className="flex items-center justify-center md:justify-start gap-2">
             <ShieldCheck className="w-5 h-5 text-emerald-500" />
             <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
-              离线优先架构 · 学习数据 云端 掌握在自己手中
+              学习数据云端保存 · 支持导出备份
             </h3>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-2xl leading-relaxed">
-            无需强制联网登录，做题记录、难句收藏、背词打卡均保存在保存存储中。支持一键导出备份文件，换电脑换浏览器轻松迁移。
+            做题记录、难句收藏、背词打卡按当前访客保存在云端。支持导出备份文件，换浏览器或设备时可手动恢复英语学习记录。
           </p>
         </div>
 
