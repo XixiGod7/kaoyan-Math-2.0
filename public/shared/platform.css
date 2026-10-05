@@ -47,6 +47,8 @@ body.math-body .app .page{max-width:none;margin:0;width:100%;box-sizing:border-b
 .politics-body .pb-app{width:100%;max-width:none;margin:0;padding:0}.politics-body .pb-hero h1{font-size:2rem}.politics-body .pb-hero{background:var(--platform-card);border:1px solid var(--platform-line);border-radius:16px;padding:24px}
 
 /* One backdrop for native dialogs and the legacy subject popup systems. */
+/* Explicit centering survives subject resets of the browser's dialog margin. */
+dialog.platform-modal{position:fixed;inset:0;margin:auto;max-height:calc(100dvh - 32px);overflow:auto}
 html[data-theme=dark]{--study-modal-scrim:rgba(5,13,22,.52)}
 dialog::backdrop{background:var(--study-modal-scrim)!important;-webkit-backdrop-filter:var(--study-modal-filter)!important;backdrop-filter:var(--study-modal-filter)!important}
 .study-modal-backdrop,.ai-modal-mask,.eb-modal-overlay,.modal-overlay,.mx-shot-mask,.install-mask,.mf-modal-backdrop,.srcpg-mask{background:var(--study-modal-scrim)!important;-webkit-backdrop-filter:var(--study-modal-filter)!important;backdrop-filter:var(--study-modal-filter)!important;z-index:9990!important}
