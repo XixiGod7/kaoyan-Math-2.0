@@ -1,8 +1,8 @@
 const fs = require('node:fs'), path = require('node:path');
-const source = path.join(__dirname, '../apps/english/public/data'), target = path.join(__dirname, '../public/english-data');
+const generated=require('./generated-directory.cjs'),source=path.join(__dirname,'../apps/english/public/data'),destination=path.join(__dirname,'../public/english-data'),target=generated.stage(destination);
 fs.mkdirSync(target, {recursive:true}); fs.cpSync(source,target,{recursive:true});
-fs.cpSync(path.join(source,'../images'),path.join(target,'../english-images'),{recursive:true});
-fs.cpSync(path.join(source,'../thumbs'),path.join(target,'../english-thumbs'),{recursive:true});
+const imagesTarget=path.join(__dirname,'../public/english-images'),imagesStage=generated.stage(imagesTarget);fs.cpSync(path.join(source,'../images'),imagesStage,{recursive:true});
+const thumbsTarget=path.join(__dirname,'../public/english-thumbs'),thumbsStage=generated.stage(thumbsTarget);fs.cpSync(path.join(source,'../thumbs'),thumbsStage,{recursive:true});
 const load = name => JSON.parse(fs.readFileSync(path.join(source,name),'utf8'));
 const catalog = {version:1,source:'XixiGod7/kaoyan-english@f1120a0',papers:{},questions:{},passages:{},sentences:{},words:{},practice:{}};
 for(const file of fs.readdirSync(path.join(source,'papers'))) {
@@ -38,3 +38,5 @@ console.log(`英语资料：${Object.keys(catalog.papers).length} 套试卷，${
 for(const q of load('paraphrase/paraphrase_all.json').items) catalog.practice['paraphrase:'+q.id]={title:q.stem,answer:q.answer};
 for(const q of load('phrases/phrases_all.json').items) catalog.practice['phrase:'+q.en]={title:q.en,answer:q.en};
 fs.writeFileSync(path.join(target,'catalog.json'),JSON.stringify(catalog));
+
+generated.publish(target,destination);generated.publish(imagesStage,imagesTarget);generated.publish(thumbsStage,thumbsTarget);

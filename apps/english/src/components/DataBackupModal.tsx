@@ -14,7 +14,7 @@ interface DataBackupModalProps {
   isOpen: boolean;
   onClose: () => void;
   wordStatuses: Record<string, 'familiar' | 'unfamiliar' | 'unknown'>;
-  onImportData: (data: any, mode: 'merge' | 'overwrite') => boolean;
+  onImportData: (data: any, mode: 'merge' | 'overwrite') => Promise<boolean>;
   onClearData: () => void;
   theme?: 'dark' | 'light';
 }
@@ -54,13 +54,14 @@ export const DataBackupModal: React.FC<DataBackupModalProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if(file.size>4*1024*1024){setImportMessage({type:'error',text:'旧英语备份最多 4 MB'});return;}
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       try {
         const text = event.target?.result as string;
         const parsed = JSON.parse(text);
 
-        const success = onImportData(parsed, 'merge');
+        const success = await onImportData(parsed, 'merge');
         if (success) {
           setImportMessage({
             type: 'success',
@@ -75,7 +76,7 @@ export const DataBackupModal: React.FC<DataBackupModalProps> = ({
       } catch (err) {
         setImportMessage({
           type: 'error',
-          text: '文件解析失败：请确保上传的是合法的 JSON 格式备份文件。',
+          text: (err as Error).message || '备份格式无效',
         });
       }
     };

@@ -1,5 +1,6 @@
 import {englishStorage,recordEnglish} from './platformStorage';
 export interface SavedQuizProgress {
+  attemptId?:string;
   year: string;
   answers: Record<number, string>;
   activeTab?: string;

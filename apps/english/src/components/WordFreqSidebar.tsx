@@ -1,5 +1,5 @@
 import {englishStorage,recordEnglish} from '../utils/platformStorage';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   ChevronLeft,
   ChevronRight,
@@ -39,7 +39,7 @@ export const WordFreqSidebar: React.FC<WordFreqSidebarProps> = ({
   // Collapse state persisted in localStorage
   const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
     try {
-      return englishStorage.getItem('kaoyan_wordfreq_sidebar_collapsed') !== 'false';
+      return window.studyPosition?.get('ui:english:sidebar')?.collapsed??(englishStorage.getItem('kaoyan_wordfreq_sidebar_collapsed')!=='false');
     } catch {
       return false;
     }
@@ -48,13 +48,16 @@ export const WordFreqSidebar: React.FC<WordFreqSidebarProps> = ({
   const toggleCollapse = (nextState: boolean) => {
     setIsCollapsed(nextState);
     try {
-      englishStorage.setItem('kaoyan_wordfreq_sidebar_collapsed', String(nextState));
+      window.studyPosition?.set('ui:english:sidebar',{collapsed:nextState});
     } catch (e) {
       console.error(e);
     }
   };
 
-  const now = Date.now();
+  const [now,setNow]=useState(Date.now);useEffect(()=>{const timer=setInterval(()=>setNow(Date.now()),60000);return()=>clearInterval(timer);},[]);
+  const [scrollTop,setScrollTop]=useState(0),[viewportHeight,setViewportHeight]=useState(600);const scrollBox=useRef<HTMLDivElement|null>(null),savedScroll=useRef(0);
+  useEffect(()=>{if(isCollapsed)return;const box=scrollBox.current;if(!box)return;box.scrollTop=savedScroll.current;const observer=new ResizeObserver(()=>setViewportHeight(box.clientHeight));observer.observe(box);return()=>observer.disconnect();},[isCollapsed]);
+  useEffect(()=>{savedScroll.current=0;setScrollTop(0);if(scrollBox.current)scrollBox.current.scrollTop=0;},[searchTerm,filterType]);
 
   // Counts & stats
   const { familiarCount, unfamiliarCount, unknownCount, calculatedDueCount } = useMemo(() => {
@@ -106,13 +109,13 @@ export const WordFreqSidebar: React.FC<WordFreqSidebarProps> = ({
   // COLLAPSED VIEW
   if (isCollapsed) {
     return (
-      <aside className={`w-11 sm:w-12 flex-shrink-0 border-r flex flex-col items-center py-2.5 h-full select-none transition-all duration-300 ease-in-out ${
+      <aside className={`w-11 sm:w-12 flex-shrink-0 border-r flex flex-col items-center py-2.5 h-full select-none transition-colors duration-150 motion-reduce:transition-none ${
         isDark ? 'border-slate-800 bg-slate-900 text-slate-100' : 'border-gray-200 bg-white text-gray-900'
       }`}>
         {/* Expand button at top */}
         <button
           onClick={() => toggleCollapse(false)}
-          title="展开重点词汇侧边栏 (762词)"
+          title={`展开重点词汇侧边栏（${words.length}词）`}
           className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
             isDark ? 'hover:bg-slate-800 text-slate-300 hover:text-white' : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
           }`}
@@ -121,7 +124,7 @@ export const WordFreqSidebar: React.FC<WordFreqSidebarProps> = ({
         </button>
 
         {/* Vertical rail trigger to expand */}
-        <div
+        <div role="button" tabIndex={0} aria-label="展开重点词汇侧边栏" onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleCollapse(false);}}}
           onClick={() => toggleCollapse(false)}
           className={`flex-1 w-full flex flex-col items-center justify-start gap-3.5 py-4 cursor-pointer group transition-colors ${
             isDark ? 'hover:bg-slate-850' : 'hover:bg-gray-50'
@@ -187,7 +190,7 @@ export const WordFreqSidebar: React.FC<WordFreqSidebarProps> = ({
 
   // EXPANDED VIEW
   return (
-    <aside className={`w-72 sm:w-80 flex-shrink-0 border-r flex flex-col h-full overflow-hidden transition-all duration-300 ease-in-out ${
+    <aside className={`w-72 sm:w-80 flex-shrink-0 border-r flex flex-col h-full overflow-hidden transition-colors duration-150 motion-reduce:transition-none ${
       isDark ? 'border-slate-800 bg-slate-900 text-slate-100' : 'border-gray-200 bg-white text-gray-900'
     }`}>
       {/* Top Banner Aligned with ExamWall */}
@@ -263,7 +266,7 @@ export const WordFreqSidebar: React.FC<WordFreqSidebarProps> = ({
             }`}
           >
             <div>全部</div>
-            <div className={`text-sm font-black ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>762</div>
+            <div className={`text-sm font-black ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>{words.length}</div>
           </button>
 
           <button
@@ -340,13 +343,13 @@ export const WordFreqSidebar: React.FC<WordFreqSidebarProps> = ({
       </div>
 
       {/* Word Scroll List */}
-      <div className="flex-1 overflow-y-auto">
+      <div ref={scrollBox} className="flex-1 overflow-y-auto" onScroll={e=>{savedScroll.current=e.currentTarget.scrollTop;setScrollTop(e.currentTarget.scrollTop);}}><div style={{height:filteredWords.length*96,position:'relative'}}>
         {filteredWords.length === 0 ? (
           <div className={`p-6 text-center text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
             未搜到匹配单词
           </div>
         ) : (
-          filteredWords.map(item => {
+          filteredWords.slice(Math.max(0,Math.floor(scrollTop/96)-4),Math.ceil((scrollTop+viewportHeight)/96)+4).map((item,offset) => {
             const isSelected = selectedWord?.word === item.word;
             const ebbinghausRec = ebbinghausRecords?.[item.word];
             const isDue = Boolean(ebbinghausRec && ebbinghausRec.nextReviewTime <= now && ebbinghausRec.stage < 8);
@@ -355,6 +358,8 @@ export const WordFreqSidebar: React.FC<WordFreqSidebarProps> = ({
             return (
               <div
                 key={item.word}
+                style={{position:'absolute',top:(Math.max(0,Math.floor(scrollTop/96)-4)+offset)*96,height:96,width:'100%'}}
+                role="button" tabIndex={0} aria-pressed={isSelected} onKeyDown={e=>{if(e.target===e.currentTarget&&(e.key==='Enter'||e.key===' ')){e.preventDefault();onSelectWord(isSelected?null:item);}}}
                 id={`word-item-${item.word}`}
                 onClick={() => {
                   if (isSelected) {
@@ -474,7 +479,7 @@ export const WordFreqSidebar: React.FC<WordFreqSidebarProps> = ({
             );
           })
         )}
-      </div>
+      </div></div>
     </aside>
   );
 };

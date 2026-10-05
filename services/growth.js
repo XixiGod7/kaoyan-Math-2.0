@@ -137,9 +137,9 @@ function text(value, max = 500) {
   return value.trim();
 }
 function mutate(action, data, requestId) {
-  const state = getState();
+  const state = getState(),hash=require('./auth-core').digest(JSON.stringify([action,data]));
   if (requestId && state.requests[requestId]) {
-    if (state.requests[requestId] !== action) throw new Error('重复请求标识不匹配');
+    if (state.requests[requestId] !== hash) throw Object.assign(new Error('重复请求标识不匹配'),{status:409});
     return { success: true, duplicate: true, state };
   }
   let message = '已保存', item;
@@ -270,7 +270,7 @@ function mutate(action, data, requestId) {
     default: throw new Error('操作不存在');
   }
   if (requestId) {
-    state.requests[requestId] = action;
+    state.requests[requestId] = hash;
     for (const key of Object.keys(state.requests).slice(0, -500)) delete state.requests[key];
   }
   save(state);

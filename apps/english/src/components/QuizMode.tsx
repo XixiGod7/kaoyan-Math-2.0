@@ -1,6 +1,7 @@
 import {useStudyTarget,QuestionNote,selectStudyTarget} from './StudyTarget';
+import {ExamClock,useExamClock} from '../hooks/useExamClock';
 import {englishStorage,recordEnglish} from '../utils/platformStorage';
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { YearPaperBundle, TaskBundleItem, TaskQuestion } from '../types/quizTask';
 import { KaoyanDict, WordFreqItem } from '../types/kaoyan';
 import { WordLookupPopover } from './WordLookupPopover';
@@ -191,7 +192,7 @@ export default function QuizMode({
     return initialSavedProg?.activeTab || 'cloze';
   });
   const [answers, setAnswers] = useState<Record<number, string>>(() => initialSavedProg?.answers || {});
-  const [elapsedSeconds, setElapsedSeconds] = useState<number>(() => initialSavedProg?.elapsedSeconds || 0);
+
   const [showTranslation, setShowTranslation] = useState(false);
   const [highlightedSentenceId, setHighlightedSentenceId] = useState<number | null>(null);
 
@@ -208,6 +209,8 @@ export default function QuizMode({
 
   // Submission & Scoring State
   const [isSubmitted, setIsSubmitted] = useState<boolean>(() => initialSavedProg?.isSubmitted || false);
+  const {checkpoint:elapsedSeconds,seconds:clockSeconds,reset:setElapsedSeconds}=useExamClock(initialSavedProg?.elapsedSeconds||0,isSubmitted);
+  const attemptId=useRef(initialSavedProg?.attemptId||crypto.randomUUID());
   const [showResultModal, setShowResultModal] = useState(false);
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -229,13 +232,16 @@ export default function QuizMode({
         year,
         answers,
         activeTab,
-        elapsedSeconds,
+        elapsedSeconds:clockSeconds(),
+        attemptId:attemptId.current,
         isSubmitted,
         lastUpdated: Date.now(),
       });
     }
   }, [year, answers, activeTab, elapsedSeconds, isSubmitted]);
 
+  const latestProgress=useRef({year,answers,activeTab,isSubmitted});latestProgress.current={year,answers,activeTab,isSubmitted};
+  useEffect(()=>{const persist=()=>saveQuizProgress({...latestProgress.current,attemptId:attemptId.current,elapsedSeconds:clockSeconds(),lastUpdated:Date.now()});window.addEventListener('pagehide',persist);const hidden=()=>{if(document.hidden)persist();};document.addEventListener('visibilitychange',hidden);return()=>{persist();window.removeEventListener('pagehide',persist);document.removeEventListener('visibilitychange',hidden);};},[clockSeconds]);
   // Dictionary for Instant In-Passage Word Selection Popover
   const [localDict, setLocalDict] = useState<KaoyanDict | null>(dict || null);
   useEffect(() => {
@@ -341,14 +347,7 @@ export default function QuizMode({
     };
   }, [initialTargetSentenceId, paperData]);
 
-  // Timer
-  useEffect(() => {
-    if (isSubmitted) return;
-    const interval = setInterval(() => {
-      setElapsedSeconds(prev => prev + 1);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [isSubmitted]);
+
 
   const formatTime = (totalSec: number) => {
     const m = Math.floor(totalSec / 60);
@@ -557,7 +556,7 @@ export default function QuizMode({
       totalObjectiveCorrect,
       totalObjectiveScore,
       accuracy,
-      timeTaken: formatTime(elapsedSeconds)
+      timeTaken: formatTime(clockSeconds())
     };
   }, [paperData, answers, elapsedSeconds]);
 
@@ -578,7 +577,7 @@ export default function QuizMode({
         totalQuestions: Object.keys(filled).length,
         correctQuestions: submission.correct,
         timestamp: Date.now(),
-        timeSpentSeconds: elapsedSeconds,
+        timeSpentSeconds: clockSeconds(),
         userAnswers: answers,
       });
     } catch (e) {
@@ -595,7 +594,7 @@ export default function QuizMode({
     if (window.confirm(confirmMsg)) {
       clearQuizProgress(year);
       setAnswers({});
-      setElapsedSeconds(0);
+      attemptId.current=crypto.randomUUID();setElapsedSeconds(0);
       setIsSubmitted(false);
       setShowResultModal(false);
       setToastMessage(`已清空 ${year} 年真题做题进度，可以重新开始作答！`);
@@ -901,7 +900,7 @@ export default function QuizMode({
           isDark ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-gray-50 border-gray-200 text-gray-700'
         }`}>
           <Clock className={`w-3.5 h-3.5 mr-1 ${isDark ? 'text-slate-400' : 'text-gray-500'}`} />
-          {formatTime(elapsedSeconds)}
+          {<ExamClock seconds={clockSeconds}/>}
         </div>
 
         {/* Clear Progress Button */}

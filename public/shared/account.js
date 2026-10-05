@@ -28,13 +28,13 @@
         if(body.confirmPassword&&body.confirmPassword!==body.password){status.textContent='两次输入的密码不一致';return;}
         delete body.confirmPassword;button.disabled=true;status.textContent='正在安全保存账号信息…';
         try{const value=await window.studySync.changeAccount(action,body);if(value.recoveryCode){
-          status.textContent='';content.innerHTML='<h3>请保存您的恢复码</h3><p>忘记密码时可用它找回账号。此码只显示一次；修改或重置密码后，旧恢复码会失效。</p><code class="recovery-code"></code><div class="account-actions"><button data-download>下载恢复码</button><button class="secondary" data-copy>复制</button></div><button class="account-continue" data-ready>已保存，开始学习</button>';
+          status.textContent=value.migrationWarning||'';content.innerHTML='<h3>请保存您的恢复码</h3><p>忘记密码时可用它找回账号。此码只显示一次；修改或重置密码后，旧恢复码会失效。</p><code class="recovery-code"></code><div class="account-actions"><button data-download>下载恢复码</button><button class="secondary" data-copy>复制</button></div><button class="account-continue" data-ready>已保存，开始学习</button>';
           content.querySelector('code').textContent=value.recoveryCode;
           content.querySelector('[data-copy]').onclick=async()=>{try{await navigator.clipboard.writeText(value.recoveryCode);status.textContent='恢复码已复制';}catch{status.textContent='请选择上方恢复码并复制';}};
           content.querySelector('[data-download]').onclick=()=>{const url=URL.createObjectURL(new Blob(['真题库账号：'+value.username+'\n恢复码：'+value.recoveryCode+'\n请妥善保存，不要分享。'],{type:'text/plain;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='真题库-恢复码.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
           content.querySelector('[data-ready]').onclick=()=>location.reload();el.querySelector('[data-close]').onclick=()=>location.reload();
           el.addEventListener('cancel',event=>{event.preventDefault();location.reload();});
-        }else location.reload();}catch(e){status.textContent=e.message;button.disabled=false;}
+        }else if(value.migrationWarning){status.textContent=value.migrationWarning;content.innerHTML='<p>账号已登录。未合并的资料仍保留，可以下次登录时重试。</p><button data-continue>继续学习</button>';content.querySelector('[data-continue]').onclick=()=>location.reload();el.querySelector('[data-close]').onclick=()=>location.reload();}else location.reload();}catch(e){status.textContent=e.message;button.disabled=false;}
       };
     };render(mode);
   }

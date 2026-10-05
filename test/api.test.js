@@ -151,7 +151,7 @@ test('真实图片上传、读取、移除及访客隔离，伪装图片被拒�
 
 test('英语草稿与备份持久化，不发积分；禁止密钥写入学习备份',async()=>{
   const before=(await request('/api/study/overview')).body.points;
-  const patch={kaoyan_word_statuses:JSON.stringify({scientist:'unfamiliar'}),kaoyan_quiz_progress_2026:JSON.stringify({year:'2026',answers:{21:'C'}}),kaoyan_essay_2026_B:'My handwritten practice essay.',kaoyan_trans_2026:JSON.stringify({46:'科学知识帮助人们理解世界。'})};
+  const patch={kaoyan_word_statuses:JSON.stringify({scientist:'unfamiliar'}),kaoyan_quiz_progress_2026:JSON.stringify({year:'2026',answers:{21:'C'},elapsedSeconds:0,isSubmitted:false,lastUpdated:Date.now()}),kaoyan_essay_2026_B:'My handwritten practice essay.',kaoyan_trans_2026:JSON.stringify({46:'科学知识帮助人们理解世界。'})};
   assert.equal((await request('/api/english/storage','POST',{patch})).status,200);
   assert.equal((await request('/api/english/storage')).body.items.kaoyan_word_statuses,patch.kaoyan_word_statuses);
   assert.equal((await request('/api/study/overview')).body.points,before);

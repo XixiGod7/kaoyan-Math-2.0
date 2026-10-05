@@ -54,7 +54,7 @@
 ## 启动与使用指南
 
 ### 环境要求
-- [Node.js](https://nodejs.org/)（使用 Node.js 22 或更新版本；Cloudflare 官方部署工具需要现代 Node 环境）
+- [Node.js](https://nodejs.org/)（使用 Node.js 22.13 或更新版本；Cloudflare 官方部署工具需要现代 Node 环境）
 
 ### 快速启动
 在项目根目录下执行：
@@ -76,8 +76,7 @@ http://localhost:3000
 ## Cloudflare Workers 部署
 
 ```sh
-npm test
-npm run build
+npm run verify
 npm run deploy
 ```
 
@@ -87,8 +86,24 @@ npm run deploy
 
 `docs/workflows/` 中提供 Verify 与 Deploy to Cloudflare 工作流模板。当前 GitHub 登录令牌没有工作流写入权限，因此模板尚未启用。后续可将其放入 `.github/workflows/`，并为手动部署工作流配置仓库 Secrets `CLOUDFLARE_API_TOKEN` 与 `CLOUDFLARE_ACCOUNT_ID`。当前仓库 main 已关联 Cloudflare Workers Builds，每次推送自动运行检查、构建和部署。
 
-用户个人记录、现有 AI 密钥和本地运行目录均被 `.gitignore` 排除。云端默认使用内置导师提示，可在网站的 AI 设置中按浏览器配置个人模型密钥。
+用户个人记录、现有 AI 密钥和本地运行目录均被 `.gitignore` 排除。云端默认使用内置导师提示，可在网站的 AI 设置中为当前身份配置模型密钥。账号登录后配置可跨设备使用。
 
 ## 账号与本地、云端保存
 
 顶部支持用户名、密码和一次性恢复码。登录自动合并访客记录，换设备登录即可继续学习；本机保留学习副本和待同步队列。各科入口自动恢复上次浏览位置，“科目首页”可回到首页。英语笔记和 AI 面板均覆盖正文，不改变页面宽度。账号、安全、迁移与同步边界见 [账号与同步说明](docs/ACCOUNTS-SYNC.md)。
+
+## 审查后的数据与安全规则
+
+[2026-10-05 实施与验收记录](docs/PROJECT-REVIEW-FIXES-2026-10-05.md) 对照原报告逐项说明改动和未完成的验证。
+
+- 模型出站只允许顶部预设的官方提供商：SenseNova、DeepSeek、通义千问、Kimi、OpenAI。统一禁止重定向并设置响应上限。自建网关地址暂不开放。
+- 本地学习资料和账号注册表使用 `data/study.sqlite`。旧 JSON 按当前身份首次读取时迁入，原文件保留；请停止服务后备份整个 `data/` 目录，包含 SQLite 的 WAL 文件，不要只复制数据库单文件。
+- 学习资料每类上限 8 MB、累计 24 MB；图片另计，最多 100 张、50 MB。成长中的积分属于个人学习记录，不具备防作弊或真实交易用途。
+- 顶部“学习进度”可导出、预览恢复、选择合并/替换，以及导出后清理指定资料。分享备份不包含模型密钥、身份凭据或图片；本地备份中的待同步操作只作为待处理记录保存，不跨账号自动重放。
+- 本地仅信任 localhost/回环 Host。局域网部署需明确设置 `HOST` 和 `LOCAL_ALLOWED_HOSTS`。旧根目录资料不再归属首位访客，由本机所有者导出后在目标账号导入，例如 PowerShell：
+
+```powershell
+node scripts/export-legacy.cjs 'D:\PersonalFiles\Agents_test\kaoyan-Math-2.0\artifacts\legacy-owner-backup.json'
+```
+
+数学完整前端源码尚未恢复。`apps/math/src/restoreTokens.cjs` 和 `scripts/prepare-math.cjs` 提供此次 Markdown 修复的可复现源码与带 hash 的产物；`apps/math/vendor/Md-baseline.js` 来源是审查基线 `510177b` 的已提交产物，不等同于完整数学源码。

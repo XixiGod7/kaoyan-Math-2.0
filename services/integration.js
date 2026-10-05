@@ -15,15 +15,13 @@ function mount(app) {
       wrong: db.getWrongBook().filter(q => !q.mastered).length, due: db.getReviewCards().filter(c => !c.nextDue || c.nextDue <= Date.now()).length }, politics: pol, english: require('./english').stats() };
     res.json({ ...growth.overview(), subjects: counts, nickname: db.getProfile().nickname });
   });
-  const actions = ['goals', 'session/start', 'session/end', 'session/cooling', 'points/adjust', 'tokens/adjust',
-    'bank/loan', 'bank/loan/repay', 'bank/deposit', 'bank/deposit/claim', 'secondary_payment/add', 'secondary_payment/update',
-    'store/buy', 'caterpillar/add', 'caterpillar/toggle', 'caterpillar/draw', 'pbl/add', 'pbl/milestone/toggle'];
+  const actions=require('../public/shared/operations').actions;
   for (const action of actions) app.post('/api/incentive/' + action, (req, res) => {
     try {
       const key = req.get('Idempotency-Key');
       if (key && !/^[a-zA-Z0-9_-]{8,100}$/.test(key)) throw new Error('请求标识无效');
       res.json(growth.mutate(action, req.body || {}, key));
-    } catch (e) { res.status(400).json({ success: false, error: e.message }); }
+    } catch (e) { res.status(e.status||400).json({ success: false, error: e.message }); }
   });
   app.post('/api/incentive/chat', async (req, res) => {
     try {

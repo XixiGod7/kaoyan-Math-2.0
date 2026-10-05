@@ -64,7 +64,7 @@ test('数学与政治答题奖励汇入同一账本，重复及并发提交只�
   const math = await req('/api/answer', { questionId: 90103, correct: false, secs: 20 });
   assert.equal(math.body.reward.points, 2);
   const answers = await Promise.all(Array.from({ length: 5 }, () => req('/api/politics/answer', { qid: single.id, choice: single.answer })));
-  assert.ok(answers.every(a => a.status === 200 && a.body.correct));
+  assert.ok(answers.every(a => a.status === 200 && a.body.correct), JSON.stringify(answers.map(a => ({ status: a.status, body: a.body }))));
   assert.equal(answers.filter(a => a.body.reward.credited).length, 1);
   assert.equal((await req('/api/answer', { questionId: 90103, correct: true })).body.reward.points, 0);
   const after = await overview(); assert.equal(after.points - before.points, 4);

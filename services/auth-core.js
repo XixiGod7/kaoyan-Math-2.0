@@ -23,6 +23,11 @@ function checkPassword(value) {
 const equal = (a, b) => /^[a-f0-9]{64}$/.test(a || '') && /^[a-f0-9]{64}$/.test(b || '') && timingSafeEqual(Buffer.from(a, 'hex'), Buffer.from(b, 'hex'));
 class AuthCore {
   constructor(store) { this.store = store; }
+  budget(ip,kind,limit,windowMs=60000) {
+    const key='budget:'+digest(ip+':'+kind),now=Date.now(),prior=this.store.get(key);
+    const item=prior&&now-prior.at<windowMs?{...prior,count:prior.count+1}:{at:now,count:1};
+    this.store.set(key,item);if(item.count>limit)throw Object.assign(new Error('请求较多，请稍后再试'),{status:429});
+  }
   rate(ip, name, action) {
     const now = Date.now(), key = 'rate:' + digest(ip + ':' + (action === 'register' ? action : name));
     const old = this.store.get(key) || { at: now, count: 0 };
@@ -80,4 +85,5 @@ class AuthCore {
     this.store.set(key, account); return true;
   }
 }
-module.exports = { AuthCore, digest };
+const guestIdentity=guest=>({authenticated:false,scope:'guest:'+digest('study-scope:'+guest)});
+module.exports = { AuthCore, digest, guestIdentity };

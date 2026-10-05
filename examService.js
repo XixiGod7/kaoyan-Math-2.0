@@ -39,9 +39,9 @@ function createPaper(payload) {
   const paper = {
     id: 'ep_' + randomUUID(), name: String(payload.name || '自选模拟卷').slice(0,100),
     questions, questionIds: questions.map(q => q.id), questionCount: questions.length,
-    fullPoints: Number(payload.fullPoints) || questions.reduce((sum, q) => sum + (q.type === '选择题' || q.type === '填空题' ? 5 : 10), 0),
+    fullPoints: (payload.fullPoints===undefined?0:require('./services/validation').finite(payload.fullPoints,{min:1,max:10000})) || questions.reduce((sum, q) => sum + (q.type === '选择题' || q.type === '填空题' ? 5 : 10), 0),
     timed: payload.timed ?? Boolean(payload.timeLimitSec),
-    timeLimitSec: Number(payload.timeLimitSec) || 10800, createdAt: new Date().toISOString()
+    timeLimitSec: require('./services/validation').finite(payload.timeLimitSec??10800,{min:1,max:86400,integer:true}), createdAt: new Date().toISOString()
   };
   db.saveExamPapers([paper, ...db.getExamPapers()]);
   return paper;
@@ -67,11 +67,12 @@ function submitPaper(key, questions, payload) {
   });
   const attempt = {
     id: 'attempt_' + randomUUID(), key, answers: assessed,
-    durationSec: Math.max(0, Number(payload.durationSec) || 0),
+    durationSec: require('./services/validation').finite(payload.durationSec??0),
     objectiveScore, objectiveTotal, ungradedIds,
     submittedAt: new Date().toISOString(), createdAt: new Date().toISOString()
   };
   const attempts = db.getPaperAttempts();
+  if((attempts[key]||[]).length>=100)throw Object.assign(new Error('此试卷已有 100 次记录，请导出并清理后提交'),{status:413});
   attempts[key] = [attempt, ...(attempts[key] || [])];
   db.savePaperAttempts(attempts);
   const complete = questions.length > 0 && assessed.every(a => String(a.chosen ?? a.answerText ?? '').trim());

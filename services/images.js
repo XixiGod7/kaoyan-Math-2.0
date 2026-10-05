@@ -23,8 +23,8 @@ async function upload(req) {
   if (!mime || (file.type && file.type !== mime)) throw fail('文件不是有效的 PNG、JPEG 或 WebP 图片');
   const index = db.readJSON('ai_images', {});
   if (Object.keys(index).length >= 100 || Object.values(index).reduce((sum, x) => sum + x.size, 0) + bytes.length > 50 * 1024 * 1024) throw fail('图片保存空间已满，请移除不需要的图片后重试', 413);
-  const id = randomUUID(); db.saveJSON('ai_image_' + id, { mime, data: bytes.toString('base64'), size: bytes.length });
-  index[id] = { size: bytes.length, createdAt: Date.now() }; db.saveJSON('ai_images', index); return id;
+  return db.atomic(()=>{const id = randomUUID(); db.saveJSON('ai_image_' + id, { mime, data: bytes.toString('base64'), size: bytes.length });
+  index[id] = { size: bytes.length, createdAt: Date.now() }; db.saveJSON('ai_images', index); return id;});
 }
 function content(text, ids = [], { allowMissing = false } = {}) {
   if (ids == null) ids = [];

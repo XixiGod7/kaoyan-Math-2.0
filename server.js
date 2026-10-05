@@ -11,14 +11,18 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.disable('x-powered-by');
+app.use(require('./services/telemetry').middleware);
+require('./services/public-api').mount(app);
 app.use(require('./services/auth-local').middleware);
 app.use('/api/auth', express.json({limit:'4kb'}));
+app.use('/api/study/restore',express.json({limit:'25mb'}));
 app.use('/api/english/storage', express.json({limit:'4mb'}));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 require('./services/auth-local').mount(app);
 app.use(require('./services/study-sync').writes);
 require('./services/study-sync').mount(app);
+require('./services/study-restore').mount(app);
 require('./services/integration').mount(app);
 
 // Load static datasets into memory for fast querying
@@ -99,7 +103,7 @@ app.post('/api/answer', (req, res) => {
   progress.answered[String(questionId)] = {
     correct, attempts: (prior?.attempts || 0) + 1,
     firstCorrect: prior?.firstCorrect ?? correct,
-    lastSecs: Number(secs) || 0, totalSecs: (prior?.totalSecs || 0) + (Number(secs) || 0),
+    lastSecs: require('./services/validation').finite(secs??0), totalSecs: (prior?.totalSecs || 0) + require('./services/validation').finite(secs??0),
     lastAt: new Date().toISOString(), timestamp: Date.now()
   };
   db.saveProgress(progress);
@@ -429,6 +433,7 @@ app.get('/api/favorite/tags', (req, res) => {
 });
 
 app.put('/api/favorite/tag', (req, res) => {
+  if(!allQuestionsMap.has(String(req.body.questionId))||typeof req.body.tag!=='string'||req.body.tag.length>100)return res.status(400).json({error:'题目或标签无效'});
   const tags = db.readJSON('favorite_tags', {});
   tags[String(req.body.questionId)] = String(req.body.tag || '');
   db.saveJSON('favorite_tags', tags);
@@ -436,6 +441,7 @@ app.put('/api/favorite/tag', (req, res) => {
 });
 
 app.put('/api/favorite/star', (req, res) => {
+  if(!allQuestionsMap.has(String(req.body.questionId)))return res.status(400).json({error:'题目无效'});require('./services/validation').finite(req.body.star,{max:5,integer:true});
   const stars = db.readJSON('favorite_stars', {});
   stars[String(req.body.questionId)] = Math.min(5, Math.max(0, Number(req.body.star) || 0));
   db.saveJSON('favorite_stars', stars);
@@ -472,6 +478,7 @@ app.post('/api/note/append', (req, res) => {
   if (!allQuestionsMap.has(String(questionId)) || typeof text !== 'string' || text.length > 20000) return res.status(400).json({ error: '笔记或题目无效' });
   const notes = db.getNotes();
   const existing = notes[String(questionId)] ? (notes[String(questionId)].text || '') + '\n' : '';
+  if((existing+text).length>20000)return res.status(413).json({error:'单篇笔记最多 20000 个字符，请导出后整理'});
   notes[String(questionId)] = {
     text: existing + text,
     updatedAt: new Date().toISOString()
@@ -714,7 +721,7 @@ app.post('/api/ai/config', (req, res) => {
   if ([apiKey, baseUrl, model, visionModel].some(value => value !== undefined && typeof value !== 'string')) {
     return res.status(400).json({ ok: false, error: '配置字段必须为文字' });
   }
-  if (baseUrl !== undefined && !validAiUrl(baseUrl)) return res.status(400).json({ ok: false, error: '请填写公网 HTTPS API 地址' });
+  if (baseUrl !== undefined && !validAiUrl(baseUrl)) return res.status(400).json({ ok: false, error: '请使用支持的 HTTPS 模型接口；自建网关暂未开放' });
   const current = db.getAiConfig();
   if(current.apiKey&&baseUrl&&new URL(baseUrl).hostname!==new URL(current.baseUrl).hostname&&!apiKey?.trim())return res.status(400).json({ok:false,error:'切换接口域名时，请同时填写该接口的密钥，避免旧密钥被发送到新地址'});
   if (apiKey !== undefined) current.apiKey = apiKey.trim();
@@ -734,7 +741,7 @@ app.post('/api/ai/test', async (req, res) => {
   const key = (apiKey !== undefined && apiKey !== '') ? apiKey.trim() : cfg.apiKey;
   const url = (baseUrl !== undefined && baseUrl !== '') ? baseUrl.trim() : cfg.baseUrl;
   const mod = (model !== undefined && model !== '') ? model.trim() : cfg.model;
-  if (!validAiUrl(url)) return res.status(400).json({ ok: false, error: '请填写公网 HTTPS API 地址' });
+  if (!validAiUrl(url)) return res.status(400).json({ ok: false, error: '请使用支持的 HTTPS 模型接口；自建接口需管理员配置 AI_ALLOWED_HOSTS' });
   if(key&&new URL(url).hostname!==new URL(cfg.baseUrl).hostname&&!apiKey?.trim())return res.status(400).json({ok:false,error:'测试新接口时，请填写该接口的密钥'});
 
   if (!key || !key.trim()) {
@@ -742,7 +749,7 @@ app.post('/api/ai/test', async (req, res) => {
   }
 
   try {
-    const fetchRes = await fetch(require('./services/ai-client').endpoint(url), {
+    const fetchRes = await require('./services/outbound').request(require('./services/ai-client').endpoint(url), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -758,11 +765,11 @@ app.post('/api/ai/test', async (req, res) => {
     });
 
     if (!fetchRes.ok) {
-      const errText = await fetchRes.text();
+      await fetchRes.body?.cancel();
       return res.json({ ok: false, error: `API 返回 HTTP ${fetchRes.status}，请检查密钥、模型与余额` });
     }
 
-    const data = await fetchRes.json();
+    const data = JSON.parse(await require('./services/outbound').text(fetchRes));
     const reply = data.choices?.[0]?.message?.content || 'OK';
     return res.json({ ok: true, message: `连接成功！模型回复：${reply.trim()}` });
   } catch (err) {
@@ -770,15 +777,7 @@ app.post('/api/ai/test', async (req, res) => {
   }
 });
 
-function validAiUrl(value) {
-  try {
-    const url = new URL(value);
-    return url.protocol === 'https:' && !url.username && !url.password && !url.port &&
-      /^[a-z0-9-]+(?:\.[a-z0-9-]+)+$/i.test(url.hostname) &&
-      !/^(?:localhost|127\.|0\.|10\.|192\.168\.|169\.254\.|172\.(?:1[6-9]|2\d|3[01])\.)/i.test(url.hostname) &&
-      !/^\d+(?:\.\d+){3}$/.test(url.hostname) && !/\.(?:local|internal)$/i.test(url.hostname);
-  } catch { return false; }
-}
+function validAiUrl(value) { return require('./services/outbound').validUrl(value); }
 
 // -------------------------------------------------------------
 // Exam Papers & Mock Exam Endpoints (组卷模考)
@@ -799,7 +798,7 @@ app.post('/api/exam-papers', (req, res) => {
   try {
     const paper = examService.createPaper(req.body);
     res.json({ ok: true, id: paper.id, paper });
-  } catch (error) { res.status(400).json({ ok: false, error: error.message }); }
+  } catch (error) { res.status(error.status||400).json({ ok: false, error: error.message }); }
 });
 
 app.get('/api/exam-papers/real-exam-years', (req, res) => {
@@ -947,7 +946,7 @@ app.post('/api/exam-papers/auto', (req, res) => {
     const questions = examService.filterQuestions(req.body);
     const paper = examService.createPaper({ ...req.body, questions });
     res.json({ ok: true, id: paper.id, paper });
-  } catch (error) { res.status(400).json({ ok: false, error: error.message }); }
+  } catch (error) { res.status(error.status||400).json({ ok: false, error: error.message }); }
 });
 
 app.get('/api/exam-papers/draft', (req, res) => {
@@ -956,6 +955,7 @@ app.get('/api/exam-papers/draft', (req, res) => {
 
 app.post('/api/exam-papers/draft', (req, res) => {
   const drafts = db.readJSON('exam_drafts', {});
+  require('./services/validation').key(req.body.paperKey||'default');
   drafts[req.body.paperKey || 'default'] = req.body.payload ?? null;
   db.saveJSON('exam_drafts', drafts);
   res.json({ ok: true });
@@ -978,7 +978,7 @@ app.get('/api/exam-papers/:id', (req, res) => {
 app.put('/api/exam-papers/:id', (req, res) => {
   const papers = db.getExamPapers();
   const p = papers.find(x => x.id === req.params.id);
-  if (p && req.body.name) p.name = req.body.name;
+  if(p&&req.body.name!==undefined){if(typeof req.body.name!=='string'||!req.body.name.trim()||req.body.name.length>100)return res.status(400).json({error:'名称需为 1–100 个字符'});p.name=req.body.name.trim();}
   db.saveExamPapers(papers);
   res.json({ ok: true });
 });
@@ -1016,8 +1016,9 @@ if (require.main === module) app.get(['/', '/library', '/english', '/english/{*r
 if (require.main === module) app.use(express.static(path.join(__dirname, 'public'), {
   maxAge: 0,
   etag: false,
-  setHeaders: (res) => {
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  setHeaders: (res,file) => {
+    if(/(?:english|politics)-app[\\/]assets[\\/].+-[a-zA-Z0-9_-]{8}\.(?:js|css)$/.test(file)){res.setHeader('Cache-Control','public, max-age=31536000, immutable');return;}
+    res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
   }
@@ -1030,13 +1031,13 @@ app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.use((error,req,res,next)=>{if(res.headersSent)return next(error);const status=error.type==='entity.too.large'?413:error.status===400?400:500;res.status(status).json({error:status===413?'内容超过保存大小限制':status===400?'请求内容无法读取，请重新提交':'服务暂时无法完成保存，请稍后重试'});});
+app.use((error,req,res,next)=>{if(res.headersSent)return next(error);const status=error.type==='entity.too.large'?413:(error.status>=400&&error.status<500)?error.status:500;res.status(status).json({error:status===413?'内容超过保存大小限制':status<500?(error.type==='entity.parse.failed'?'请求内容无法读取，请重新提交':error.message):'服务暂时无法完成保存，请稍后重试'});});
 
 if (require.main === module) app.listen(PORT, process.env.HOST || '127.0.0.1', () => {
   console.log(`=======================================================`);
-  console.log(` 数砖 · 考研数学真题分析平台已成功启动！`);
+  console.log(` 真题库 · 三科学习平台已成功启动！`);
   console.log(` 本地访问地址: http://localhost:${PORT}`);
-  console.log(` 免登录模式: 已启用（全功能直接开放无阻断）`);
+  console.log(` 访客资料独立保存，登录账号后支持跨设备同步`);
   console.log(`=======================================================`);
 });
 

@@ -35,32 +35,25 @@ function result(q, a, state) {
   return { ...a, ok: true, answer: normal(q.answer), analysis: q.analysis || '', userNote: state.notes[q.id] || '',
     missed: [...normal(q.answer)].filter(c => !a.myChoice.includes(c)).join(''), extra: [...a.myChoice].filter(c => !normal(q.answer).includes(c)).join('') };
 }
-function stats(state = getState()) {
-  const answers = Object.values(state.answers), now = Date.now();
-  return { total: answers.length, correct: answers.filter(a => a.firstCorrect).length, wrong: answers.filter(a => !a.correct).length,
-    due: answers.filter(a => a.nextReviewAt <= now).length, favorites: state.favorites.length,
-    bySubject: ['马原', '毛中特', '新思想', '史纲', '思修', '时政'].map(subject => {
-      const a = answers.filter(a => a.subject === subject);
-      return { subject, done: a.length, correct: a.filter(a => a.firstCorrect).length, multiDone: a.filter(a => a.type === 'multi').length, multiCorrect: a.filter(a => a.type === 'multi' && a.firstCorrect).length };
-    }) };
-}
+function summarize(answers){const subjects=new Map(),banks=new Map(),chapters=new Map();let correct=0,wrong=0,due=0;const now=Date.now();for(const a of answers){if(a.firstCorrect)correct++;if(!a.correct)wrong++;if(a.nextReviewAt<=now)due++;for(const [map,key]of [[subjects,a.subject],[banks,a.bankCode],[chapters,a.chapterCode]]){const item=map.get(key)||{done:0,correct:0,multiDone:0,multiCorrect:0};item.done++;if(a.firstCorrect)item.correct++;if(a.type==='multi'){item.multiDone++;if(a.firstCorrect)item.multiCorrect++;}if(!item.recent||a.timestamp>item.recent.timestamp)item.recent=a;map.set(key,item);}}return {correct,wrong,due,subjects,banks,chapters};}
+function stats(state=getState()){const answers=Object.values(state.answers),summary=summarize(answers);return {total:answers.length,correct:summary.correct,wrong:summary.wrong,due:summary.due,favorites:state.favorites.length,bySubject:['马原','毛中特','新思想','史纲','思修','时政'].map(subject=>({subject,...(summary.subjects.get(subject)||{done:0,correct:0,multiDone:0,multiCorrect:0}),recent:undefined}))};}
 function mount(app) {
-  const wrap = fn => async (req, res) => { try { await fn(req, res); } catch (e) { res.status(400).json({ ok: false, error: e.message, message: e.message }); } };
+  const wrap = fn => async (req, res) => { try { await fn(req, res); } catch (e) { res.status(e.status||400).json({ ok: false, error: e.message, message: e.message }); } };
   app.get('/api/politics/banks', wrap(async (req, res) => {
-    const cat = await catalog(), state = getState();
+    const cat = await catalog(), state = getState(),summary=summarize(Object.values(state.answers));
     res.json(cat.banks.filter(b => !req.query.kind || b.kind === req.query.kind).sort((a, b) => b.code.localeCompare(a.code)).map(b => {
-      const answers = Object.values(state.answers).filter(a => a.bankCode === b.code), recent = answers.sort((a, b) => b.timestamp - a.timestamp)[0];
-      return { ...b, chapters: undefined, done: answers.length, correct: answers.filter(a => a.firstCorrect).length,
+      const item=summary.banks.get(b.code)||{done:0,correct:0},recent=item.recent;
+      return { ...b, chapters: undefined, done:item.done,correct:item.correct,
         lastAt: recent ? new Date(recent.timestamp).toISOString() : undefined, resumeCode: recent?.chapterCode, resumeName: cat.chapters[recent?.chapterCode]?.name };
     }));
   }));
   app.get('/api/politics/banks/:code', wrap(async (req, res) => {
     const bank = (await catalog()).banks.find(b => b.code === req.params.code);
     if (!bank) return res.status(404).json(null);
-    const state = getState();
+    const state = getState(),summary=summarize(Object.values(state.answers));
     res.json({ ...bank, chapters: bank.chapters.map(ch => {
-      const answers = Object.values(state.answers).filter(a => a.chapterCode === ch.code);
-      return { ...ch, done: answers.length, correct: answers.filter(a => a.firstCorrect).length };
+      const item=summary.chapters.get(ch.code)||{done:0,correct:0};
+      return {...ch,done:item.done,correct:item.correct};
     }) });
   }));
   app.get('/api/politics/chapters/:code', wrap(async (req, res) => {
@@ -120,7 +113,7 @@ function mount(app) {
   app.post('/api/politics/papers/:code/draft', wrap(async (req, res) => {
     if (!(await catalog()).banks.some(b => b.code === req.params.code)) throw new Error('试卷不存在');
     if (!req.body.choices || typeof req.body.choices !== 'object' || JSON.stringify(req.body).length > 50000) throw new Error('草稿无效');
-    const state = getState(); state.drafts[req.params.code] = { choices: req.body.choices, elapsed: Math.min(86400, Math.max(0, Number(req.body.elapsed) || 0)) };
+    const state = getState(); state.drafts[req.params.code] = { choices: req.body.choices, elapsed: require('./validation').finite(req.body.elapsed??0) };
     save(state); res.json({ ok: true });
   }));
   app.post('/api/politics/papers/:code/submit', wrap(async (req, res) => {
@@ -128,7 +121,7 @@ function mount(app) {
     if (!bank || bank.kind !== 'exam') throw new Error('试卷不存在');
     const chapters = await Promise.all(bank.chapters.map(c => chapter(c.code)));
     const state = getState(), requestId = String(req.get('Idempotency-Key') || '');
-    if (requestId && state.requests[requestId]) return res.json(state.requests[requestId]);
+    const hash=require('./auth-core').digest(JSON.stringify([bank.code,req.body]));if(requestId&&state.requests[requestId]){if(state.requests[requestId].hash!==hash)return res.status(409).json({error:'重复请求标识不匹配'});return res.json(state.requests[requestId].value);}
     const submitted = Array.isArray(req.body.answers) ? req.body.answers : [];
     const answers = new Map(submitted.map(a => [a.id, normal(a.choice)]));
     const detail = []; let full = 0, score = 0;
@@ -139,9 +132,9 @@ function mount(app) {
     }
     const complete = detail.length > 0 && detail.every(d => d.picked);
     const value = { ok: true, score, full, detail, complete, takenAt: new Date().toISOString(), id: randomUUID() };
-    state.history[bank.code] = [{ score, full, takenAt: value.takenAt, duration: Number(req.body.duration) || 0 }, ...(state.history[bank.code] || [])].slice(0, 100);
+    state.history[bank.code] = [{ score, full, takenAt: value.takenAt, duration: require('./validation').finite(req.body.duration??0) }, ...(state.history[bank.code] || [])].slice(0, 100);
     delete state.drafts[bank.code];
-    if (requestId) state.requests[requestId] = value;
+    if (requestId) state.requests[requestId] = {hash,value};
     for (const key of Object.keys(state.requests).slice(0, -20)) delete state.requests[key];
     save(state);
     // Paper actions earn one completion reward; they do not also mint question rewards.

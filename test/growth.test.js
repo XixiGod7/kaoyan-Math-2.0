@@ -7,7 +7,7 @@ function isolated(run) {
   const sqlite = new DatabaseSync(':memory:');
   sqlite.exec('CREATE TABLE documents (name TEXT PRIMARY KEY, value TEXT NOT NULL)');
   const sql = { exec(query, ...args) { const stmt = sqlite.prepare(query); return query.startsWith('SELECT') ? { toArray: () => stmt.all(...args) } : stmt.run(...args); } };
-  try { return db.runWithStorage(sql, run); } finally { sqlite.close(); }
+  try { return db.runWithStorage(sql,run,undefined,undefined,{transactionSync(callback){sqlite.exec('BEGIN');try{const value=callback();sqlite.exec('COMMIT');return value;}catch(e){sqlite.exec('ROLLBACK');throw e;}}}); } finally { sqlite.close(); }
 }
 test('北京时间跨日会更新目标计数，保留历史和总积分', () => {
   assert.equal(growth.dayKey(Date.parse('2026-10-03T15:59:59Z')), '2026-10-03');

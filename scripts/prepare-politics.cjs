@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const source = path.join(__dirname, '../apps/politics/src/data/banks');
-const output = path.join(__dirname, '../public/politics-data');
+const generated=require('./generated-directory.cjs'),destination=path.join(__dirname,'../public/politics-data'),output=generated.stage(destination);
 fs.mkdirSync(output, { recursive: true });
 const banks = [], chapters = {};
 let questionCount = 0;
@@ -30,3 +30,5 @@ for (const filename of fs.readdirSync(source).filter(f => f.endsWith('.json')).s
 const catalog = { banks, chapters, questionCount, sourceNotice: '导入题库含模板生成与整理内容，题目答案用于练习参考；年份标签不代表已核验的官方真题。' };
 fs.writeFileSync(path.join(output, 'catalog.json'), JSON.stringify(catalog));
 console.log(`政治题库：${banks.length} 个题册，${Object.keys(chapters).length} 个章节，${questionCount} 道题；独立题目标识已生成。`);
+
+generated.publish(output,destination);

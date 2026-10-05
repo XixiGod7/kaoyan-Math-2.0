@@ -123,6 +123,7 @@ async function streamChat({content, sessionId, questionId, imageIds = [], onDelt
     const input = images.content(content, imageIds);
     const sessions = db.getQaSessions();
     let session = sessions.find(s => s.id === sessionId);
+    const existing=Boolean(session);
     if (!session) { session = {id:require('node:crypto').randomUUID(),title:content.slice(0,60) || '图片答疑',questionId,createdAt:new Date().toISOString(),messages:[]}; sessions.unshift(session); }
     const q = anchorQuestion || resolveQuestion(questionId || session.questionId);
     const messages = [{role:'system',content:getSystemPrompt(q)},...session.messages.slice(-8).map(m => ({role:m.role,content:m.role === 'user' ? images.content(m.content,m.imageIds || [],{allowMissing:true}) : m.content})),{role:'user',content:input}];
@@ -130,8 +131,8 @@ async function streamChat({content, sessionId, questionId, imageIds = [], onDelt
     if (db.getAiConfig().apiKey) fullText = await ai.complete(messages,{onDelta});
     else { fullText = imageIds?.length ? '图片已保存。请在顶部 AI 设置中配置支持图片的模型后再次发送；当前尚未识别图片内容。' : '【内置学习提示】\n\n' + generateTutorReply(content,q).join(''); onDelta(fullText); }
     const at = new Date().toISOString(); session.updatedAt = at;
-    session.messages.push({role:'user',content,imageIds:imageIds || [],createdAt:at},{role:'assistant',content:fullText,createdAt:at});
-    session.messages = session.messages.slice(-100); db.saveQaSessions(sessions.slice(0,100)); onDone({sessionId:session.id,done:true,fullText});
+    if(db.requestSignal()?.aborted)throw new Error('请求已取消');db.atomic(()=>{const current=db.getQaSessions();if(existing&&!current.some(s=>s.id===session.id))throw new Error('此答疑记录已删除，回答未重新保存');const latest=current.find(s=>s.id===session.id)||{...session,messages:[]};latest.updatedAt=at;latest.messages.push({role:'user',content,imageIds:imageIds || [],createdAt:at},{role:'assistant',content:fullText,createdAt:at});
+    latest.messages=latest.messages.slice(-100);db.saveQaSessions([latest,...current.filter(s=>s.id!==latest.id)].slice(0,100));}); onDone({sessionId:session.id,done:true,fullText});
   } catch (e) { onError(e.message || '答疑失败，请重试'); }
 }
 

@@ -1,9 +1,16 @@
 import {AiConfig} from '../types/ai';
+const activeRequests=new Set<AbortController>();
+const announce=()=>window.dispatchEvent(new CustomEvent('study:ai-active',{detail:activeRequests.size}));
+window.addEventListener('study:cancel-ai',()=>{for(const controller of activeRequests)controller.abort();});
+window.addEventListener('pagehide',()=>{for(const controller of activeRequests)controller.abort();});
 export function stripAiThinking(raw:string){return raw.replace(/<think>[\s\S]*?<\/think>/gi,'').replace(/<think>[\s\S]*$/gi,'').trim();}
-export async function sendChatCompletion(config:AiConfig,messages:Array<{role:'system'|'user'|'assistant';content:string}>,onDelta?:(chunk:string,fullText:string)=>void):Promise<string>{
+export async function sendChatCompletion(_config:AiConfig,messages:Array<{role:'system'|'user'|'assistant';content:string}>,onComplete?:(chunk:string,fullText:string)=>void,signal?:AbortSignal):Promise<string>{
   if(document.querySelector('.study-images[data-uploading]'))throw new Error('图片正在上传，请稍候再发送');
-  const response=await fetch('/api/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subject:'english',messages,imageIds:window.studyImageIds || []})});
-  const data=await response.json();if(!response.ok)throw new Error(data.error || 'AI 批阅失败');const answer=stripAiThinking(data.answer);if(onDelta)onDelta(answer,answer);return answer;
+  const controller=new AbortController();activeRequests.add(controller);announce();
+  try{
+  const response=await fetch('/api/ai/chat',{signal:signal?AbortSignal.any([signal,controller.signal]):controller.signal,method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subject:'english',messages,imageIds:window.studyImageIds || []})});
+  const data=await response.json();if(!response.ok)throw new Error(data.error || 'AI 批阅失败');const answer=stripAiThinking(data.answer);if(onComplete)onComplete(answer,answer);return answer;
+  }catch(e){if((e as Error).name==='AbortError')throw new Error('已取消 AI 请求，尚未生成批阅记录');throw e;}finally{activeRequests.delete(controller);announce();}
 }
 export async function gradeTranslationSentence(
   config: AiConfig,
@@ -14,7 +21,7 @@ export async function gradeTranslationSentence(
     userTranslation: string;
     standardTranslation?: string;
   },
-  onDelta?: (chunk: string, fullText: string) => void
+  onComplete?: (chunk: string, fullText: string) => void
 ): Promise<string> {
   const { year, qNum, sentenceEn, userTranslation, standardTranslation } = params;
 
@@ -62,7 +69,7 @@ ${userTranslation.trim() || '（考生未作答）'}
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userPrompt }
     ],
-    onDelta
+    onComplete
   );
 }
 
@@ -79,7 +86,7 @@ export async function gradeWritingEssay(
     userEssay: string;
     referenceEssay?: string;
   },
-  onDelta?: (chunk: string, fullText: string) => void
+  onComplete?: (chunk: string, fullText: string) => void
 ): Promise<string> {
   const { year, type, qid, directions, userEssay, referenceEssay } = params;
   const isEssay = type === 'writing_essay';
@@ -150,7 +157,7 @@ ${userEssay.trim() || '（考生未作答）'}
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userPrompt }
     ],
-    onDelta
+    onComplete
   );
 }
 

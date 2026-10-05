@@ -5,19 +5,20 @@ const catalog = () => readContent('english-data/catalog.json');
 const fresh = () => ({answers:{},cards:{},notes:{},exams:[]});
 const state = () => db.readJSON('english_state',fresh());
 const save = data => db.saveJSON('english_state',data);
-function values(key,fallback) { try { return JSON.parse(db.readJSON('english_storage',{})[key] || 'null') || fallback; } catch { return fallback; } }
+function values(key,fallback) { try { const raw=db.readJSON('english_storage',{})[key];return raw?validate(key,raw):fallback; } catch { return fallback; } }
 function stats() { const s=state(); return {answered:Object.keys(s.answers).length,correct:Object.values(s.answers).filter(a=>a.correct === true).length,favorites:values('kaoyan_favorite_sentences',[]).length,wrong:values('kaoyan_wrong_questions',[]).length,notes:Object.keys(s.notes).length,due:Object.values(s.cards).filter(c=>c.nextDue<=Date.now()).length,exams:s.exams.length}; }
-const validKey = key => /^(kaoyan_(?:word_statuses|wordfreq_sidebar_collapsed|quiz_history|quiz_records|ebbinghaus_records|daily_session_state|daily_review_limit|favorite_sentences|wrong_questions|paraphrase_progress|phrase_dictate_history|reading_progress|trans_\d{4}|quiz_progress_\d{4}|essay_[a-zA-Z0-9_-]+|ai_reviews_[a-zA-Z0-9_-]+))$/.test(key);
+const {validKey,validate,validatePatch}=require('./english-schema');
 function mount(app) {
   const wrap = fn => async(req,res)=>{try{await fn(req,res);}catch(e){res.status(e.status || 400).json({ok:false,error:e.message});}};
-  app.get('/api/english/storage',(req,res)=>res.json({items:db.readJSON('english_storage',{})}));
+  app.get('/api/english/storage',(req,res)=>res.json({items:require('./study-export').snapshot().data.english_storage||{}}));
   app.post('/api/english/storage',wrap((req,res)=>{
     const patch=req.body.patch;if(!patch || Array.isArray(patch) || typeof patch!=='object') throw new Error('学习记录无效');
+    validatePatch(patch);if(Object.keys(patch).length>1000)throw new Error('学习记录字段过多');
     const data=db.readJSON('english_storage',{});
     const mergedPatch={};
     for(const [key,value] of Object.entries(patch))if(/^kaoyan_quiz_progress_\d{4}$/.test(key)&&typeof value==='string'&&data[key]){
       const old=JSON.parse(data[key]),incoming=JSON.parse(value);
-      if(old&&incoming&&typeof incoming==='object'){
+      if(old&&incoming&&typeof incoming==='object'&&old.attemptId===incoming.attemptId){
         const merged={...(Number(old.lastUpdated)>Number(incoming.lastUpdated)?old:incoming),answers:{...old.answers,...incoming.answers},elapsedSeconds:Math.max(Number(old.elapsedSeconds)||0,Number(incoming.elapsedSeconds)||0)};
         // Clearing progress is an explicit null patch handled below.
         patch[key]=JSON.stringify(merged);if(patch[key]!==value)mergedPatch[key]=patch[key];

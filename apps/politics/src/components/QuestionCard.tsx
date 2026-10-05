@@ -27,6 +27,8 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   defaultRevealed = false,
   chapterCode
 }) => {
+  const activeQuestion=useRef<string|number|null>(q.id);activeQuestion.current=q.id;
+  useEffect(()=>{activeQuestion.current=q.id;return()=>{activeQuestion.current=null;};},[q.id]);
   const [pickedSet, setPickedSet] = useState<Set<string>>(new Set());
   const elim = useEliminate(q.id);
   const [submission, setSubmission] = useState<any>(initial);
@@ -40,6 +42,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   const excerptSeq = useRef(1);
 
   useEffect(() => {
+    setSubmitting(false);
     setPickedSet(new Set());
     setSubmission(initial);
     setIsFav(favored);
@@ -79,7 +82,8 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
     if (!choiceStr || submitting) return;
 
     setSubmitting(true);
-    const res = await submitAnswerApi(q.id, choiceStr, chapterCode);
+    const requestedId=q.id;const res = await submitAnswerApi(requestedId, choiceStr, chapterCode);
+    if(activeQuestion.current!==requestedId)return;
     setSubmitting(false);
 
     if (res.ok === false) {
@@ -96,7 +100,8 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   async function handleToggleFavorite() {
     const next = !isFav;
     setIsFav(next);
-    const res = await toggleFavoriteApi(q.id, next);
+    const requestedId=q.id;const res = await toggleFavoriteApi(requestedId, next);
+    if(activeQuestion.current!==requestedId)return;
     if (res.ok) {
       onFavor?.(q.id, next);
     } else {

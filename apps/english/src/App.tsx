@@ -1,14 +1,15 @@
+import {papersReady} from './utils/publicData';
 import {StudyBridge} from './components/StudyBridge';
-import {englishStorage,recordEnglish} from './utils/platformStorage';
+import {englishStorage,recordEnglish,hydrateEnglish} from './utils/platformStorage';
 import React, { useState, useEffect, useMemo } from 'react';
 import { Header, AppTab } from './components/Header';
 import { WordFreqSidebar } from './components/WordFreqSidebar';
-import { WordDetailModal } from './components/WordDetailModal';
-import { DataBackupModal } from './components/DataBackupModal';
-import { EbbinghausNotebookModal } from './components/EbbinghausNotebookModal';
-import { StudyProgressModal } from './components/StudyProgressModal';
-import { DesktopAppModal } from './components/DesktopAppModal';
-import { AiConfigModal } from './components/AiConfigModal';
+const WordDetailModal=React.lazy(()=>import('./components/WordDetailModal').then(m=>({default:m.WordDetailModal})));
+const DataBackupModal=React.lazy(()=>import('./components/DataBackupModal').then(m=>({default:m.DataBackupModal})));
+const EbbinghausNotebookModal=React.lazy(()=>import('./components/EbbinghausNotebookModal').then(m=>({default:m.EbbinghausNotebookModal})));
+const StudyProgressModal=React.lazy(()=>import('./components/StudyProgressModal').then(m=>({default:m.StudyProgressModal})));
+const DesktopAppModal=React.lazy(()=>import('./components/DesktopAppModal').then(m=>({default:m.DesktopAppModal})));
+const AiConfigModal=React.lazy(()=>import('./components/AiConfigModal').then(m=>({default:m.AiConfigModal})));
 import { ExamWall } from './components/ExamWall';
 const QuizMode=React.lazy(()=>import('./components/QuizMode'));
 const IntensiveReadingView=React.lazy(()=>import('./components/IntensiveReadingView').then(module=>({default:module.IntensiveReadingView})));
@@ -136,89 +137,19 @@ export const App: React.FC = () => {
   };
 
   // Data import handler
-  const handleImportData = (payload: any, mode: 'merge' | 'overwrite'): boolean => {
-    try {
-      if (!payload || typeof payload !== 'object') return false;
-      const dataObj = payload.data || payload;
-      const importedStatuses = dataObj.wordStatuses;
-
-      if (importedStatuses && typeof importedStatuses === 'object') {
-        setWordStatuses(prev => {
-          const merged = mode === 'overwrite' ? { ...importedStatuses } : { ...prev, ...importedStatuses };
-          try {
-            englishStorage.setItem('kaoyan_word_statuses', JSON.stringify(merged));
-          } catch {}
-          return merged;
-        });
-      }
-
-      if (dataObj.quizHistory) {
-        try {
-          englishStorage.setItem('kaoyan_quiz_history', JSON.stringify(dataObj.quizHistory));
-          setQuizHistory(dataObj.quizHistory);
-        } catch {}
-      }
-
-      if (dataObj.ebbinghausRecords) {
-        try {
-          const currentEbb = loadEbbinghausRecords();
-          const mergedEbb = mode === 'overwrite' ? dataObj.ebbinghausRecords : { ...currentEbb, ...dataObj.ebbinghausRecords };
-          englishStorage.setItem('kaoyan_ebbinghaus_records', JSON.stringify(mergedEbb));
-        } catch {}
-      }
-
-      if (dataObj.favoriteSentences) {
-        try {
-          const cur = JSON.parse(englishStorage.getItem('kaoyan_favorite_sentences') || '[]');
-          const merged = mode === 'overwrite' ? dataObj.favoriteSentences : [...dataObj.favoriteSentences, ...cur.filter((c: any) => !dataObj.favoriteSentences.some((d: any) => d.sid === c.sid))];
-          englishStorage.setItem('kaoyan_favorite_sentences', JSON.stringify(merged));
-        } catch {}
-      }
-
-      if (dataObj.wrongQuestions) {
-        try {
-          const cur = JSON.parse(englishStorage.getItem('kaoyan_wrong_questions') || '[]');
-          const merged = mode === 'overwrite' ? dataObj.wrongQuestions : [...dataObj.wrongQuestions, ...cur.filter((c: any) => !dataObj.wrongQuestions.some((d: any) => String(d.id) === String(c.id)))];
-          englishStorage.setItem('kaoyan_wrong_questions', JSON.stringify(merged));
-        } catch {}
-      }
-
-      if (dataObj.paraphraseProgress) {
-        try {
-          const cur = JSON.parse(englishStorage.getItem('kaoyan_paraphrase_progress') || '{}');
-          const merged = mode === 'overwrite' ? dataObj.paraphraseProgress : { ...cur, ...dataObj.paraphraseProgress };
-          englishStorage.setItem('kaoyan_paraphrase_progress', JSON.stringify(merged));
-        } catch {}
-      }
-
-      if (dataObj.phraseDictateHistory) {
-        try {
-          const cur = JSON.parse(englishStorage.getItem('kaoyan_phrase_dictate_history') || '{}');
-          const merged = mode === 'overwrite' ? dataObj.phraseDictateHistory : { ...cur, ...dataObj.phraseDictateHistory };
-          englishStorage.setItem('kaoyan_phrase_dictate_history', JSON.stringify(merged));
-        } catch {}
-      }
-
-      if (dataObj.readingProgress) {
-        try {
-          const cur = JSON.parse(englishStorage.getItem('kaoyan_reading_progress') || '{}');
-          const merged = mode === 'overwrite' ? dataObj.readingProgress : { ...cur, ...dataObj.readingProgress };
-          englishStorage.setItem('kaoyan_reading_progress', JSON.stringify(merged));
-        } catch {}
-      }
-
-      if (dataObj.theme && (dataObj.theme === 'dark' || dataObj.theme === 'light')) {
-        setTheme(dataObj.theme);
-        try {
-          localStorage.setItem('mb_theme', dataObj.theme);
-        } catch {}
-      }
-
-      return true;
-    } catch (e) {
-      console.error('Failed to import study data:', e);
-      return false;
+  const handleImportData = async (payload: unknown, mode: 'merge' | 'overwrite'): Promise<boolean> => {
+    if(!payload||typeof payload!=='object')throw new Error('备份结构无效');
+    const raw=payload as Record<string,any>,data=raw.data||raw;
+    const keys:Record<string,string>={wordStatuses:'word_statuses',quizHistory:'quiz_history',ebbinghausRecords:'ebbinghaus_records',favoriteSentences:'favorite_sentences',wrongQuestions:'wrong_questions',paraphraseProgress:'paraphrase_progress',phraseDictateHistory:'phrase_dictate_history',readingProgress:'reading_progress'};
+    const patch:Record<string,string>={};
+    for(const [legacy,key] of Object.entries(keys))if(Object.hasOwn(data,legacy)){
+      const incoming=data[legacy],old=JSON.parse(englishStorage.getItem('kaoyan_'+key)||'null');
+      const value=mode==='overwrite'||old==null?incoming:Array.isArray(incoming)&&Array.isArray(old)?[...incoming,...old.filter(o=>!incoming.some(i=>(i.sid??i.id??JSON.stringify(i))===(o.sid??o.id??JSON.stringify(o))))]:incoming&&typeof incoming==='object'&&!Array.isArray(incoming)?{...old,...incoming}:incoming;
+      patch['kaoyan_'+key]=JSON.stringify(value);
     }
+    if(!Object.keys(patch).length)throw new Error('文件不包含可导入的英语学习记录');
+    const response=await fetch('/api/english/storage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({patch})});const value=await response.json();if(!response.ok)throw new Error(value.localSaved?'导入已保存在本地，等待联网确认':value.error);
+    await hydrateEnglish();setWordStatuses(JSON.parse(englishStorage.getItem('kaoyan_word_statuses')||'{}'));setQuizHistory(loadQuizHistory());return true;
   };
 
   // Data clear handler
@@ -243,20 +174,9 @@ export const App: React.FC = () => {
     async function loadData() {
       try {
         setLoading(true);
-        const [papersRes, dictRes] = await Promise.all([
-          fetch('/english-data/papers_by_type.json'),
-          fetch('/english-data/kaoyan1_dict.json'),
-        ]);
-
-        if (papersRes.ok) {
-          const papersData = await papersRes.json();
-          setPapers(papersData);
-        }
-
-        if (dictRes.ok) {
-          const dictData = await dictRes.json();
-          setDict(dictData);
-        }
+        setPapers(await papersReady);
+        const loadDictionary=()=>fetch('/english-data/kaoyan1_dict.json').then(r=>{if(!r.ok)throw Error('词典载入失败');return r.json();}).then(setDict).catch(()=>{});
+        if('requestIdleCallback' in window)(window as any).requestIdleCallback(loadDictionary,{timeout:1500});else setTimeout(loadDictionary,100);
       } catch (err) {
         console.error('Failed to load kaoyan data:', err);
       } finally {
@@ -586,16 +506,16 @@ export const App: React.FC = () => {
       ) : null}
 
       {/* Word Detail & Sentence Examples Modal */}
-      <WordDetailModal
+      {wordModalItem && <WordDetailModal
         item={wordModalItem}
         onClose={() => setWordModalItem(null)}
         onToggleStatus={handleToggleStatus}
         onJumpToSentence={handleJumpToSentence}
         theme={theme}
-      />
+      />}
 
       {/* Ebbinghaus Forgetting Curve Vocabulary Notebook & Review Modal */}
-      <EbbinghausNotebookModal
+      {isEbbinghausOpen && <EbbinghausNotebookModal
         isOpen={isEbbinghausOpen}
         onClose={() => {
           setIsEbbinghausOpen(false);
@@ -607,10 +527,10 @@ export const App: React.FC = () => {
         onToggleStatus={handleToggleStatus}
         onOpenWordDetail={item => setWordModalItem(item)}
         theme={theme}
-      />
+      />}
 
       {/* Study Progress & Quiz Records Dashboard Modal */}
-      <StudyProgressModal
+      {isProgressOpen && <StudyProgressModal
         isOpen={isProgressOpen}
         onClose={() => setIsProgressOpen(false)}
         stats={studyStats}
@@ -622,31 +542,31 @@ export const App: React.FC = () => {
           setTargetSectionId(null);
         }}
         theme={theme}
-      />
+      />}
 
       {/* Personal Learning Data Backup & Import/Export Modal */}
-      <DataBackupModal
+      {isBackupModalOpen && <DataBackupModal
         isOpen={isBackupModalOpen}
         onClose={() => setIsBackupModalOpen(false)}
         wordStatuses={wordStatuses}
         onImportData={handleImportData}
         onClearData={handleClearData}
         theme={theme}
-      />
+      />}
 
       {/* Desktop App Generation & PWA Modal */}
-      <DesktopAppModal
+      {isDesktopAppOpen && <DesktopAppModal
         isOpen={isDesktopAppOpen}
         onClose={() => setIsDesktopAppOpen(false)}
         theme={theme}
-      />
+      />}
 
       {/* AI Grading & Custom API Settings Modal */}
-      <AiConfigModal
+      {isAiConfigOpen && <AiConfigModal
         isOpen={isAiConfigOpen}
         onClose={() => setIsAiConfigOpen(false)}
         theme={theme}
-      />
+      />}
 
       {/* Floating Word Lookup Popover Card (Dictionary Tooltip) */}
       <WordLookupPopover

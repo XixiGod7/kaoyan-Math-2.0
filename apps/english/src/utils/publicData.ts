@@ -1,0 +1,1 @@
+export const papersReady=fetch('/english-data/papers_by_type.json').then(r=>{if(!r.ok)throw Error('试卷目录载入失败');return r.json();});papersReady.catch(()=>{});

@@ -3,5 +3,5 @@ import react from '@vitejs/plugin-react';
 import { fileURLToPath } from 'node:url';
 export default defineConfig({
   root: fileURLToPath(new URL('.', import.meta.url)), base: '/politics-app/', plugins: [react()],
-  build: { outDir: '../../public/politics-app', emptyOutDir: true }
+  build: { outDir: '../../public/politics-app', emptyOutDir: false }
 });

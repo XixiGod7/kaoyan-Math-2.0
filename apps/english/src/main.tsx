@@ -1,15 +1,17 @@
+import './utils/publicData';
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import {LoadBoundary} from './components/LoadBoundary';
 import App from './App'
 import './index.css'
 import {hydrateEnglish} from './utils/platformStorage'
 import {hydrateAiConfig} from './utils/aiConfigStorage'
 
 async function start() {
-try { await window.studyReady; await Promise.all([hydrateEnglish(),hydrateAiConfig().catch(()=>{})]);
+try { await window.studyReady; await hydrateEnglish();hydrateAiConfig().catch(()=>{});
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <React.Suspense fallback={<p className="platform-empty">正在载入学习页面…</p>}><App /></React.Suspense>
+    <LoadBoundary><React.Suspense fallback={<p className="platform-empty">正在载入学习页面…</p>}><App /></React.Suspense></LoadBoundary>
   </React.StrictMode>,
 )
 

@@ -432,3 +432,6 @@ body.math-body .app{padding-top:0}body.math-body .app>main{padding-top:28px}
   background: rgba(239, 68, 68, 0.08);
 }
 @media(max-width:600px){.ai-modal{padding:20px;max-height:calc(100dvh - 32px)}.ai-modal-foot{flex-wrap:wrap}.ai-modal-foot button{min-height:40px}.ai-modal-title{font-size:16px}.ai-form-input{font-size:16px}}
+
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+.study-storage{margin-top:24px;border-top:1px solid var(--border);padding-top:16px}.study-storage summary{cursor:pointer;font-weight:600}.study-storage select,.export-actions select{border:1px solid var(--border);border-radius:10px;background:var(--panel);color:var(--text);padding:10px}.study-storage label{display:block;margin:16px 0}.study-storage input{margin-right:8px}
