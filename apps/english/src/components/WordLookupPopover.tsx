@@ -25,65 +25,9 @@ interface PopoverState {
   placement: 'top' | 'bottom';
 }
 
-// Lemmatization rules to resolve inflections back to base dictionary forms
-export function resolveLemma(rawWord: string, entries: Record<string, DictEntry>): { lemma: string; entry: DictEntry } | null {
-  const w = rawWord.toLowerCase().trim().replace(/^[^a-z]+|[^a-z]+$/g, '');
-  if (!w || w.length < 2) return null;
-
-  // 1. Direct exact match
-  if (entries[w]) return { lemma: w, entry: entries[w] };
-
-  const candidates: string[] = [];
-
-  // 2. Plurals / 3rd person '-s', '-es', '-ies'
-  if (w.endsWith('ies') && w.length > 3) candidates.push(w.slice(0, -3) + 'y');
-  if (w.endsWith('es') && w.length > 3) candidates.push(w.slice(0, -2));
-  if (w.endsWith('s') && w.length > 2) candidates.push(w.slice(0, -1));
-
-  // 3. Past tense / past participle '-ed', '-ied'
-  if (w.endsWith('ied') && w.length > 3) candidates.push(w.slice(0, -3) + 'y');
-  if (w.endsWith('ed') && w.length > 3) {
-    candidates.push(w.slice(0, -2)); // walked -> walk
-    candidates.push(w.slice(0, -1)); // decided -> decide (drop 'd')
-    // Double consonant: stopped -> stop
-    if (w.length > 4 && w[w.length - 3] === w[w.length - 4]) {
-      candidates.push(w.slice(0, -3));
-    }
-  }
-
-  // 4. Continuous '-ing'
-  if (w.endsWith('ing') && w.length > 4) {
-    candidates.push(w.slice(0, -3)); // studying -> study (or working -> work)
-    candidates.push(w.slice(0, -3) + 'e'); // making -> make
-    if (w.length > 5 && w[w.length - 4] === w[w.length - 5]) {
-      candidates.push(w.slice(0, -4)); // running -> run
-    }
-  }
-
-  // 5. Adverbs '-ly', '-ily'
-  if (w.endsWith('ily') && w.length > 4) candidates.push(w.slice(0, -3) + 'y'); // happily -> happy
-  if (w.endsWith('ly') && w.length > 3) candidates.push(w.slice(0, -2)); // quickly -> quick
-
-  // 6. Comparative / Superlative '-er', '-est', '-ier', '-iest'
-  if (w.endsWith('ier') && w.length > 4) candidates.push(w.slice(0, -3) + 'y');
-  if (w.endsWith('iest') && w.length > 5) candidates.push(w.slice(0, -4) + 'y');
-  if (w.endsWith('er') && w.length > 3) {
-    candidates.push(w.slice(0, -2));
-    candidates.push(w.slice(0, -1));
-  }
-  if (w.endsWith('est') && w.length > 4) {
-    candidates.push(w.slice(0, -3));
-    candidates.push(w.slice(0, -2));
-  }
-
-  for (const cand of candidates) {
-    if (entries[cand]) {
-      return { lemma: cand, entry: entries[cand] };
-    }
-  }
-
-  return null;
-}
+// Lemmatization rules to resolve inflections back to base dictionary forms (unified from dictionaryService)
+import { formatPhonetic, resolveLemma, normalizeWord } from '../services/dictionaryService';
+export { resolveLemma };
 
 export const WordLookupPopover: React.FC<WordLookupPopoverProps> = ({
   dict,
@@ -102,7 +46,7 @@ export const WordLookupPopover: React.FC<WordLookupPopoverProps> = ({
   // Handle explicitly passed targetWord from click
   useEffect(() => {
     if (!targetWord || !dict || !dict.entries) return;
-    const clean = targetWord.word.replace(/^[^a-zA-Z]+|[^a-zA-Z]+$/g, '');
+    const clean = normalizeWord(targetWord.word);
     if (!clean) return;
 
     const res = resolveLemma(clean, dict.entries);
@@ -172,7 +116,7 @@ export const WordLookupPopover: React.FC<WordLookupPopoverProps> = ({
         return;
       }
 
-      const clean = text.replace(/^[^a-zA-Z]+|[^a-zA-Z]+$/g, '');
+      const clean = normalizeWord(text);
       if (!clean) return;
 
       const res = resolveLemma(clean, dict.entries);
@@ -295,7 +239,7 @@ export const WordLookupPopover: React.FC<WordLookupPopoverProps> = ({
           <div className="flex items-center gap-2 mt-1">
             {popover.entry.phonetic && (
               <span className={`text-xs font-mono font-semibold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                /{popover.entry.phonetic}/
+                {formatPhonetic(popover.entry.phonetic)}
               </span>
             )}
             {isExamKey ? (
@@ -336,6 +280,12 @@ export const WordLookupPopover: React.FC<WordLookupPopoverProps> = ({
           ))
         ) : (
           <p className="text-xs text-gray-400 italic">暂无释义</p>
+        )}
+        {popover.entry.supplementary_cn && popover.entry.supplementary_cn.length > 0 && (
+          <div className="mt-1 pt-1 border-t border-slate-700/30 text-[11px] text-slate-400">
+            <span className="text-[10px] font-bold text-slate-500 mr-1">[补充释义]</span>
+            {popover.entry.supplementary_cn.join('； ')}
+          </div>
         )}
       </div>
 

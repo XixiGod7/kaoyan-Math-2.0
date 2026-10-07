@@ -42,6 +42,7 @@ import {
   isTimestampToday
 } from '../utils/ebbinghaus';
 import { findRelatedWords } from '../utils/wordRelations';
+import { formatPhonetic, lookup, normalizeWord, useDictionary } from '../services/dictionaryService';
 
 interface EbbinghausNotebookModalProps {
   isOpen: boolean;
@@ -65,13 +66,15 @@ interface SessionCardItem {
 export const EbbinghausNotebookModal: React.FC<EbbinghausNotebookModalProps> = ({
   isOpen,
   onClose,
-  dict,
+  dict: providedDict,
   words,
   wordStatuses,
   onToggleStatus,
   onOpenWordDetail,
   theme = 'dark',
 }) => {
+  const { dict: sharedDict, loading: dictionaryLoading, error: dictionaryError, reload: reloadDictionary } = useDictionary();
+  const dict = providedDict || sharedDict;
   const isDark = theme === 'dark';
   const [activeTab, setActiveTab] = useState<'review' | 'list' | 'curve'>('review');
   const [records, setRecords] = useState<Record<string, EbbinghausWordRecord>>({});
@@ -324,8 +327,11 @@ export const EbbinghausNotebookModal: React.FC<EbbinghausNotebookModalProps> = (
   const filteredList = useMemo(() => {
     return allSavedWords.filter(r => {
       const isUnfam = wordStatuses[r.word] === 'unfamiliar';
-      const matchSearch = r.word.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (dict?.entries?.[r.word]?.definition_cn || '').includes(searchTerm);
+      const normWord = normalizeWord(r.word);
+      const entry = lookup(r.word, dict).entry;
+      const matchSearch = normWord.includes(searchTerm.toLowerCase()) ||
+        (entry?.definition_cn || '').includes(searchTerm) ||
+        (entry?.supplementary_cn || []).some(s => s.includes(searchTerm));
 
       let matchStage = true;
       if (stageFilter === 'unfamiliar') matchStage = isUnfam;
@@ -341,7 +347,7 @@ export const EbbinghausNotebookModal: React.FC<EbbinghausNotebookModalProps> = (
   // Current Active Card in the Session Queue
   const currentCard = sessionQueue[0] || null;
   const currentDueWord = currentCard ? currentCard.record : null;
-  const currentEntry = currentDueWord && dict?.entries ? dict.entries[currentDueWord.word] : null;
+  const currentEntry = currentDueWord ? lookup(currentDueWord.word, dict).entry : null;
   const isCurrentUnfamiliar = currentDueWord ? wordStatuses[currentDueWord.word] === 'unfamiliar' : false;
 
   // Find similar, derivative, and confusable words for the current card
@@ -610,6 +616,10 @@ export const EbbinghausNotebookModal: React.FC<EbbinghausNotebookModalProps> = (
 
         {/* Modal Main Content Body */}
         <div className="flex-1 overflow-y-auto p-6">
+          {dictionaryLoading && !dict && <p role="status">词典加载中…</p>}
+          {dictionaryError && <div role="alert" className="mb-4 flex items-center gap-3 text-sm">
+            <span>{dictionaryError}</span><button onClick={() => { void reloadDictionary().catch(() => {}); }}>重试加载词典</button>
+          </div>}
           {/* TAB 1: Daily Flashcard Review Mode */}
           {activeTab === 'review' && (
             <div className="h-full flex flex-col items-center justify-between max-w-2xl mx-auto py-1">
@@ -833,7 +843,7 @@ export const EbbinghausNotebookModal: React.FC<EbbinghausNotebookModalProps> = (
 
                       {currentEntry?.phonetic && (
                         <p className="text-base font-mono font-semibold text-slate-400 mt-2">
-                          /{currentEntry.phonetic}/
+                          {formatPhonetic(currentEntry.phonetic)}
                         </p>
                       )}
                     </div>
@@ -843,11 +853,19 @@ export const EbbinghausNotebookModal: React.FC<EbbinghausNotebookModalProps> = (
                       <div className="w-full mt-3 pt-3 border-t border-slate-700/60 animate-fade-in flex flex-col items-center">
                         <div className="max-w-xl text-left space-y-1.5 mb-3 w-full">
                           {currentEntry?.definition_cn ? (
-                            currentEntry.definition_cn.split('\n').map((def, i) => (
-                              <p key={i} className={`text-sm leading-relaxed font-medium ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
-                                {def}
-                              </p>
-                            ))
+                            <>
+                              {currentEntry.definition_cn.split('\n').map((def, i) => (
+                                <p key={i} className={`text-sm leading-relaxed font-medium ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
+                                  {def}
+                                </p>
+                              ))}
+                              {currentEntry.supplementary_cn && currentEntry.supplementary_cn.length > 0 && (
+                                <div className="mt-1.5 pt-1 border-t border-slate-700/40 text-[11px] text-slate-400">
+                                  <span className="text-[10px] font-bold text-slate-400 mr-1">[补充释义]</span>
+                                  {currentEntry.supplementary_cn.join('； ')}
+                                </div>
+                              )}
+                            </>
                           ) : (
                             <p className="text-xs text-gray-400 italic">暂无释义</p>
                           )}
@@ -1089,7 +1107,7 @@ export const EbbinghausNotebookModal: React.FC<EbbinghausNotebookModalProps> = (
                     </div>
                   ) : (
                     filteredList.map(item => {
-                      const entry = dict?.entries?.[item.word];
+                      const entry = lookup(item.word, dict).entry;
                       const stageInfo = STAGE_LABELS[item.stage];
                       const isUnfam = wordStatuses[item.word] === 'unfamiliar';
                       const isDue = item.nextReviewTime <= now && item.stage < 8;
@@ -1108,7 +1126,7 @@ export const EbbinghausNotebookModal: React.FC<EbbinghausNotebookModalProps> = (
                               </span>
                               {entry?.phonetic && (
                                 <span className={`text-xs font-mono ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                                  /{entry.phonetic}/
+                                  {formatPhonetic(entry.phonetic)}
                                 </span>
                               )}
                               {isUnfam && (

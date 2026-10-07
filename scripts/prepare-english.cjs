@@ -31,9 +31,11 @@ for(const file of fs.readdirSync(path.join(source,'reading/passages'))) {
 }
 for(const group of load('translation/translation_all.json'))for(const task of group.tasks){const id=group.year+':'+task.no;catalog.questions[id] ||= {id,year:String(group.year),number:task.no,title:group.year+' 年第 '+task.no+' 题翻译',objective:false,options:[]};}
 for(const item of load('essay/essays_all.json')){const number=item.part==='A'?51:52,id=item.year+':'+number;catalog.questions[id] ||= {id,year:String(item.year),number,title:item.directions,objective:false,options:[]};}
-for(const [word,entry] of Object.entries(load('kaoyan1_dict.json').entries)) catalog.words[word]=entry.definition_cn || '';
+const { compileLexicon } = require('./compile-lexicon.cjs');
+const compiled = compileLexicon({ srcDir: source, targetDir: target });
+for(const [word,entry] of Object.entries(compiled.unifiedDict.entries)) catalog.words[word]=entry.definition_cn || '';
 fs.writeFileSync(path.join(target,'catalog.json'),JSON.stringify(catalog));
-console.log(`英语资料：${Object.keys(catalog.papers).length} 套试卷，${Object.keys(catalog.questions).length} 道题，${Object.keys(catalog.sentences).length} 个精读句子`);
+console.log(`英语资料：${Object.keys(catalog.papers).length} 套试卷，${Object.keys(catalog.questions).length} 道题，${Object.keys(catalog.sentences).length} 个精读句子，${Object.keys(catalog.words).length} 个统一词汇条目`);
 
 for(const q of load('paraphrase/paraphrase_all.json').items) catalog.practice['paraphrase:'+q.id]={title:q.stem,answer:q.answer};
 for(const q of load('phrases/phrases_all.json').items) catalog.practice['phrase:'+q.en]={title:q.en,answer:q.en};

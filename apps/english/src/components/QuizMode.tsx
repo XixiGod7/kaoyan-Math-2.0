@@ -4,6 +4,7 @@ import {englishStorage,recordEnglish} from '../utils/platformStorage';
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { YearPaperBundle, TaskBundleItem, TaskQuestion } from '../types/quizTask';
 import { KaoyanDict, WordFreqItem } from '../types/kaoyan';
+import { useDictionary } from '../services/dictionaryService';
 import { WordLookupPopover } from './WordLookupPopover';
 import { saveQuizHistoryRecord } from '../utils/ebbinghaus';
 import { loadQuizProgress, saveQuizProgress, clearQuizProgress, SavedQuizProgress } from '../utils/quizProgress';
@@ -243,17 +244,8 @@ export default function QuizMode({
   const latestProgress=useRef({year,answers,activeTab,isSubmitted});latestProgress.current={year,answers,activeTab,isSubmitted};
   useEffect(()=>{const persist=()=>saveQuizProgress({...latestProgress.current,attemptId:attemptId.current,elapsedSeconds:clockSeconds(),lastUpdated:Date.now()});window.addEventListener('pagehide',persist);const hidden=()=>{if(document.hidden)persist();};document.addEventListener('visibilitychange',hidden);return()=>{persist();window.removeEventListener('pagehide',persist);document.removeEventListener('visibilitychange',hidden);};},[clockSeconds]);
   // Dictionary for Instant In-Passage Word Selection Popover
-  const [localDict, setLocalDict] = useState<KaoyanDict | null>(dict || null);
-  useEffect(() => {
-    if (dict) {
-      setLocalDict(dict);
-      return;
-    }
-    fetch('/english-data/kaoyan1_dict.json')
-      .then(res => res.json())
-      .then(data => setLocalDict(data))
-      .catch(err => console.error("Failed to load dictionary in QuizMode:", err));
-  }, [dict]);
+  const { dict: sharedDict } = useDictionary();
+  const localDict = dict || sharedDict;
 
   useEffect(() => {
     fetch(`/english-data/papers/${year}.json`)

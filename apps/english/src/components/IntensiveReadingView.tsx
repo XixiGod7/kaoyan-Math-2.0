@@ -37,7 +37,8 @@ import {
   removeWrongQuestion
 } from '../utils/readingStorage';
 import { VocabBlindSpotModal } from './VocabBlindSpotModal';
-import { extractPassageLemmas, isWordMastered, getLemmas } from '../utils/vocabLemmatizer';
+import { extractPassageLemmas, isWordMastered } from '../utils/vocabLemmatizer';
+import { useDictionary, lookup } from '../services/dictionaryService';
 import { FontSizeLevel } from '../utils/fontSize';
 
 interface IntensiveReadingViewProps {
@@ -65,8 +66,11 @@ export const IntensiveReadingView: React.FC<IntensiveReadingViewProps> = ({
   const [loading, setLoading] = useState<boolean>(true);
 
   // Vocab stats & tiered coverage state
-  const [vocabStats, setVocabStats] = useState<Record<string, { rank: number; trans: string; phonetic?: string }>>({});
-  const [dictEntries, setDictEntries] = useState<Record<string, { definition_cn?: string; phonetic?: string }>>({});
+  const { dict, vocabulary } = useDictionary();
+  const dictEntries = useMemo(() => dict?.entries || {}, [dict]);
+  const vocabStats = useMemo(() => Object.fromEntries(vocabulary.map(item => [item.w, {
+    rank: item.rank ?? 9999, trans: item.trans || '', phonetic: item.phonetic || ''
+  }])), [vocabulary]);
   const [vocabTier, setVocabTier] = useState<'2000' | '3000' | '4000' | '5000' | 'custom'>('2000');
   const [showBlindSpotModal, setShowBlindSpotModal] = useState<boolean>(false);
 
@@ -104,40 +108,6 @@ export const IntensiveReadingView: React.FC<IntensiveReadingViewProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Load vocab stats dictionary and official syllabus dictionary
-  useEffect(() => {
-    async function loadVocabData() {
-      try {
-        const [statsRes, dictRes] = await Promise.all([
-          fetch('/english-data/vocab_stats/vocab_stats_all.json'),
-          fetch('/english-data/kaoyan1_dict.json')
-        ]);
-        if (statsRes.ok) {
-          const list: any[] = await statsRes.json();
-          const map: Record<string, { rank: number; trans: string; phonetic?: string }> = {};
-          list.forEach(item => {
-            if (item.w) {
-              map[item.w.toLowerCase()] = {
-                rank: item.rank || 9999, // Use real exam occurrence frequency rank (1~3149)
-                trans: item.trans || '',
-                phonetic: item.phonetic || ''
-              };
-            }
-          });
-          setVocabStats(map);
-        }
-        if (dictRes.ok) {
-          const dictData = await dictRes.json();
-          if (dictData && dictData.entries) {
-            setDictEntries(dictData.entries);
-          }
-        }
-      } catch (e) {
-        console.error('Failed to load vocab stats or dict:', e);
-      }
-    }
-    loadVocabData();
-  }, []);
 
   // 1. Load passages index
   useEffect(() => {
@@ -264,21 +234,7 @@ export const IntensiveReadingView: React.FC<IntensiveReadingViewProps> = ({
       if (isKnown) {
         knownTokens += item.count;
       } else {
-        // Find best translation checking dictEntries and vocabStats
-        let trans = dictEntries[item.lemma]?.definition_cn || vocabStats[item.lemma]?.trans;
-        if (!trans) {
-          const lemmas = getLemmas(item.lemma);
-          for (const lem of lemmas) {
-            if (dictEntries[lem]?.definition_cn) {
-              trans = dictEntries[lem].definition_cn;
-              break;
-            }
-            if (vocabStats[lem]?.trans) {
-              trans = vocabStats[lem].trans;
-              break;
-            }
-          }
-        }
+        const trans = lookup(item.lemma, dict).entry?.definition_cn;
 
         unfamiliarList.push({
           word: item.lemma,
@@ -702,7 +658,7 @@ export const IntensiveReadingView: React.FC<IntensiveReadingViewProps> = ({
                 </div>
                 <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                   {keywords.words.map((w, idx) => {
-                    const trans = w.trans || w.zh || vocabStats[w.w.toLowerCase()]?.trans || '';
+                    const trans = lookup(w.w, dict).entry?.definition_cn || w.trans || w.zh || '';
                     const count = w.n || w.count || 1;
                     return (
                       <button

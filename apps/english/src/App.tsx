@@ -24,6 +24,7 @@ const EssayGradingView=React.lazy(()=>import('./components/EssayGradingView').th
 import { HomeView } from './components/HomeView';
 import { WordLookupPopover } from './components/WordLookupPopover';
 import { PaperGroup, KaoyanDict, WordFreqItem } from './types/kaoyan';
+import { useDictionary, lookup, normalizeWord } from './services/dictionaryService';
 import {
   loadQuizHistory,
   loadEbbinghausRecords,
@@ -43,7 +44,7 @@ import {
 
 export const App: React.FC = () => {
   const [papers, setPapers] = useState<PaperGroup[]>([]);
-  const [dict, setDict] = useState<KaoyanDict | null>(null);
+  const { dict, status: dictionaryStatus, error: dictionaryError, reload: reloadDictionary } = useDictionary();
   const [loading, setLoading] = useState(true);
   const [isBackupModalOpen, setIsBackupModalOpen] = useState(new URLSearchParams(location.search).get('import')==='1');
   const [isEbbinghausOpen, setIsEbbinghausOpen] = useState(false);
@@ -122,8 +123,9 @@ export const App: React.FC = () => {
     if (rect) {
       setLookupTarget({ word, rect });
     } else {
-      const clean = word.toLowerCase().replace(/[^a-z]/g, '');
-      const entry = dict?.entries[clean];
+      const result = lookup(word, dict);
+      const clean = result.wordKey;
+      const entry = result.entry;
       if (entry) {
         setWordModalItem({
           word: clean,
@@ -175,8 +177,6 @@ export const App: React.FC = () => {
       try {
         setLoading(true);
         setPapers(await papersReady);
-        const loadDictionary=()=>fetch('/english-data/kaoyan1_dict.json').then(r=>{if(!r.ok)throw Error('词典载入失败');return r.json();}).then(setDict).catch(()=>{});
-        if('requestIdleCallback' in window)(window as any).requestIdleCallback(loadDictionary,{timeout:1500});else setTimeout(loadDictionary,100);
       } catch (err) {
         console.error('Failed to load kaoyan data:', err);
       } finally {
@@ -188,7 +188,8 @@ export const App: React.FC = () => {
   }, []);
 
   // Save statuses to localStorage & sync with Ebbinghaus records
-  const handleToggleStatus = (word: string, status: 'familiar' | 'unfamiliar' | 'unknown') => {
+  const handleToggleStatus = (rawWord: string, status: 'familiar' | 'unfamiliar' | 'unknown') => {
+    const word = normalizeWord(rawWord);
     setWordStatuses(prev => {
       const updated = { ...prev, [word]: status };
       try {
@@ -200,10 +201,9 @@ export const App: React.FC = () => {
     });
 
     // Deep sync to Ebbinghaus database & active daily session
-    const syncRes = syncSingleWordStatus(word, status, ebbinghausRecords);
-    setEbbinghausRecords(syncRes.records);
+    setEbbinghausRecords(previous => syncSingleWordStatus(word, status, previous).records);
 
-    if (selectedWord && selectedWord.word === word) {
+    if (selectedWord && (selectedWord.word === rawWord || selectedWord.word.toLowerCase().trim() === word)) {
       setSelectedWord(prev => prev ? { ...prev, status } : null);
     }
   };
@@ -325,6 +325,10 @@ export const App: React.FC = () => {
         />
 
       <StudyBridge context={currentTab+(selectedYear || currentPassKey)}/>
+      {dictionaryStatus === 'error' && <div role="alert" className="px-4 py-3 flex items-center gap-3 text-sm">
+        <span>{dictionaryError || '词典加载失败'}</span>
+        <button className="platform-button" onClick={() => { void reloadDictionary().catch(() => {}); }}>重试加载词典</button>
+      </div>}
       {loading ? (
         <div className={`flex-1 flex items-center justify-center text-sm font-bold gap-3 ${
           isDark ? 'text-slate-300' : 'text-slate-600'

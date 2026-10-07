@@ -14,6 +14,7 @@ import {
 import { VocabStatItem } from '../types/reading';
 import { saveWordStatus } from '../utils/readingStorage';
 import { BASIC_VOCAB_SET } from '../utils/vocabLemmatizer';
+import { formatPhonetic, useDictionary, normalizeWord } from '../services/dictionaryService';
 
 interface VocabBlindSpotModalProps {
   isOpen: boolean;
@@ -28,8 +29,7 @@ export const VocabBlindSpotModal: React.FC<VocabBlindSpotModalProps> = ({
   onWordClick,
   onUpdateWordStatus
 }) => {
-  const [allWords, setAllWords] = useState<VocabStatItem[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { vocabulary: allWords, loading, error, reload, getDefinition } = useDictionary();
 
   // Test state
   const [testWords, setTestWords] = useState<VocabStatItem[]>([]);
@@ -39,24 +39,6 @@ export const VocabBlindSpotModal: React.FC<VocabBlindSpotModalProps> = ({
   const [isFinished, setIsFinished] = useState<boolean>(false);
   const [addedToNotebook, setAddedToNotebook] = useState<boolean>(false);
 
-  // 1. Fetch vocab dataset once
-  useEffect(() => {
-    async function loadVocab() {
-      try {
-        setLoading(true);
-        const res = await fetch('/english-data/vocab_stats/vocab_stats_all.json');
-        if (res.ok) {
-          const data: VocabStatItem[] = await res.json();
-          setAllWords(data);
-        }
-      } catch (err) {
-        console.error('Failed to load vocab stats for blind spot test:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadVocab();
-  }, []);
 
   // 2. Initialize or reset a 40-word test
   const initializeTest = (wordsSource: VocabStatItem[] = allWords) => {
@@ -175,9 +157,10 @@ export const VocabBlindSpotModal: React.FC<VocabBlindSpotModalProps> = ({
   // Add all unknown words to notebook
   const handleSaveAllUnknown = () => {
     unknownList.forEach(w => {
-      saveWordStatus(w.w, 'unfamiliar');
+      const clean = normalizeWord(w.w);
+      saveWordStatus(clean, 'unfamiliar');
       if (onUpdateWordStatus) {
-        onUpdateWordStatus(w.w, 'unfamiliar');
+        onUpdateWordStatus(clean, 'unfamiliar');
       }
     });
     setAddedToNotebook(true);
@@ -237,6 +220,8 @@ export const VocabBlindSpotModal: React.FC<VocabBlindSpotModalProps> = ({
               <div className="w-8 h-8 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto" />
               <p className="text-xs">正在抽取考纲阶梯词汇题库...</p>
             </div>
+          ) : error ? (
+            <div role="alert" className="py-12 text-center space-y-4"><p>{error}</p><button onClick={() => { void reload().catch(() => {}); }}>重试加载词典</button></div>
           ) : isFinished ? (
             /* Diagnostic Assessment Report */
             <div className="space-y-6 animate-in fade-in duration-300">
@@ -332,10 +317,10 @@ export const VocabBlindSpotModal: React.FC<VocabBlindSpotModalProps> = ({
                         <div className="min-w-0">
                           <div className="font-serif font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
                             {w.w}
-                            {w.phonetic && <span className="font-sans font-normal text-[11px] text-slate-400">{w.phonetic}</span>}
+                            {w.phonetic && <span className="font-sans font-normal text-[11px] text-slate-400">{formatPhonetic(w.phonetic)}</span>}
                           </div>
                           <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
-                            {w.trans}
+                            {getDefinition(w.w).main}
                           </div>
                         </div>
                         <ChevronRight className="w-3.5 h-3.5 text-slate-300 shrink-0" />
@@ -382,7 +367,7 @@ export const VocabBlindSpotModal: React.FC<VocabBlindSpotModalProps> = ({
                 </div>
                 {currentWord.phonetic && (
                   <div className="text-sm font-mono text-slate-400 dark:text-slate-500">
-                    {currentWord.phonetic}
+                    {formatPhonetic(currentWord.phonetic)}
                   </div>
                 )}
               </div>
@@ -419,7 +404,7 @@ export const VocabBlindSpotModal: React.FC<VocabBlindSpotModalProps> = ({
                   )}
 
                   <div className="text-sm font-sans text-slate-700 dark:text-slate-200 leading-relaxed bg-slate-50/80 dark:bg-slate-800/80 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-2xs">
-                    {currentWord.trans || '考纲暂无详细释义'}
+                    {getDefinition(currentWord.w).main}
                   </div>
 
                   <div>

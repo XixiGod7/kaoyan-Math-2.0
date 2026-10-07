@@ -1,6 +1,7 @@
 const db = require('../db');
 const growth = require('./growth');
 const {readContent} = require('./content');
+const {normalizeWord,hasWord} = require('../public/shared/lexicon.mjs');
 const catalog = () => readContent('english-data/catalog.json');
 const fresh = () => ({answers:{},cards:{},notes:{},exams:[]});
 const state = () => db.readJSON('english_state',fresh());
@@ -53,13 +54,22 @@ function mount(app) {
   }));
   app.post('/api/english/review',wrap(async(req,res)=>{
     const {word,rating}=req.body,c=await catalog();
-    if(typeof word!=='string' || !Object.hasOwn(c.words,word) || !['again','hard','good','easy'].includes(rating))throw new Error('复习内容无效');
-    const s=state(),now=Date.now(),old=s.cards[word] || {stage:0,nextDue:0};
-    const due=old.nextDue<=now; const stage=rating==='again'?0:rating==='hard'?old.stage:Math.min(8,old.stage+(rating==='easy'?2:1));
+    if(typeof word!=='string' || !['again','hard','good','easy'].includes(rating))throw new Error('复习内容无效');
+    const cleanWord=normalizeWord(word);
+    const targetWord=hasWord(c.words,cleanWord)?cleanWord:null;
+    if(!targetWord)throw new Error('复习内容无效');
+    const s=state(),now=Date.now();
+    // Case/spacing variants from old backups must retain their schedule and cannot earn twice.
+    const variants=Object.entries(s.cards).filter(([key])=>normalizeWord(key)===targetWord);
+    const old=variants.sort((a,b)=>(b[1].at||0)-(a[1].at||0) || b[1].nextDue-a[1].nextDue)[0]?.[1] || {stage:0,nextDue:0};
+    const due=variants.every(([,card])=>card.nextDue<=now);
+    const stage=rating==='again'?0:rating==='hard'?old.stage:Math.min(8,old.stage+(rating==='easy'?2:1));
     const intervals=[5,30,720,1440,2880,5760,10080,21600,43200];
-    s.cards[word]={stage,nextDue:now+intervals[stage]*60000,at:now};save(s);
-    const reward=due ? growth.recordLearning('english','review','word:'+word,{href:'/english?review=1'}) : {credited:false,points:0};
-    res.json({ok:true,reward,card:s.cards[word]});
+    for(const [key] of variants)delete s.cards[key];
+    s.cards[targetWord]={...old,stage,nextDue:now+intervals[stage]*60000,at:now};
+    save(s);
+    const reward=due ? growth.recordLearning('english','review','word:'+targetWord,{href:'/english?review=1'}) : {credited:false,points:0};
+    res.json({ok:true,reward,card:s.cards[targetWord]});
   }));
   app.post('/api/english/practice',wrap(async(req,res)=>{
     const c=await catalog(),{id,answer}=req.body,q=c.practice[id];
@@ -81,7 +91,7 @@ function mount(app) {
     if(kind==='notes')items=Object.entries(s.notes).map(([id,n])=>({title:c.questions[id]?.title || c.sentences[id]?.s || id,text:n.text,href:c.questions[id]?`/english?tab=quiz&year=${c.questions[id].year}&note=${c.questions[id].number}`:`/english?tab=reading&pass=${c.sentences[id]?.passKey || '2026-t1'}`}));
     if(kind==='favorites')items=values('kaoyan_favorite_sentences',[]).map(n=>({title:n.s,text:n.zh,href:`/english?tab=reading&pass=${c.sentences[n.sid]?.passKey || '2026-t1'}`}));
     if(kind==='wrong')items=[...values('kaoyan_wrong_questions',[]).map(n=>({title:n.stem,text:n.analysis || '',href:`/english?tab=reading&pass=${n.passKey || '2026-t1'}`})),...Object.entries(s.answers).filter(([,n])=>n.correct===false).map(([id])=>({title:c.questions[id]?.title || c.practice[id]?.title || id,text:'参考答案：'+(c.questions[id]?.answer || c.practice[id]?.answer || '请结合原文核对'),href:c.practice[id]?'/english?tab='+(id.startsWith('phrase:')?'phrases':'paraphrase'):`/english?tab=quiz&year=${id.slice(0,4)}`}))];
-    if(kind==='review')items=Object.entries(s.cards).filter(([,n])=>n.nextDue<=Date.now()).map(([word])=>({title:word,text:c.words[word],href:'/english?review=1'}));
+    if(kind==='review')items=Object.entries(s.cards).filter(([,n])=>n.nextDue<=Date.now()).map(([word])=>({title:word,text:c.words[normalizeWord(word)] || '',href:'/english?review=1'}));
     res.json({items:items.slice(page*20,page*20+20),total:items.length});
   }));
 }

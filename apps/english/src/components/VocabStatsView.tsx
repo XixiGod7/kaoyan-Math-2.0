@@ -17,6 +17,7 @@ import {
   BarChart3
 } from 'lucide-react';
 import { VocabBlindSpotModal } from './VocabBlindSpotModal';
+import { formatPhonetic, useDictionary } from '../services/dictionaryService';
 
 interface VocabStatsViewProps {
   onWordClick?: (word: string, rect: DOMRect) => void;
@@ -31,8 +32,7 @@ export const VocabStatsView: React.FC<VocabStatsViewProps> = ({
   wordStatuses = {},
   onUpdateWordStatus
 }) => {
-  const [words, setWords] = useState<VocabStatItem[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { vocabulary: words, loading, error, reload, dict } = useDictionary();
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [filterMode, setFilterMode] = useState<'all' | 'high_freq' | 'recent' | 'unfamiliar'>('all');
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -40,23 +40,6 @@ export const VocabStatsView: React.FC<VocabStatsViewProps> = ({
   // Vocab Test Modal State
   const [isTestActive, setIsTestActive] = useState<boolean>(false);
 
-  useEffect(() => {
-    async function loadData() {
-      try {
-        setLoading(true);
-        const res = await fetch('/english-data/vocab_stats/vocab_stats_all.json');
-        if (res.ok) {
-          const json = await res.json();
-          setWords(json);
-        }
-      } catch (err) {
-        console.error('Failed to load vocab stats:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadData();
-  }, []);
 
   const filteredWords = useMemo(() => {
     let list = words;
@@ -65,18 +48,20 @@ export const VocabStatsView: React.FC<VocabStatsViewProps> = ({
     } else if (filterMode === 'recent') {
       list = list.filter(w => w.recent > 0);
     } else if (filterMode === 'unfamiliar') {
-      list = list.filter(w => wordStatuses[w.w] === 'unfamiliar');
+      list = list.filter(w => (wordStatuses[w.w] || wordStatuses[w.w?.toLowerCase()]) === 'unfamiliar');
     }
 
     if (searchQuery.trim()) {
       const q = searchQuery.trim().toLowerCase();
       list = list.filter(w =>
         (w.w && w.w.toLowerCase().includes(q)) ||
-        (w.trans && w.trans.includes(q))
+        (w.trans && w.trans.includes(q)) ||
+        dict?.entries[w.w]?.supplementary_cn?.some(s => s.toLowerCase().includes(q))
       );
     }
     return list;
-  }, [words, filterMode, searchQuery, wordStatuses]);
+  }, [words, filterMode, searchQuery, wordStatuses, dict]);
+  useEffect(() => { setCurrentPage(1); }, [searchQuery, filterMode]);
 
   const totalPages = Math.max(1, Math.ceil(filteredWords.length / PAGE_SIZE));
   const pageWords = useMemo(() => {
@@ -105,6 +90,8 @@ export const VocabStatsView: React.FC<VocabStatsViewProps> = ({
       </div>
     );
   }
+
+  if (error) return <div role="alert" className="p-6 space-y-4"><p>{error}</p><button onClick={() => { void reload().catch(() => {}); }}>重试加载词典</button></div>;
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -226,7 +213,7 @@ export const VocabStatsView: React.FC<VocabStatsViewProps> = ({
 
         <div className="divide-y divide-slate-100 dark:divide-slate-800">
           {pageWords.map((item, idx) => {
-            const status = wordStatuses[item.w] || 'unknown';
+            const status = wordStatuses[item.w] || wordStatuses[item.w?.toLowerCase()] || 'unknown';
 
             return (
               <div
@@ -251,7 +238,7 @@ export const VocabStatsView: React.FC<VocabStatsViewProps> = ({
                         {item.w}
                       </b>
                       {item.phonetic && (
-                        <span className="text-xs font-mono text-slate-400">{item.phonetic}</span>
+                        <span className="text-xs font-mono text-slate-400">{formatPhonetic(item.phonetic)}</span>
                       )}
                       <button
                         type="button"
