@@ -159,9 +159,39 @@ test("出站请求拒绝重定向、继承取消并限制响应大小", async ()
         "https://api.deepseek.com/v1/chat/completions",
       ),
     );
-    assert.equal(options.redirect, "error");
+    assert.equal(options.redirect, "manual");
     controller.abort();
     assert.equal(options.signal.aborted, true);
+    for (const status of [300, 301, 302, 303, 304, 307, 308, 399]) {
+      let cancelled = false;
+      let calls = 0;
+      global.fetch = async (_, options) => {
+        calls++;
+        assert.equal(options.redirect, "manual");
+        const body = status === 304 ? null : new ReadableStream({
+          cancel() { cancelled = true; },
+        });
+        return new Response(body, { status, headers: { Location: "https://evil.example/" } });
+      };
+      await assert.rejects(
+        require("../services/outbound").request(
+          "https://api.deepseek.com/v1/chat/completions",
+          { redirect: "follow", headers: { Authorization: "Bearer test-placeholder" } },
+        ),
+        (e) => e.status === 400 && /重定向/.test(e.message),
+      );
+      assert.equal(calls, 1);
+      assert.equal(cancelled, status !== 304);
+    }
+    global.fetch = async () => ({
+      status: 0,
+      type: "opaqueredirect",
+      body: { cancel: async () => { throw new Error("取消流失败"); } },
+    });
+    await assert.rejects(
+      require("../services/outbound").request("https://api.deepseek.com/v1/chat/completions"),
+      (e) => e.status === 400 && /重定向/.test(e.message),
+    );
     await assert.rejects(
       require("../services/outbound").text(
         new Response("x".repeat(4097)),

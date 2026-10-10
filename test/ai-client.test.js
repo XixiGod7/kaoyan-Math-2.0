@@ -24,3 +24,16 @@ test('拆分的 SSE 中文、末行与思考字段处理正确，空答复和失
     global.fetch=async()=>new Response('不要回显原始密钥错误',{status:401});await assert.rejects(complete([{role:'user',content:'题目'}],{config}),/HTTP 401/);
   } finally {global.fetch=realFetch;}
 });
+
+test('商汤 DeepSeek V4.1 Flash 的文本、显式图像模型及推理开关正确传递',async()=>{
+  const realFetch=global.fetch;const requests=[];
+  global.fetch=async(_,options)=>{requests.push(JSON.parse(options.body));return Response.json({choices:[{message:{content:'正式答案',reasoning_content:'隐藏推理'}}]});};
+  try {
+    const flash={...config,model:'deepseek-flash',visionModel:'deepseek-flash'};
+    await complete([{role:'user',content:'文字题'}],{config:flash});
+    const content=[{type:'text',text:'图像题'},{type:'image_url',image_url:{url:'data:image/png;base64,cGl4ZWw='}}];
+    assert.equal(await complete([{role:'user',content}],{config:{...flash,enableThinking:true}}),'正式答案');
+    assert.equal(requests[0].model,'deepseek-flash');assert.equal(requests[0].reasoning_effort,'none');
+    assert.equal(requests[1].model,'deepseek-flash');assert.equal(requests[1].reasoning_effort,'medium');assert.deepEqual(requests[1].messages[0].content,content);
+  } finally {global.fetch=realFetch;}
+});

@@ -40,9 +40,17 @@ async function request(url, options = {}) {
   try {
     response = await fetch(url, {
       ...options,
-      redirect: "error",
+      // Workers requires manual handling here; never forward credentials to a redirect target.
+      redirect: "manual",
       signal: AbortSignal.any(signals),
     });
+    if (
+      (response.status >= 300 && response.status < 400) ||
+      response.type === "opaqueredirect"
+    ) {
+      await response.body?.cancel().catch(() => {});
+      throw Object.assign(new Error("出站请求拒绝重定向"), { status: 400 });
+    }
   } catch (e) {
     const kind = ["AbortError", "TimeoutError"].includes(e.name)
       ? e.name

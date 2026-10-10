@@ -4,8 +4,9 @@
   let modalEl = null;
 
   const presets = [
+    { label: 'DeepSeek V4.1 Flash (商汤)', url: 'https://token.sensenova.cn/v1', model: 'deepseek-flash' },
     { label: '商汤日日新 (SenseNova)', url: 'https://token.sensenova.cn/v1', model: 'sensenova-6.8-flash-lite' },
-    { label: 'DeepSeek Chat (推荐)', url: 'https://api.deepseek.com/v1', model: 'deepseek-chat' },
+    { label: 'DeepSeek Chat (官方)', url: 'https://api.deepseek.com/v1', model: 'deepseek-chat' },
     { label: 'DeepSeek 深度思考 (R1)', url: 'https://api.deepseek.com/v1', model: 'deepseek-reasoner' },
     { label: '阿里通义千问 (Qwen)', url: 'https://dashscope.aliyuncs.com/compatible-mode/v1', model: 'qwen-plus' },
     { label: 'Moonshot (Kimi)', url: 'https://api.moonshot.cn/v1', model: 'moonshot-v1-8k' },
@@ -58,7 +59,7 @@
             <input id="ai-input-model" class="ai-form-input" placeholder="例如：deepseek-chat" autocomplete="off" />
           </div>
 
-          <div class="ai-form-group"><label class="ai-form-label" for="ai-input-vision">图片模型（可选）</label><input id="ai-input-vision" class="ai-form-input" placeholder="商汤自动使用 sensenova-6.8-flash-lite；其他接口留空沿用上方模型" /><small>纯文字模型无法读取图片；可单独设置支持图像的模型。</small></div><div class="ai-form-group" style="margin-top: 10px; background: rgba(59, 130, 246, 0.05); padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.15);">
+          <div class="ai-form-group"><label class="ai-form-label" for="ai-input-vision">图片模型（可选）</label><input id="ai-input-vision" class="ai-form-input" placeholder="留空：商汤使用 sensenova-6.8-flash-lite；其他接口沿用主模型" /><small>纯文字模型无法读取图片；如需用商汤 DeepSeek V4.1 Flash 识图，请填写 deepseek-flash。</small></div><div class="ai-form-group" style="margin-top: 10px; background: rgba(59, 130, 246, 0.05); padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.15);">
             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text, #1f2937); margin: 0;">
               <input type="checkbox" id="ai-input-thinking" checked style="width: 16px; height: 16px; cursor: pointer;" />
               <span>启用模型深度推理</span>
