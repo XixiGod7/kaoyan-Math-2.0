@@ -2,6 +2,19 @@ export type SubjectType = '马原' | '毛中特' | '新思想' | '史纲' | '思
 
 export type QuestionType = 'single' | 'multi';
 
+export interface QuestionSource {
+  title: string;
+  url: string;
+}
+
+export interface QuestionFigure {
+  src: string;
+  width: number;
+  height: number;
+  viewBox: string;
+  alt: string;
+}
+
 export interface QuestionChoices {
   A: string;
   B: string;
@@ -18,6 +31,11 @@ export interface Question {
   type: QuestionType;
   subject: SubjectType;
   isReal?: boolean;
+  archived?: boolean;
+  year?: number;
+  number?: number;
+  sources?: QuestionSource[];
+  figure?: QuestionFigure;
   analysis?: string;
   attempts?: number;
   myChoice?: string;
@@ -63,6 +81,7 @@ export interface BankDetail {
   kind: 'book' | 'exam';
   qCount: number;
   aveScore?: number;
+  redirectCode?: string;
   chapters: BankChapterSummary[];
 }
 
@@ -112,6 +131,8 @@ export interface PaperSubmitResult {
     correct: boolean;
     answer: string;
     picked: string;
+    analysis: string;
+    sources: QuestionSource[];
   }>;
   message?: string;
 }

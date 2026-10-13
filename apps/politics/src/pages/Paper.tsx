@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import {AnalysisSection, QuestionIllustration, QuestionSources} from '../components/QuestionSolution';
 import {
   getBankApi,
   getChapterApi,
@@ -20,6 +21,7 @@ function formatDuration(seconds: number): string {
 
 export const PaperPage: React.FC = () => {
   const { code = '' } = useParams<{ code: string }>();
+  const navigate = useNavigate();
   const [paperName, setPaperName] = useState('');
   const [aveScore, setAveScore] = useState<number | undefined>(undefined);
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -27,6 +29,7 @@ export const PaperPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<PaperSubmitResult | null>(null);
+  const [showSolutions, setShowSolutions] = useState(false);
   const [history, setHistory] = useState<PaperHistoryItem[]>([]);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [error, setError] = useState('');
@@ -40,17 +43,24 @@ export const PaperPage: React.FC = () => {
     let active = true;
     setLoading(true);
     setResult(null);
+    setShowSolutions(false);
     setUserChoices({});
     setQuestions([]); setError(''); setDraftStatus('');
     setElapsedSeconds(0);
     submitKey.current = crypto.randomUUID();
     startTimeRef.current = Date.now();
 
-    Promise.all([getBankApi(code), getPaperDraftApi(code), getPaperHistoryApi(code)]).then(async ([bank, draft, hist]) => {
+    getBankApi(code).then(async bank => {
       if (!active || !bank) {
         setLoading(false);
         return;
       }
+      if (bank.redirectCode) {
+        navigate(`/politics/paper/${bank.redirectCode}`, {replace: true});
+        return;
+      }
+      const [draft, hist] = await Promise.all([getPaperDraftApi(code), getPaperHistoryApi(code)]);
+      if (!active) return;
       setPaperName(bank.name);
       setAveScore(bank.aveScore);
       const chapters = await Promise.all(bank.chapters.map(ch => getChapterApi(ch.code)));
@@ -71,7 +81,7 @@ export const PaperPage: React.FC = () => {
     return () => {
       active = false;
     };
-  }, [code]);
+  }, [code, navigate]);
 
   // 计时器
   useEffect(() => {
@@ -198,6 +208,9 @@ export const PaperPage: React.FC = () => {
           </span>
           {aveScore != null && <span className="pb-ave">全站均分 {aveScore} / 50</span>}
           <span className="pb-spacer" />
+          <button type="button" className="pb-btn" onClick={() => setShowSolutions(value => !value)} aria-pressed={showSolutions}>
+            {showSolutions ? '收起答案与解析' : '查看答案与解析'}
+          </button>
           <button
             type="button"
             className="pb-submit"
@@ -244,7 +257,7 @@ export const PaperPage: React.FC = () => {
               }`}
             >
               <div className="pb-card-head">
-                <span className="pb-no">{idx + 1}</span>
+                <span className="pb-no">{q.number ?? idx + 1}</span>
                 <span className={`pb-type ${q.type}`}>
                   {q.type === 'multi' ? '多选 2分' : '单选 1分'}
                 </span>
@@ -257,6 +270,7 @@ export const PaperPage: React.FC = () => {
               </div>
 
               <div className="pb-stem">{q.stem}</div>
+              <QuestionIllustration figure={q.figure} />
 
               <div className="pb-opts">
                 {L.map(opt => {
@@ -281,6 +295,7 @@ export const PaperPage: React.FC = () => {
                       type="button"
                       className={optClasses.join(' ')}
                       onClick={() => handleSelect(q, opt)}
+                      disabled={!!result || submitting}
                     >
                       <span className="pb-opt-let">{opt}</span>
                       <span className="pb-opt-txt">{q.choices?.[opt] ?? ''}</span>
@@ -292,6 +307,11 @@ export const PaperPage: React.FC = () => {
               {!result && currentPicked && (
                 <div className="pb-hint">已选 {currentPicked}</div>
               )}
+              {(detail || showSolutions) && <div className="pb-paper-solution">
+                {!detail && <div className="pb-verdict">参考答案 <b>{q.answer}</b></div>}
+                <AnalysisSection text={detail?.analysis || q.analysis || ''} />
+                <QuestionSources sources={detail?.sources || q.sources} />
+              </div>}
             </li>
           );
         })}

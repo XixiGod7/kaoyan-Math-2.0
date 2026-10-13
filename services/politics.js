@@ -6,8 +6,14 @@ const catalog = () => readContent('politics-data/catalog.json');
 const getState = () => db.readJSON('politics_state', { answers: {}, notes: {}, favorites: [], history: {}, drafts: {}, requests: {} });
 const save = state => db.saveJSON('politics_state', state);
 const normal = value => [...new Set(String(value || '').toUpperCase())].filter(c => 'ABCD'.includes(c)).sort().join('');
+const isArchivedId = id => /^pol:exam-20(?:1\d|2[0-6]):/.test(String(id));
+const activeAnswers = state => Object.values(state.answers).filter(a => !isArchivedId(a.id));
+function requireActive(q) {
+  if (q.archived) throw Object.assign(new Error('旧年份模板已归档，请进入更新后的真题卷'), {status: 410});
+}
 async function chapter(code) {
-  if (!(await catalog()).chapters[code]) throw new Error('章节不存在');
+  const cat = await catalog();
+  if (!cat.chapters[code] && !cat.archivedChapters?.[code]) throw new Error('章节不存在');
   return readContent(`politics-data/${code}.json`);
 }
 async function question(id) {
@@ -36,11 +42,11 @@ function result(q, a, state) {
     missed: [...normal(q.answer)].filter(c => !a.myChoice.includes(c)).join(''), extra: [...a.myChoice].filter(c => !normal(q.answer).includes(c)).join('') };
 }
 function summarize(answers){const subjects=new Map(),banks=new Map(),chapters=new Map();let correct=0,wrong=0,due=0;const now=Date.now();for(const a of answers){if(a.firstCorrect)correct++;if(!a.correct)wrong++;if(a.nextReviewAt<=now)due++;for(const [map,key]of [[subjects,a.subject],[banks,a.bankCode],[chapters,a.chapterCode]]){const item=map.get(key)||{done:0,correct:0,multiDone:0,multiCorrect:0};item.done++;if(a.firstCorrect)item.correct++;if(a.type==='multi'){item.multiDone++;if(a.firstCorrect)item.multiCorrect++;}if(!item.recent||a.timestamp>item.recent.timestamp)item.recent=a;map.set(key,item);}}return {correct,wrong,due,subjects,banks,chapters};}
-function stats(state=getState()){const answers=Object.values(state.answers),summary=summarize(answers);return {total:answers.length,correct:summary.correct,wrong:summary.wrong,due:summary.due,favorites:state.favorites.length,bySubject:['马原','毛中特','新思想','史纲','思修','时政'].map(subject=>({subject,...(summary.subjects.get(subject)||{done:0,correct:0,multiDone:0,multiCorrect:0}),recent:undefined}))};}
+function stats(state=getState()){const answers=activeAnswers(state),summary=summarize(answers);return {total:answers.length,correct:summary.correct,wrong:summary.wrong,due:summary.due,favorites:state.favorites.length,bySubject:['马原','毛中特','新思想','史纲','思修','时政'].map(subject=>({subject,...(summary.subjects.get(subject)||{done:0,correct:0,multiDone:0,multiCorrect:0}),recent:undefined}))};}
 function mount(app) {
   const wrap = fn => async (req, res) => { try { await fn(req, res); } catch (e) { res.status(e.status||400).json({ ok: false, error: e.message, message: e.message }); } };
   app.get('/api/politics/banks', wrap(async (req, res) => {
-    const cat = await catalog(), state = getState(),summary=summarize(Object.values(state.answers));
+    const cat = await catalog(), state = getState(),summary=summarize(activeAnswers(state));
     res.json(cat.banks.filter(b => !req.query.kind || b.kind === req.query.kind).sort((a, b) => b.code.localeCompare(a.code)).map(b => {
       const item=summary.banks.get(b.code)||{done:0,correct:0},recent=item.recent;
       return { ...b, chapters: undefined, done:item.done,correct:item.correct,
@@ -48,10 +54,11 @@ function mount(app) {
     }));
   }));
   app.get('/api/politics/banks/:code', wrap(async (req, res) => {
-    const bank = (await catalog()).banks.find(b => b.code === req.params.code);
+    const cat = await catalog(), redirectCode = cat.replacements?.[req.params.code];
+    const bank = cat.banks.find(b => b.code === (redirectCode || req.params.code));
     if (!bank) return res.status(404).json(null);
-    const state = getState(),summary=summarize(Object.values(state.answers));
-    res.json({ ...bank, chapters: bank.chapters.map(ch => {
+    const state = getState(),summary=summarize(activeAnswers(state));
+    res.json({ ...bank, redirectCode, chapters: bank.chapters.map(ch => {
       const item=summary.chapters.get(ch.code)||{done:0,correct:0};
       return {...ch,done:item.done,correct:item.correct};
     }) });
@@ -66,6 +73,7 @@ function mount(app) {
   }));
   app.post('/api/politics/answer', wrap(async (req, res) => {
     const { q, ch } = await question(req.body.qid), choice = normal(req.body.choice), state = getState();
+    requireActive(q);
     const a = updateAnswer(state, q, ch, choice); save(state);
     const reward = growth.recordLearning('politics', 'answer', q.id, { href: `/politics/practice/${ch.code}` });
     res.json({ ...result(q, a, state), reward });
@@ -75,7 +83,7 @@ function mount(app) {
     if (typeof req.body.note !== 'string' || req.body.note.length > 20000) throw new Error('笔记内容无效或过长');
     const state = getState();
     state.notes[q.id] = req.body.note.trim(); save(state);
-    const reward = growth.recordLearning('politics', 'note', q.id, { text: req.body.note, href: `/politics/practice/${ch.code}` });
+    const reward = q.archived ? {credited: false, points: 0} : growth.recordLearning('politics', 'note', q.id, { text: req.body.note, href: `/politics/practice/${ch.code}` });
     res.json({ ok: true, reward });
   }));
   app.get('/api/politics/favorite-ids', (req, res) => res.json(getState().favorites));
@@ -88,7 +96,7 @@ function mount(app) {
   }));
   for (const kind of ['wrong', 'favorites', 'review', 'notes']) app.get(`/api/politics/${kind}`, wrap(async (req, res) => {
     const state = getState();
-    let ids = kind === 'favorites' ? state.favorites : kind === 'notes' ? Object.keys(state.notes).filter(id => state.notes[id]) : Object.values(state.answers)
+    let ids = kind === 'favorites' ? state.favorites : kind === 'notes' ? Object.keys(state.notes).filter(id => state.notes[id]) : activeAnswers(state)
       .filter(a => (kind === 'wrong' ? !a.correct : a.nextReviewAt <= Date.now()) && (!req.query.subject || a.subject === req.query.subject))
       .sort((a, b) => b.timestamp - a.timestamp).map(a => a.id);
     const page = Math.max(0, Number(req.query.page) || 0), size = Math.min(100, Math.max(1, Number(req.query.limit) || 20));
@@ -97,6 +105,7 @@ function mount(app) {
   }));
   app.post('/api/politics/review', wrap(async (req, res) => {
     const { q, ch } = await question(req.body.qid), grade = req.body.grade;
+    requireActive(q);
     if (![0, 1, 2].includes(grade)) throw new Error('复习评分无效');
     const state = getState(), record = state.answers[q.id];
     if (!record || record.nextReviewAt > Date.now()) throw new Error('该题尚未到复习时间');
@@ -111,9 +120,12 @@ function mount(app) {
   app.get('/api/politics/papers/:code/history', (req, res) => res.json(getState().history[req.params.code] || []));
   app.get('/api/politics/papers/:code/draft', (req, res) => res.json(getState().drafts[req.params.code] || null));
   app.post('/api/politics/papers/:code/draft', wrap(async (req, res) => {
-    if (!(await catalog()).banks.some(b => b.code === req.params.code)) throw new Error('试卷不存在');
+    const bank = (await catalog()).banks.find(b => b.kind === 'exam' && b.code === req.params.code);
+    if (!bank) throw new Error('试卷不存在');
     if (!req.body.choices || typeof req.body.choices !== 'object' || JSON.stringify(req.body).length > 50000) throw new Error('草稿无效');
-    const state = getState(); state.drafts[req.params.code] = { choices: req.body.choices, elapsed: require('./validation').finite(req.body.elapsed??0) };
+    const questions = (await Promise.all(bank.chapters.map(c => chapter(c.code)))).flatMap(ch => ch.questions);
+    const choices = validatedChoices(req.body.choices, questions);
+    const state = getState(); state.drafts[req.params.code] = { choices, elapsed: require('./validation').finite(req.body.elapsed??0) };
     save(state); res.json({ ok: true });
   }));
   app.post('/api/politics/papers/:code/submit', wrap(async (req, res) => {
@@ -122,13 +134,19 @@ function mount(app) {
     const chapters = await Promise.all(bank.chapters.map(c => chapter(c.code)));
     const state = getState(), requestId = String(req.get('Idempotency-Key') || '');
     const hash=require('./auth-core').digest(JSON.stringify([bank.code,req.body]));if(requestId&&state.requests[requestId]){if(state.requests[requestId].hash!==hash)return res.status(409).json({error:'重复请求标识不匹配'});return res.json(state.requests[requestId].value);}
-    const submitted = Array.isArray(req.body.answers) ? req.body.answers : [];
-    const answers = new Map(submitted.map(a => [a.id, normal(a.choice)]));
+    const questions = chapters.flatMap(ch => ch.questions);
+    if (!Array.isArray(req.body.answers)) throw new Error('作答格式无效');
+    const submitted = req.body.answers, choices = Object.create(null);
+    for (const item of submitted) {
+      if (!item || typeof item.id !== 'string' || Object.hasOwn(choices, item.id)) throw new Error('作答题目标识重复或无效');
+      choices[item.id] = item.choice;
+    }
+    const answers = new Map(Object.entries(validatedChoices(choices, questions)));
     const detail = []; let full = 0, score = 0;
     for (const ch of chapters) for (const q of ch.questions) {
       const choice = answers.get(q.id) || '', a = updateAnswer(state, q, ch, choice, true), points = q.type === 'multi' ? 2 : 1;
       full += points; if (a.correct) score += points;
-      detail.push({ id: q.id, correct: a.correct, answer: normal(q.answer), picked: choice });
+      detail.push({id: q.id, number: q.number, correct: a.correct, answer: normal(q.answer), picked: choice, analysis: q.analysis || '', sources: q.sources || []});
     }
     const complete = detail.length > 0 && detail.every(d => d.picked);
     const value = { ok: true, score, full, detail, complete, takenAt: new Date().toISOString(), id: randomUUID() };
@@ -144,10 +162,21 @@ function mount(app) {
   app.post('/api/politics/ask', wrap(async (req, res) => {
     const { q } = await question(req.body.qid);
     if (typeof req.body.question !== 'string' || !req.body.question.trim() || req.body.question.length > 4000) throw new Error('请输入有效问题');
-    const answer = await require('./assistant').reply('你是考研政治学习助手。解释概念和选项，题库答案未独立核验，不确定时明确说明。',
+    const answer = await require('./assistant').reply(`你是考研政治学习助手。解释概念和选项，区分真题来源与整理解析，不确定时明确说明。${q.archived ? '本题为已停用的旧模板，不能作为历年真题。' : ''}`,
       `题目：${q.stem}\n选项：${JSON.stringify(q.choices)}\n题库参考答案：${q.answer}\n题库解析：${q.analysis || ''}\n用户问题：${req.body.question}`,
       `【题库参考解析，未启用外部 AI】\n参考答案：${q.answer}\n${q.analysis || '该题尚无详细解析，请结合教材核对。'}\n\n可以在顶部统一 AI 设置中配置个人模型，以获得针对问题的回复。`, req.body.imageIds || []);
     res.json({ ok: true, ...answer });
   }));
 }
-module.exports = { mount, getState, stats, question, chapter, catalog };
+function validatedChoices(values, questions) {
+  if (!values || typeof values !== 'object' || Array.isArray(values)) throw new Error('草稿或作答格式无效');
+  const allowed = new Map(questions.map(q => [q.id, q]));
+  return Object.fromEntries(Object.entries(values).map(([id, value]) => {
+    const q = allowed.get(id);
+    if (!q || typeof value !== 'string' || !/^[A-D]*$/i.test(value)) throw new Error('作答含其他试卷题目或无效选项');
+    const choice = normal(value);
+    if (q.type === 'single' && choice.length > 1) throw new Error('单选题只能选择一个选项');
+    return [id, choice];
+  }));
+}
+module.exports = { mount, getState, stats, question, chapter, catalog, isArchivedId, validatedChoices };

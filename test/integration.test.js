@@ -39,6 +39,33 @@ async function req(url, data, headers = {}, method = data === undefined ? 'GET' 
   return { status: response.status, body, headers: response.headers };
 }
 const overview = async () => (await req('/api/study/overview')).body;
+test('政治旧模板归档保留笔记与备份，版本更新不串进度或草稿', async () => {
+  const oldId = 'pol:exam-2010:0:0';
+  const oldRecord = {id: oldId, chapterCode: 'exam-2010--0', bankCode: 'exam-2010', subject: '马原', type: 'single', correct: false, firstCorrect: false, myChoice: 'B', timestamp: 1, attempts: 1, nextReviewAt: 0};
+  const backup = {format: 'yanzhuan-study', version: 2, data: {politics_state: {answers: {[oldId]: oldRecord}, notes: {[oldId]: '原模板笔记，需要保留到归档中。'}, favorites: [oldId], history: {'exam-2010': [{score: 1, full: 50, takenAt: '2026-01-01'}]}, drafts: {'exam-2010': {choices: {[oldId]: 'B'}, elapsed: 70}}, requests: {}}}};
+  const preview = await req('/api/study/restore', {backup, mode: 'merge'});
+  assert.equal(preview.status, 200);
+  assert.equal((await req('/api/study/restore', {backup, mode: 'merge', preview: false, confirmation: preview.body.confirmation, revision: preview.body.revision})).status, 200);
+  const bank = (await req('/api/politics/banks/exam-2010')).body;
+  assert.equal(bank.redirectCode, 'exam-2010-v2');
+  assert.ok(bank.chapters.every(ch => ch.done === 0));
+  const archived = (await req('/api/politics/chapters/exam-2010--0')).body.questions[0];
+  assert.equal(archived.archived, true); assert.equal(archived.userNote, backup.data.politics_state.notes[oldId]);
+  const note = (await req('/api/politics/notes')).body.items.find(q => q.id === oldId);
+  assert.ok(note?.archived);
+  assert.ok(!(await req('/api/politics/wrong')).body.items.some(q => q.id === oldId));
+  assert.ok(!(await req('/api/politics/review')).body.items.some(q => q.id === oldId));
+  assert.equal((await req('/api/politics/answer', {qid: oldId, choice: 'A'})).status, 410);
+  assert.equal((await req('/api/politics/review', {qid: oldId, grade: 0})).status, 410);
+  assert.equal((await req('/api/politics/note', {qid: oldId, note: '修改归档内容也不会领取新的学习积分。'})).body.reward.points, 0);
+  assert.equal((await req('/api/politics/papers/exam-2010-v2/draft')).body, null);
+  assert.equal((await req('/api/politics/papers/exam-2010-v2/draft', {choices: {[oldId]: 'A'}, elapsed: 1})).status, 400);
+  assert.equal((await req('/api/politics/papers/exam-2010/submit', {answers: []})).status, 400);
+  const exported = (await req('/api/study/export')).body.data.politics_state;
+  assert.deepEqual(exported.answers[oldId], oldRecord);
+  assert.equal(exported.drafts['exam-2010'].elapsed, 70);
+  assert.equal(exported.history['exam-2010'][0].score, 1);
+});
 const action = (name, data = {}, key = crypto.randomUUID()) => req('/api/incentive/' + name, data, { 'Idempotency-Key': key });
 async function reviewRequest(url, options) {
   const result = await req(url, options?.body ? JSON.parse(options.body) : undefined);
@@ -174,7 +201,8 @@ test('完整数学模考奖励一次，空白及部分交卷不发完成奖励',
 });
 
 test('政治模考草稿可恢复，完整交卷只发模考奖励，重复请求不重复历史', async () => {
-  const bank = (await req('/api/politics/banks/exam-2026')).body;
+  const exams = (await req('/api/politics/banks?kind=exam')).body;
+  const bank = (await req('/api/politics/banks/' + exams[0].code)).body;
   const chapters = await Promise.all(bank.chapters.map(c => req('/api/politics/chapters/' + c.code)));
   const questions = chapters.flatMap(c => c.body.questions), before = await overview();
   const root = '/api/politics/papers/' + bank.code;
@@ -184,6 +212,8 @@ test('政治模考草稿可恢复，完整交卷只发模考奖励，重复请�
   const answers = questions.map(q => ({ id: q.id, choice: q.answer })), key = crypto.randomUUID();
   const result = await req(root + '/submit', { answers, duration: 234 }, { 'Idempotency-Key': key });
   assert.equal(result.body.score, result.body.full); assert.equal(result.body.reward.points, 20);
+  assert.equal(result.body.full, 50); assert.equal(result.body.detail.length, 33);
+  assert.ok(result.body.detail.every(d => d.analysis.length >= 40 && d.sources.length > 0));
   assert.equal((await req(root + '/draft')).body, null);
   const count = (await req(root + '/history')).body.length;
   await req(root + '/submit', { answers }, { 'Idempotency-Key': key });

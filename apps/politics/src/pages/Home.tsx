@@ -233,8 +233,8 @@ export const HomePage: React.FC = () => {
 
       {/* 历年真题 */}
       <section className="pb-block">
-        <h2>年份练习卷</h2>
-        <p className="pb-block-sub">整卷计时练习，按题库参考答案判分。原资料中的年份未独立核验。</p>
+        <h2>历年真题·选择题</h2>
+        <p className="pb-block-sub">2010—2026 年，每卷 33 题、满分 50 分，附答案与解析。</p>
         {loading ? (
           <div className="pb-loading">加载中…</div>
         ) : (

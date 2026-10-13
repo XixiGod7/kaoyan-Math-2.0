@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import {AnalysisSection, QuestionIllustration, QuestionSources} from './QuestionSolution';
 import type { Question } from '../types/politics';
 import { L, normalizeChoices, submitAnswerApi, toggleFavoriteApi, saveUserNoteApi, askAiApi } from '../services/politicsApi';
 import { useEliminate } from '../hooks/useEliminate';
@@ -51,7 +52,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
     setToastMsg('');
   }, [q.id, initial, favored, defaultRevealed]);
 
-  const hasResult = !!submission && submission.ok !== false && !!submission.answer;
+  const hasResult = !!q.archived || (!!submission && submission.ok !== false && !!submission.answer);
   const standardAnswer = submission?.answer ?? q.answer ?? '';
   const myChoice = submission?.myChoice ?? q.myChoice ?? '';
   const analysisText = submission?.analysis ?? q.analysis ?? '';
@@ -78,6 +79,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
   // 提交作答
   async function handleSubmit() {
+    if (q.archived) return;
     const choiceStr = normalizeChoices(pickedSet);
     if (!choiceStr || submitting) return;
 
@@ -143,6 +145,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
         )}
         {q.subject && <span className="pb-subject">{q.subject}</span>}
         {q.isReal && <span className="pb-tag-real">真题</span>}
+        {q.archived && <span className="pb-tag-real">旧模板归档</span>}
         <span className="pb-spacer" />
         {typeof q.attempts === 'number' && q.attempts > 1 && (
           <span className="pb-attempts" title="做过的次数">
@@ -160,6 +163,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
       </div>
 
       <div className="pb-stem">{q.stem}</div>
+      <QuestionIllustration figure={q.figure} />
 
       <div className="pb-opts">
         {L.map(opt => (
@@ -169,7 +173,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             className={getOptionClass(opt)}
             onClick={() => handleOptionClick(opt)}
             {...(hasResult ? {} : elim.bind(opt))}
-            disabled={submitting}
+            disabled={submitting || !!q.archived}
             title={hasResult ? undefined : '点击选择；右键或长按可划掉它（排除法）'}
           >
             <span className="pb-opt-let">{opt}</span>
@@ -200,6 +204,8 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
       {hasResult && (
         <div className="pb-result">
+          {q.archived && <div className="pb-archive-note">此题为已停用的年份模板，原作答和笔记保留；不计入新真题进度。</div>}
+          {!q.archived && (
           <div className="pb-verdict">
             <b className={submission?.correct ? 'ok' : 'no'}>
               {submission?.correct ? '答对了' : '答错了'}
@@ -215,6 +221,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             {missed && <span className="pb-missed">漏选 {missed}</span>}
             {extra && <span className="pb-extra">多选 {extra}</span>}
           </div>
+          )}
 
           <div ref={analysisRef}>
             {analysisText ? (
@@ -236,6 +243,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                 clearSelection();
               }}
             />
+            <QuestionSources sources={q.sources} />
           </div>
 
           <AiQuestionAssistant qid={q.id} />
@@ -247,51 +255,6 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
           />
         </div>
       )}
-    </div>
-  );
-};
-
-// 解析段落格式化组件
-function parseAnalysisSections(text: string): Array<{ title: string | null; body: string }> {
-  const sections: Array<{ title: string | null; body: string }> = [];
-  const regex = /【([^】]{1,12})】/g;
-  let lastIndex = 0;
-  let currentTitle: string | null = null;
-  let match: RegExpExecArray | null;
-
-  while ((match = regex.exec(text)) !== null) {
-    const body = text.slice(lastIndex, match.index).trim();
-    if (body || currentTitle) {
-      sections.push({ title: currentTitle, body });
-    }
-    currentTitle = match[1];
-    lastIndex = match.index + match[0].length;
-  }
-
-  const trailing = text.slice(lastIndex).trim();
-  if (trailing || currentTitle) {
-    sections.push({ title: currentTitle, body: trailing });
-  }
-
-  return sections.length ? sections : [{ title: null, body: text }];
-}
-
-const AnalysisSection: React.FC<{ text: string }> = ({ text }) => {
-  const sections = useMemo(() => parseAnalysisSections(text), [text]);
-
-  return (
-    <div className="pb-analysis">
-      {sections.map((sec, idx) => (
-        <div key={idx} className="pb-sec">
-          {sec.title && <div className="pb-sec-title">【{sec.title}】</div>}
-          {sec.body
-            .split('\n')
-            .filter(Boolean)
-            .map((p, pIdx) => (
-              <p key={pIdx}>{p}</p>
-            ))}
-        </div>
-      ))}
     </div>
   );
 };
